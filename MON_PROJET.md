@@ -103,6 +103,10 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 ### Bâtiments
 - [ ] Construire les formes des niveaux 2 et 3 (caserne, Town Centre).
+- [ ] **Chantiers plus réalistes** pendant la construction d'un bâtiment :
+  - durée de construction un peu plus longue ;
+  - échafaudages (scaffolding) de hauteur aléatoire autour du bâtiment, à certains endroits, retirés à la fin ;
+  - **barre de progression** du chantier au-dessus du bâtiment (comme une barre de vie).
 - [ ] Tours de guet améliorables (portée et dégâts par niveau).
 - [ ] **Limite de distance** pour poser un bâtiment : il faut être assez proche d'un de ses bâtiments (pas de construction dans une base ennemie), sauf entrepôts et quelques autres.
 
