@@ -6,6 +6,7 @@ import com.solegendary.reignofnether.building.BuildingClientEvents;
 import com.solegendary.reignofnether.building.BuildingPlacement;
 import com.solegendary.reignofnether.building.BuildingServerEvents;
 import com.solegendary.reignofnether.building.custombuilding.CustomBuilding;
+import com.solegendary.reignofnether.building.level.BuildingLevel;
 import com.solegendary.reignofnether.registrars.BlockRegistrar;
 import com.solegendary.reignofnether.unit.UnitClientEvents;
 import com.solegendary.reignofnether.unit.UnitServerEvents;
@@ -23,6 +24,12 @@ import java.util.List;
 public interface GarrisonableBuildingAddon extends BuildingAddon {
     // set range for all garrisoned units don't use this for abilities as it may not be balanced
     public int getAttackRange();
+
+    // range for a specific placement, so levelled buildings can override it per level
+    default int getAttackRange(BuildingPlacement placement) {
+        BuildingLevel level = placement.getBuilding().getLevel(placement);
+        return level != null && level.attackRange > 0 ? level.attackRange : getAttackRange();
+    }
     // bonus for units attacking garrisoned units
     public int getExternalAttackRangeBonus();
 

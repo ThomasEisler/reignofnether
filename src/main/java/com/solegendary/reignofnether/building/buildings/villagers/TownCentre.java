@@ -1,5 +1,6 @@
 package com.solegendary.reignofnether.building.buildings.villagers;
 
+import com.solegendary.reignofnether.building.level.BuildingLevel;
 import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBlockData;
 
 import com.solegendary.reignofnether.ability.Ability;
@@ -64,6 +65,17 @@ public class TownCentre extends ProductionBuilding implements RangeIndicatorAddo
         this.productions.add(ProductionItems.VILLAGER, Keybindings.abilitySlot1);
         this.productions.add(ProductionItems.SCOUT_DOG, Keybindings.abilitySlot2);
         this.productions.add(ProductionItems.SCOUT_CAT, Keybindings.abilitySlot2);
+
+        // PLACEHOLDER structures: town_centre_lvl2/town_centre_lvl3 are copies of town_centre.nbt until real ones are made
+        setLevels(
+            BuildingLevel.of(structureName).maxHealth(380d).build(),
+            BuildingLevel.of("town_centre_lvl2").maxHealth(500d).productionSpeed(1.25f)
+                .upgradeCost(ResourceCost.Research(0, 300, 200, 90)).build(),
+            BuildingLevel.of("town_centre_lvl3").maxHealth(650d).productionSpeed(1.5f)
+                .upgradeCost(ResourceCost.Research(0, 500, 400, 120)).build()
+        );
+        this.productions.add(ProductionItems.TOWN_CENTRE_LEVEL_2, Keybindings.abilitySlot3);
+        this.productions.add(ProductionItems.TOWN_CENTRE_LEVEL_3, Keybindings.abilitySlot3);
 
         setActiveAddon(RangeIndicatorAddon.class, this, true);
     }

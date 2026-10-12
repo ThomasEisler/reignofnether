@@ -188,10 +188,11 @@ public abstract class ProductionItem {
                     active.ticksLeft -= 10;
             }
             else {
+                float speed = placement.getBuilding().getProductionSpeed(placement);
                 if (placement.getLevel().isClientSide())
-                    active.ticksLeft -= (RtsDebugClientEvents.getCappedTPS() / 20D);
+                    active.ticksLeft -= (RtsDebugClientEvents.getCappedTPS() / 20D) * speed;
                 else
-                    active.ticksLeft -= 1;
+                    active.ticksLeft -= speed;
             }
 
             if (active.ticksLeft < 0)

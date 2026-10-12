@@ -83,7 +83,7 @@ public class BuildingSaveData extends SavedData {
                 ListTag commandsNbt = btag.contains("commandsNbt") ? btag.getList("commandsNbt", Tag.TAG_COMPOUND) : new ListTag();
 
                 if (building != null) {
-                    data.buildings.add(new BuildingSave(pos,
+                    BuildingSave save = new BuildingSave(pos,
                             level,
                             building,
                             ownerName,
@@ -98,7 +98,10 @@ public class BuildingSaveData extends SavedData {
                             dataStorage,
                             partialBlocksDestroyed,
                             commandsNbt
-                    ));
+                    );
+                    if (btag.contains("structureHash"))
+                        save.structureHash = btag.getInt("structureHash");
+                    data.buildings.add(save);
                     ReignOfNether.LOGGER.info("BuildingSaveData.load: " + ownerName + "|" + building.name);
                 }
             }
@@ -138,6 +141,8 @@ public class BuildingSaveData extends SavedData {
             cTag.put("dataStorage", b.dataStorage.write());
             cTag.putDouble("partialBlocksDestroyed", b.partialBlocksDestroyed);
             cTag.put("commandsNbt", b.commandsNbt);
+            if (b.structureHash != null)
+                cTag.putInt("structureHash", b.structureHash);
             list.add(cTag);
 
             //ReignOfNether.LOGGER.info("BuildingSaveData.save: " + b.ownerName + "|" + buildingName);

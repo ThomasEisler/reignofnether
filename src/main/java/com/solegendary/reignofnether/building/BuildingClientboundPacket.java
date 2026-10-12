@@ -149,6 +149,26 @@ public class BuildingClientboundPacket {
         );
     }
 
+    public static void changeLevel(BlockPos buildingPos, int levelIndex) {
+        sendFiltered(buildingPos,
+                new BuildingClientboundPacket(BuildingAction.CHANGE_LEVEL,
+                        EMPTY,
+                        "",
+                        buildingPos,
+                        Rotation.NONE,
+                        "",
+                        0,
+                        0,
+                        0,
+                        false,
+                        levelIndex,
+                        false,
+                        PortalPlacement.PortalType.BASIC,
+                        new BlockPos(0,0,0)
+                )
+        );
+    }
+
     public static void changeStructure(BlockPos buildingPos, String structureName) {
         sendFiltered(buildingPos,
                 new BuildingClientboundPacket(BuildingAction.CHANGE_STRUCTURE,
@@ -325,6 +345,9 @@ public class BuildingClientboundPacket {
                     }
                     case CHANGE_STRUCTURE -> {
                         building.changeStructure(itemName);
+                    }
+                    case CHANGE_LEVEL -> {
+                        building.applyLevel(upgradeLevel);
                     }
                     case REMOVE -> {
                         BuildingClientEvents.removeBuilding(buildingPos);

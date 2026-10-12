@@ -4,6 +4,7 @@ import com.solegendary.reignofnether.api.ReignOfNetherRegistries;
 import com.solegendary.reignofnether.building.BuildingClientEvents;
 import com.solegendary.reignofnether.building.BuildingPlaceButton;
 import com.solegendary.reignofnether.building.Buildings;
+import com.solegendary.reignofnether.building.level.BuildingLevel;
 import com.solegendary.reignofnether.building.production.ProductionBuilding;
 import com.solegendary.reignofnether.building.production.ProductionItems;
 import com.solegendary.reignofnether.keybinds.Keybinding;
@@ -41,6 +42,17 @@ public class Barracks extends ProductionBuilding {
 
         this.productions.add(ProductionItems.VINDICATOR, Keybindings.abilitySlot1);
         this.productions.add(ProductionItems.PILLAGER, Keybindings.abilitySlot2);
+
+        // PLACEHOLDER structures: barracks_lvl2/barracks_lvl3 are copies of barracks.nbt until real ones are made
+        setLevels(
+            BuildingLevel.of(structureName).maxHealth(150d).build(),
+            BuildingLevel.of("barracks_lvl2").maxHealth(225d).productionSpeed(1.25f)
+                .upgradeCost(ResourceCost.Research(0, 150, 100, 60)).build(),
+            BuildingLevel.of("barracks_lvl3").maxHealth(300d).productionSpeed(1.5f)
+                .upgradeCost(ResourceCost.Research(0, 250, 200, 90)).build()
+        );
+        this.productions.add(ProductionItems.BARRACKS_LEVEL_2, Keybindings.abilitySlot3);
+        this.productions.add(ProductionItems.BARRACKS_LEVEL_3, Keybindings.abilitySlot3);
     }
 
 

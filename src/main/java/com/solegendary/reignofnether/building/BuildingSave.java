@@ -25,6 +25,7 @@ public class BuildingSave {
     public DataStorage dataStorage;
     public double partialBlocksDestroyed;
     public ListTag commandsNbt;
+    public Integer structureHash = null; // null for saves made before structure hashes existed
 
     public BuildingSave(BlockPos originPos, Level level, Building building, String ownerName, Rotation rotation,
                         BlockPos rallyPoint, boolean isDiagonalBridge, boolean isBuilt, int upgradeLevel,

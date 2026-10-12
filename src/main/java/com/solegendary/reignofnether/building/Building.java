@@ -3,6 +3,7 @@ package com.solegendary.reignofnether.building;
 import com.solegendary.reignofnether.ability.Abilities;
 import com.solegendary.reignofnether.api.ReignOfNetherRegistries;
 import com.solegendary.reignofnether.building.addon.BuildingAddon;
+import com.solegendary.reignofnether.building.level.BuildingLevel;
 import com.solegendary.reignofnether.faction.Factions;
 import com.solegendary.reignofnether.keybinds.Keybinding;
 import com.solegendary.reignofnether.resources.ResourceCost;
@@ -60,7 +61,13 @@ public abstract class Building {
 
     public final static double DEFAULT_HEALTH_PER_BLOCK = 2.0d;
 
+    // optional levels (level 1, 2, 3...); empty for buildings that don't use the generic level system
+    private List<BuildingLevel> levels = List.of();
+
     public double getMaxHealth(BuildingPlacement placement) {
+        BuildingLevel level = getLevel(placement);
+        if (level != null && level.maxHealth > 0)
+            return level.maxHealth;
         return maxHealth + (getUpgradeLevel(placement) * maxHealthBonusPerUpgradeLevel);
     }
 
@@ -108,8 +115,37 @@ public abstract class Building {
         return this.faction == null ? Factions.NONE : this.faction;
     }
 
+    // for levelled buildings this is the level index (0 = level 1), stored on the placement
+    // other buildings override this to derive their upgrade state from their blocks
     public int getUpgradeLevel(BuildingPlacement placement) {
-        return 0;
+        return hasLevels() ? placement.getLevelIndex() : 0;
+    }
+
+    // the first level's structure replaces structureName so placement uses it
+    protected void setLevels(BuildingLevel... levels) {
+        this.levels = List.of(levels);
+        this.structureName = levels[0].structureName;
+    }
+
+    public boolean hasLevels() {
+        return !levels.isEmpty();
+    }
+
+    public List<BuildingLevel> getLevels() {
+        return levels;
+    }
+
+    @Nullable
+    public BuildingLevel getLevel(BuildingPlacement placement) {
+        if (!hasLevels())
+            return null;
+        int index = getUpgradeLevel(placement);
+        return index >= 0 && index < levels.size() ? levels.get(index) : null;
+    }
+
+    public float getProductionSpeed(BuildingPlacement placement) {
+        BuildingLevel level = getLevel(placement);
+        return level != null ? level.productionSpeed : 1.0f;
     }
 
     public abstract BuildingPlaceButton getBuildButton(Keybinding var1);
@@ -119,6 +155,8 @@ public abstract class Building {
     }
 
     public String getUpgradedStructureName(int upgradeLevel) {
+        if (upgradeLevel >= 0 && upgradeLevel < levels.size())
+            return levels.get(upgradeLevel).structureName;
         return structureName;
     }
 
@@ -164,6 +202,9 @@ public abstract class Building {
         if (key == null) {
             return "Unknown";
         }
-        return I18n.get("buildings." + key.getNamespace() + "." + key.getPath());
+        String name = I18n.get("buildings." + key.getNamespace() + "." + key.getPath());
+        if (hasLevels())
+            name += " " + I18n.get("buildings.reignofnether.level", getUpgradeLevel(buildingPlacement) + 1);
+        return name;
     }
 }

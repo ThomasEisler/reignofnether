@@ -2356,5 +2356,12 @@
     "matchstart.reignofnether.hint.close": "Click Back to leave · F12 off + on to reopen.",
     "matchstart.reignofnether.settings.title": "GAME SETTINGS",
     "matchstart.reignofnether.settings.mode": "Mode",
-    "matchstart.reignofnether.settings.op_only": "Gamerule settings require op."
+    "matchstart.reignofnether.settings.op_only": "Gamerule settings require op.",
+    "buildings.reignofnether.level": "(Lvl %s)",
+    "research.reignofnether.level_upgrade": "Upgrade to level %s",
+    "research.reignofnether.level_upgrade.health": "Health: %s -> %s",
+    "research.reignofnether.level_upgrade.range": "Garrison attack range: %s -> %s",
+    "research.reignofnether.level_upgrade.production": "Production speed: %s%% -> %s%%",
+    "hud.reignofnether.level_upgrade_unavailable": "This building can't be upgraded right now",
+    "commands.reignofnether.building.rebuild": "Rebuilt %d building(s) of type %s"
 }

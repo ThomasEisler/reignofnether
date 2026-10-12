@@ -210,7 +210,7 @@ public class BuildingServerEvents {
             if (b instanceof CustomBuildingPlacement cb) {
                 cb.packCommandsNbt();
             }
-            buildingData.buildings.add(new BuildingSave(b.originPos,
+            BuildingSave save = new BuildingSave(b.originPos,
                     level,
                     b.getBuilding(),
                     b.ownerName,
@@ -225,7 +225,9 @@ public class BuildingServerEvents {
                     b.getDataStorage(),
                     b.partialBlocksDestroyed,
                     b instanceof CustomBuildingPlacement cb ? cb.commandsNbt : new ListTag()
-            ));
+            );
+            save.structureHash = b.getStructureHash();
+            buildingData.buildings.add(save);
             //ReignOfNether.LOGGER.info("saved buildings/nether in serverevents: " + b.originPos);
         });
 
@@ -290,12 +292,19 @@ public class BuildingServerEvents {
                             }
                         } else if (building instanceof BeaconPlacement beacon) {
                             beacon.changeBeaconStructure(b.upgradeLevel);
+                        } else if (building.getBuilding().hasLevels()) {
+                            building.applyLevel(b.upgradeLevel);
                         } else {
                             String upgradedStructureName = building.getBuilding().getUpgradedStructureName(b.upgradeLevel);
                             if (!upgradedStructureName.equals(building.getBuilding().structureName)) {
                                 building.changeStructure(upgradedStructureName);
                             }
                         }
+                    }
+                    // the structure NBT changed since this building was saved (e.g. after a mod update): rebuild it to match
+                    if (b.isBuilt && b.structureHash != null && b.structureHash != building.getStructureHash()) {
+                        building.rebuildBlocksInWorld();
+                        ReignOfNether.LOGGER.info("rebuilt building with changed structure: " + b.building.name + "|" + b.originPos);
                     }
                     // setNetherZone can only be run once - this supercedes where it normally happens in tick() ->
                     // onBuilt()

@@ -870,6 +870,8 @@ public class BuildingClientEvents {
                         portal.destination = portalDestination;
                 } else if (newBuilding instanceof BeaconPlacement beacon) {
                     beacon.changeBeaconStructure(upgradeLevel);
+                } else if (newBuilding.getBuilding().hasLevels()) {
+                    newBuilding.applyLevel(upgradeLevel);
                 } else {
                     String upgradedStructureName = newBuilding.getBuilding().getUpgradedStructureName(upgradeLevel);
                     if (!upgradedStructureName.equals(newBuilding.getBuilding().structureName)) {

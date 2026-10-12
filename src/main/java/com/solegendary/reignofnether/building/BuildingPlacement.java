@@ -127,6 +127,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 public class BuildingPlacement {
     private Building building;
+    private int levelIndex = 0; // only used by buildings with levels (Building.hasLevels())
     public Level level; // directly return MC.level if it's clientside to avoid stale references
     public BlockPos originPos;
     public Rotation rotation;
@@ -1288,6 +1289,41 @@ public class BuildingPlacement {
 
     public Building getBuilding() {
         return building;
+    }
+
+    // fingerprint of the building's current structure (positions + block states), saved with the building so the
+    // server can tell on load if the structure NBT was changed since and rebuild the building to match
+    public int getStructureHash() {
+        int hash = 1;
+        for (BuildingBlock block : blocks)
+            hash = 31 * (31 * hash + Long.hashCode(block.getBlockPos().asLong())) + block.getBlockState().toString().hashCode();
+        return hash;
+    }
+
+    // instantly replaces the building's blocks in the world with its current structure
+    // structures include their air blocks, so this also clears old blocks inside the structure's bounds
+    public void rebuildBlocksInWorld() {
+        for (BuildingBlock block : blocks)
+            level.setBlockAndUpdate(block.getBlockPos(), block.getBlockState());
+        initPlacedBlocks();
+    }
+
+    public int getLevelIndex() {
+        return levelIndex;
+    }
+
+    // switches a levelled building to the given level index (0 = level 1) and its structure
+    // new blocks are queued and placed like other structure upgrades; clients are synced via CHANGE_LEVEL
+    public void applyLevel(int newLevelIndex) {
+        if (!getBuilding().hasLevels() || newLevelIndex < 0 || newLevelIndex >= getBuilding().getLevels().size())
+            return;
+        this.levelIndex = newLevelIndex;
+        String structure = getBuilding().getLevels().get(newLevelIndex).structureName;
+        ArrayList<BuildingBlock> newBlocks = BuildingBlockData.getBuildingBlocksFromNbt(structure, this.getLevel());
+        setBlocks(getAbsoluteBlockData(newBlocks, this.getLevel(), originPos, rotation));
+        refreshBlocks();
+        if (!level.isClientSide())
+            BuildingClientboundPacket.changeLevel(originPos, newLevelIndex);
     }
 
     public void changeStructure(String newStructureName) {

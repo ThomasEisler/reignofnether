@@ -1508,5 +1508,12 @@
     "effect.reignofnether.bloodlust": "Soif de sang",
     "effect.reignofnether.frost_damage": "Dégâts de givre",
     "effect.reignofnether.enchantment_amplifier": "Amplificateur d'enchantement",
-    "effect.reignofnether.disarm": "Désarmement"
+    "effect.reignofnether.disarm": "Désarmement",
+    "buildings.reignofnether.level": "(Niv. %s)",
+    "research.reignofnether.level_upgrade": "Améliorer au niveau %s",
+    "research.reignofnether.level_upgrade.health": "Points de vie : %s -> %s",
+    "research.reignofnether.level_upgrade.range": "Portée de tir de la garnison : %s -> %s",
+    "research.reignofnether.level_upgrade.production": "Vitesse de production : %s%% -> %s%%",
+    "hud.reignofnether.level_upgrade_unavailable": "Ce bâtiment ne peut pas être amélioré pour l'instant",
+    "commands.reignofnether.building.rebuild": "%d bâtiment(s) de type %s reconstruit(s)"
 }

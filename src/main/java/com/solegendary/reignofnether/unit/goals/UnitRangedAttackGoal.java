@@ -122,7 +122,7 @@ public class UnitRangedAttackGoal<T extends net.minecraft.world.entity.Mob> exte
             float attackRange = ((AttackerUnit) this.mob).getAttackRange();
 
             if (isGarrisoned)
-                attackRange = garr.getAttackRange();
+                attackRange = garr.getAttackRange(garrPlacement);
             else if (isTargetGarrisoned)
                 attackRange += targetGarr.getExternalAttackRangeBonus();
 

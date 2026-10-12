@@ -386,6 +386,16 @@ public class CommandsServerEvents {
 										)))))
 		);
 
+		// replaces the blocks of every placed building of a type with its current structure (e.g. after editing its NBT)
+		dispatcher.register(Commands.literal("rts-rebuild-buildings")
+				.requires(source -> source.hasPermission(2))
+				.then(Commands.argument("building", ResourceLocationArgument.id())
+					.suggests((ctx, builder) -> SharedSuggestionProvider.suggestResource(
+						ReignOfNetherRegistries.BUILDING.keySet().stream(), builder))
+					.executes(ctx -> rebuildBuildings(ResourceLocationArgument.getId(ctx, "building"), ctx.getSource()))
+				)
+		);
+
 		dispatcher.register(Commands.literal("rts-reset")
 				.requires(source -> source.hasPermission(2))
 				.executes(ctx -> PlayerServerEvents.resetRTS(false))
@@ -740,6 +750,19 @@ public class CommandsServerEvents {
 		return 1;
 	}
 	
+	public static int rebuildBuildings(ResourceLocation buildingKey, CommandSourceStack source) {
+		int rebuilt = 0;
+		for (BuildingPlacement placement : BuildingServerEvents.getBuildings()) {
+			if (!buildingKey.equals(ReignOfNetherRegistries.BUILDING.getKey(placement.getBuilding())))
+				continue;
+			placement.rebuildBlocksInWorld();
+			rebuilt++;
+		}
+		int finalRebuilt = rebuilt;
+		source.sendSuccess(() -> Component.translatable("commands.reignofnether.building.rebuild", finalRebuilt, buildingKey.toString()), true);
+		return rebuilt;
+	}
+
 	public static int destroyBuildingsAt(BlockPos pos, CommandSourceStack source) {
 		int removed = 0;
 		for (BuildingPlacement placement : BuildingServerEvents.getBuildings()) {

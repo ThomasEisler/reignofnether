@@ -134,7 +134,7 @@ public class UnitBowAttackGoal<T extends net.minecraft.world.entity.Mob> extends
             Unit unit = (Unit) this.mob;
             if (!unit.isFlyingUnit()) {
                 if (isGarrisoned) {
-                    attackRange = garr.getAttackRange();
+                    attackRange = garr.getAttackRange(garrPlacement);
                     if (target instanceof Unit targetUnit && targetUnit.isFlyingUnit())
                         attackRange += GARRISON_BONUS_RANGE_TO_FLYING;
                 }

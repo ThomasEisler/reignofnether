@@ -2,6 +2,8 @@ package com.solegendary.reignofnether.building.production;
 
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.api.ReignOfNetherRegistries;
+import com.solegendary.reignofnether.building.Buildings;
+import com.solegendary.reignofnether.building.level.BuildingLevelUpgrade;
 import com.solegendary.reignofnether.registrars.EntityRegistrar;
 import com.solegendary.reignofnether.research.researchItems.*;
 import com.solegendary.reignofnether.unit.units.monsters.*;
@@ -128,6 +130,12 @@ public class ProductionItems {
     public static final ResearchBeaconLevel3 RESEARCH_BEACON_LEVEL_3 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "beacon_level_3"), new ResearchBeaconLevel3());
     public static final ResearchBeaconLevel4 RESEARCH_BEACON_LEVEL_4 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "beacon_level_4"), new ResearchBeaconLevel4());
     public static final ResearchBeaconLevel5 RESEARCH_BEACON_LEVEL_5 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "beacon_level_5"), new ResearchBeaconLevel5());
+
+    public static final BuildingLevelUpgrade BARRACKS_LEVEL_2 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barracks_level_2"), new BuildingLevelUpgrade(() -> Buildings.BARRACKS, 1));
+    public static final BuildingLevelUpgrade BARRACKS_LEVEL_3 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barracks_level_3"), new BuildingLevelUpgrade(() -> Buildings.BARRACKS, 2));
+
+    public static final BuildingLevelUpgrade TOWN_CENTRE_LEVEL_2 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "town_centre_level_2"), new BuildingLevelUpgrade(() -> Buildings.TOWN_CENTRE, 1));
+    public static final BuildingLevelUpgrade TOWN_CENTRE_LEVEL_3 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "town_centre_level_3"), new BuildingLevelUpgrade(() -> Buildings.TOWN_CENTRE, 2));
 
     private static <T extends ProductionItem> T register(ResourceLocation id, T building) {
         return Registry.register(ReignOfNetherRegistries.PRODUCTION_ITEM, id, building);
