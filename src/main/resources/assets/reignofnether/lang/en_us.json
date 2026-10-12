@@ -2374,10 +2374,18 @@
     "hud.reignofnether.road_blocked_building": "Another building is in the way",
     "effect.reignofnether.road_speed": "Road Speed",
     "abilities.reignofnether.build_road": "Build Road",
-    "abilities.reignofnether.build_road.tooltip1": "Click another of your buildings to connect it by road.",
+    "abilities.reignofnether.build_road.tooltip1": "Click another of your buildings to connect it by road, built by your workers.",
     "abilities.reignofnether.build_road.tooltip2": "Costs %s wood and %s ore per block of length. Units move faster on roads.",
     "abilities.reignofnether.build_road.tooltip3": "Click two buildings already connected to upgrade their road:",
     "abilities.reignofnether.build_road.tooltip4": "- Paved road: %s wood and %s ore per block, +25%% speed",
     "abilities.reignofnether.build_road.tooltip5": "- Advanced road: %s wood and %s ore per block, +35%% speed",
-    "hud.reignofnether.road_max_level": "This road is already at its highest level"
+    "hud.reignofnether.road_max_level": "This road is already at its highest level",
+    "hud.reignofnether.road_under_construction": "This road is still being built",
+    "hud.reignofnether.road_no_workers": "No idle worker nearby: send workers to the road to build it",
+    "hud.reignofnether.road_preview": "Road of %s blocks: %s",
+    "hud.reignofnether.road_preview_upgrade": "Upgrade to %s: %s",
+    "hud.reignofnether.road_cost_wood": "%s wood",
+    "hud.reignofnether.road_cost_ore": "%s ore",
+    "hud.reignofnether.road_type.paved": "paved road",
+    "hud.reignofnether.road_type.advanced": "advanced road"
 }

@@ -58,7 +58,7 @@ public class RoadPathTracer {
                 BlockPos centre = getSurface(level, x, z);
                 if (centre == null)
                     return Result.error("hud.reignofnether.road_blocked_water");
-                if (BuildingUtils.isPosInsideAnyBuilding(false, centre.above()))
+                if (BuildingUtils.isPosInsideAnyBuilding(level.isClientSide(), centre.above()))
                     return Result.error("hud.reignofnether.road_blocked_building");
                 length++;
                 for (int w = -WIDTH_RADIUS; w <= WIDTH_RADIUS; w++) {
@@ -67,7 +67,7 @@ public class RoadPathTracer {
                     if (isInFootprint(a, wx, wz) || isInFootprint(b, wx, wz))
                         continue;
                     BlockPos side = getSurface(level, wx, wz);
-                    if (side != null && !BuildingUtils.isPosInsideAnyBuilding(false, side.above()))
+                    if (side != null && !BuildingUtils.isPosInsideAnyBuilding(level.isClientSide(), side.above()))
                         blocks.add(side);
                 }
             }
@@ -104,7 +104,7 @@ public class RoadPathTracer {
                 if (dist > width)
                     continue;
                 BlockPos surface = getSurface(level, x, z);
-                if (surface != null && !BuildingUtils.isPosInsideAnyBuilding(false, surface.above()))
+                if (surface != null && !BuildingUtils.isPosInsideAnyBuilding(level.isClientSide(), surface.above()))
                     apron.add(surface);
             }
         }

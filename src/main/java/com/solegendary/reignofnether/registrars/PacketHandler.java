@@ -1,6 +1,7 @@
 package com.solegendary.reignofnether.registrars;
 
 import com.solegendary.reignofnether.road.RoadServerboundPacket;
+import com.solegendary.reignofnether.road.RoadClientboundPacket;
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.ability.AbilityClientboundPacket;
 import com.solegendary.reignofnether.ability.AbilityServerboundPacket;
@@ -442,6 +443,12 @@ public final class PacketHandler {
                 .encoder(RoadServerboundPacket::encode)
                 .decoder(RoadServerboundPacket::new)
                 .consumerMainThread(RoadServerboundPacket::handle)
+                .add();
+
+        INSTANCE.messageBuilder(RoadClientboundPacket.class, index++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(RoadClientboundPacket::encode)
+                .decoder(RoadClientboundPacket::new)
+                .consumerMainThread(RoadClientboundPacket::handle)
                 .add();
     }
 }

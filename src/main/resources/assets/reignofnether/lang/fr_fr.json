@@ -1526,10 +1526,18 @@
     "hud.reignofnether.road_blocked_building": "Un autre bâtiment bloque le passage",
     "effect.reignofnether.road_speed": "Vitesse sur route",
     "abilities.reignofnether.build_road": "Construire une route",
-    "abilities.reignofnether.build_road.tooltip1": "Cliquez sur un autre de vos bâtiments pour les relier par une route.",
+    "abilities.reignofnether.build_road.tooltip1": "Cliquez sur un autre de vos bâtiments pour les relier par une route, construite par vos ouvriers.",
     "abilities.reignofnether.build_road.tooltip2": "Coûte %s bois et %s minerai par bloc de longueur. Les unités vont plus vite sur les routes.",
     "abilities.reignofnether.build_road.tooltip3": "Cliquez deux bâtiments déjà reliés pour améliorer leur route :",
     "abilities.reignofnether.build_road.tooltip4": "- Route pavée : %s bois et %s minerai par bloc, +25%% de vitesse",
     "abilities.reignofnether.build_road.tooltip5": "- Route avancée : %s bois et %s minerai par bloc, +35%% de vitesse",
-    "hud.reignofnether.road_max_level": "Cette route est déjà au niveau maximum"
+    "hud.reignofnether.road_max_level": "Cette route est déjà au niveau maximum",
+    "hud.reignofnether.road_under_construction": "Cette route est encore en construction",
+    "hud.reignofnether.road_no_workers": "Aucun ouvrier libre à proximité : envoyez des ouvriers vers la route pour la construire",
+    "hud.reignofnether.road_preview": "Route de %s blocs : %s",
+    "hud.reignofnether.road_preview_upgrade": "Améliorer en %s : %s",
+    "hud.reignofnether.road_cost_wood": "%s bois",
+    "hud.reignofnether.road_cost_ore": "%s minerai",
+    "hud.reignofnether.road_type.paved": "route pavée",
+    "hud.reignofnether.road_type.advanced": "route avancée"
 }
