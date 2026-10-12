@@ -45,8 +45,20 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - ⚠️ Les formes des **niveaux 2 et 3 sont provisoires** (copies des anciens bâtiments de pierre) : à construire.
 
 ### Chantiers
-- La construction d'un bâtiment dure **1,5 fois plus longtemps** que dans le mod d'origine (les réparations ne changent pas).
-- Des **échafaudages** de hauteur aléatoire entourent le bâtiment à certains endroits pendant le chantier. Ils sont retirés quand il est terminé ou détruit.
+- **Durée propre à chaque bâtiment**, fixée dans un tableau (secondes avec **1 ouvrier** ; avec 3 ouvriers il faut 60 % du temps, avec 5 ouvriers 43 %) :
+
+| Bâtiment | Durée (1 ouvrier) | | Bâtiment | Durée (1 ouvrier) |
+|---|---|---|---|---|
+| Ferme de blé | 30 s | | Marché | 90 s |
+| Entrepôt (Stockpile) | 40 s | | Forge | 90 s |
+| Maison | 40 s | | Bibliothèque | 90 s |
+| Caserne | 60 s | | Hutte de sorcière | 90 s |
+| Golem de fer | 60 s | | Sanctuaire de prospérité | 90 s |
+| Tour de guet | 75 s | | Tour arcanique | 120 s |
+| Town Centre | 150 s | | Château | 180 s |
+
+  Les bâtiments des autres factions (monstres, piglins) gardent le calcul d'origine, ralenti 1,5 fois. Les réparations ne changent pas.
+- **Tours d'échafaudage** dans la case du bâtiment et juste autour : elles poussent au fur et à mesure du chantier, chacune à son rythme (un peu au hasard), et montent devant les murs. Retirées quand le bâtiment est terminé ou détruit.
 - Une **barre de progression dorée** flotte au-dessus de chaque chantier visible.
 
 ### Formes des bâtiments (structures)
@@ -126,7 +138,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Town Centre).
 - [ ] Routes : tracé, prix, place autour des bâtiments, passage aux niveaux pavée / avancée, sol des bâtiments qui change de matériau.
-- [ ] Chantiers : durée plus longue, échafaudages autour, barre de progression dorée.
+- [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
 - [ ] Routes qui contournent les obstacles (eau, bâtiments, falaises, arbres).
 - [ ] Chantier de route par les ouvriers (envoi automatique, aide des ouvriers proches, nouvel ordre = quitte le chantier) et aperçu du tracé/prix.
 - [ ] Les unités vont plus vite sur la route et la préfèrent pour leurs trajets.
@@ -144,7 +156,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Empreinte des structures : `BuildingPlacement.getStructureHash()` / `rebuildBlocksInWorld()`, sauvegardée dans `BuildingSaveData` (`structureHash`), comparée au chargement dans `BuildingServerEvents`.
 - Fondations de secours : `BuildingServerEvents` (placement d'un bâtiment, après la boucle sur `startingBlockTypes`).
 - Routes : dossier `road/` — `RoadType` (niveaux, mélanges, prix, vitesse), `RoadConnection`, `RoadPathTracer` (tracé A* qui contourne les obstacles + place autour des bâtiments), `RoadServerEvents` (réseau, paiement, sauvegarde, sol adaptable), `RoadSaveData`, `RoadServerboundPacket`. Chantier par les ouvriers : `RoadServerEvents.tickRoadWorkers` (toutes les 10 ticks ; `RoadConnection.built` = avancement, `upgradeTo` = amélioration en cours ; seuls les blocs posés comptent pour la vitesse et l'itinéraire). Aperçu : `RoadClientEvents` (tracé calculé côté joueur, réseau reçu par `RoadClientboundPacket`). Bouton : `ability/abilities/BuildRoad.java` (ajouté à tous les bâtiments dans le constructeur de `Building`, touche `hotkey10` = H). Vitesse : effet `ROAD_MOVEMENT_SPEED` dans `MobEffectRegistrar`, appliqué dans `Unit.tick`. Itinéraire : `KIND_ROAD` dans `unit/pathfinding/WalkabilityBuilder.java`, coût `PathfinderConfig.ROAD_COST`.
-- Chantiers : `building/ConstructionSiteServerEvents.java` (échafaudages), `BuildingPlacement.CONSTRUCTION_TIME_MULTIPLIER` (durée), `HealthBarClientEvents.renderConstructionBars` (barre).
+- Chantiers : `building/BuildTimes.java` (tableau des durées), `building/ConstructionSiteServerEvents.java` (tours d'échafaudage), `BuildingPlacement.CONSTRUCTION_TIME_MULTIPLIER` (bâtiments hors tableau), `HealthBarClientEvents.renderConstructionBars` (barre).
 - Commandes : `commands/CommandsServerEvents.java` (`rts-rebuild-buildings`, `rts-road`).
 - Terrain : `src/main/resources/data/minecraft/worldgen/world_preset/normal.json` (`settings` = `minecraft:overworld`).
 
@@ -170,4 +182,4 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | 13/10/2026 | Routes en mélanges de blocs (gravier, terre grossière, andésite, pierre), journal `MON_PROJET.md` |
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
-| 13/10/2026 | Chantiers : durée x1,5, échafaudages, barre de progression |
+| 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |

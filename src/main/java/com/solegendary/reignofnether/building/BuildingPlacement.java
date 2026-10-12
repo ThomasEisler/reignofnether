@@ -1030,7 +1030,11 @@ public class BuildingPlacement {
                 // 5 builders - 3/7 (43%)
                 float msPerBuild = (float) (3 * baseMsPerBuild) / (builderCount + 2);
                 if (!isBuilt) {
-                    msPerBuild *= building.buildTimeModifier * CONSTRUCTION_TIME_MULTIPLIER;
+                    Integer seconds = BuildTimes.getSecondsWithOneWorker(building);
+                    if (seconds != null)
+                        msPerBuild = (3f * seconds * 1000f * Math.max(1, blocksPerBuild) / Math.max(1, getBlocksTotal())) / (builderCount + 2);
+                    else
+                        msPerBuild *= building.buildTimeModifier * CONSTRUCTION_TIME_MULTIPLIER;
                     if (isCapitol && BuildingUtils.getTotalCompletedBuildingsOwned(false, ownerName) > 0)
                         msPerBuild *= 2;
                 } else {
