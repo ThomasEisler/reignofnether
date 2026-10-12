@@ -24,7 +24,7 @@ import java.util.List;
 public class RoadClientEvents {
 
     private static final Minecraft MC = Minecraft.getInstance();
-    private static final int RECALC_TICKS = 20;
+    private static final int RECALC_TICKS = 100; // the route search isn't free, only redo it now and then while hovering
 
     private static List<RoadClientboundPacket.RoadInfo> roads = new ArrayList<>();
 

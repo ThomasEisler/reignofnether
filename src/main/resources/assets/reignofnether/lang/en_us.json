@@ -2387,5 +2387,6 @@
     "hud.reignofnether.road_cost_wood": "%s wood",
     "hud.reignofnether.road_cost_ore": "%s ore",
     "hud.reignofnether.road_type.paved": "paved road",
-    "hud.reignofnether.road_type.advanced": "advanced road"
+    "hud.reignofnether.road_type.advanced": "advanced road",
+    "hud.reignofnether.road_no_path": "No possible route: water, buildings or slopes too steep in the way"
 }
