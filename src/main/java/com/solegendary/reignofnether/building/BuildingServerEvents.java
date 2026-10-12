@@ -495,6 +495,15 @@ public class BuildingServerEvents {
                         newBuilding.addToBlockPlaceQueue(block);
                     }
                 }
+                // if the structure was edited and none of its foundation blocks match startingBlockTypes, use the
+                // whole foundation layer instead; a building with no blocks placed is immediately destroyed
+                if (newBuilding.blockPlaceQueue.isEmpty()) {
+                    for (BuildingBlock block : newBuilding.blocks) {
+                        if (block.getBlockPos().getY() <= minY + (newBuilding.getBuilding().foundationYLayers - 1)) {
+                            newBuilding.addToBlockPlaceQueue(block);
+                        }
+                    }
+                }
             }
 
             BuildingClientboundPacket.placeBuilding(originPos,

@@ -1,5 +1,8 @@
 package com.solegendary.reignofnether.commands;
 
+import java.util.Arrays;
+import com.solegendary.reignofnether.road.RoadType;
+import com.solegendary.reignofnether.road.RoadServerEvents;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -386,6 +389,21 @@ public class CommandsServerEvents {
 										)))))
 		);
 
+		// builds a road between the two buildings at the given positions, owned and paid for by the executing player
+		dispatcher.register(Commands.literal("rts-road")
+				.requires(source -> source.hasPermission(2))
+				.then(Commands.argument("from", BlockPosArgument.blockPos())
+					.then(Commands.argument("to", BlockPosArgument.blockPos())
+						.executes(ctx -> buildRoad(ctx, RoadType.PATH))
+						.then(Commands.argument("type", StringArgumentType.word())
+							.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+								Arrays.stream(RoadType.values()).map(t -> t.name().toLowerCase()), builder))
+							.executes(ctx -> buildRoad(ctx, RoadType.valueOf(StringArgumentType.getString(ctx, "type").toUpperCase())))
+						)
+					)
+				)
+		);
+
 		// replaces the blocks of every placed building of a type with its current structure (e.g. after editing its NBT)
 		dispatcher.register(Commands.literal("rts-rebuild-buildings")
 				.requires(source -> source.hasPermission(2))
@@ -750,6 +768,13 @@ public class CommandsServerEvents {
 		return 1;
 	}
 	
+	private static int buildRoad(CommandContext<CommandSourceStack> ctx, RoadType type) throws CommandSyntaxException {
+		ServerPlayer player = ctx.getSource().getPlayerOrException();
+		boolean built = RoadServerEvents.tryBuildRoad(ctx.getSource().getLevel(), player.getName().getString(),
+			BlockPosArgument.getLoadedBlockPos(ctx, "from"), BlockPosArgument.getLoadedBlockPos(ctx, "to"), type);
+		return built ? 1 : 0;
+	}
+
 	public static int rebuildBuildings(ResourceLocation buildingKey, CommandSourceStack source) {
 		int rebuilt = 0;
 		for (BuildingPlacement placement : BuildingServerEvents.getBuildings()) {

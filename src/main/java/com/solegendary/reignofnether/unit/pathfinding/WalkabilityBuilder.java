@@ -1,5 +1,6 @@
 package com.solegendary.reignofnether.unit.pathfinding;
 
+import com.solegendary.reignofnether.road.RoadType;
 import com.solegendary.reignofnether.blocks.BlockUtils;
 import com.solegendary.reignofnether.util.MiscUtil;
 import net.minecraft.core.BlockPos;
@@ -24,6 +25,7 @@ public final class WalkabilityBuilder {
     public static final byte KIND_FIRE    = 3;
     public static final byte KIND_LAVA    = 4;
     public static final byte KIND_SLIME    = 5;
+    public static final byte KIND_ROAD     = 6; // land with a road block floor; cheaper so units prefer roads
 
     // hot path (per cell during a chunk build); reuse mutable positions to avoid BlockPos allocations.
     private static final ThreadLocal<BlockPos.MutableBlockPos> FEET  = ThreadLocal.withInitial(BlockPos.MutableBlockPos::new);
@@ -61,7 +63,8 @@ public final class WalkabilityBuilder {
         // the very leaf it's told to mine). don't count these as support: the cell falls through to "no floor" so
         // the unit routes around and stands on the real ground below. BlockTags.LEAVES is allocation-free, unlike
         // BlockUtils.isLeafBlock whose List.of fallback would allocate on this hot path for every solid floor.
-        if (MiscUtil.isSolidBlocking(level, floor) && !isFenceLike(floorBs) && !floorBs.is(BlockTags.LEAVES)) return KIND_LAND;
+        if (MiscUtil.isSolidBlocking(level, floor) && !isFenceLike(floorBs) && !floorBs.is(BlockTags.LEAVES))
+            return RoadType.isRoadBlock(floorBs) ? KIND_ROAD : KIND_LAND;
         if (floorBs.getFluidState().is(FluidTags.LAVA)) return KIND_LAVA;
         if (!floorBs.getFluidState().isEmpty()) return KIND_WATER;
         return KIND_BLOCKED; // no floor support

@@ -1,5 +1,6 @@
 package com.solegendary.reignofnether.registrars;
 
+import com.solegendary.reignofnether.road.RoadServerEvents;
 import com.solegendary.reignofnether.alliance.AlliancesServerEvents;
 import com.solegendary.reignofnether.attackwarnings.AttackWarningServerEvents;
 import com.solegendary.reignofnether.blocks.BlockServerEvents;
@@ -71,5 +72,6 @@ public class ServerEventRegistrar {
         vanillaEventBus.register(CustomButtonServerEvents.class);
         vanillaEventBus.register(ItemServerEvents.class);
         vanillaEventBus.register(TaskSchedulerServerEvents.class);
+        vanillaEventBus.register(RoadServerEvents.class);
     }
 }

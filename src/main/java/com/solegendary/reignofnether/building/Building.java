@@ -1,5 +1,8 @@
 package com.solegendary.reignofnether.building;
 
+import com.solegendary.reignofnether.road.RoadType;
+import com.solegendary.reignofnether.keybinds.Keybindings;
+import com.solegendary.reignofnether.ability.abilities.BuildRoad;
 import com.solegendary.reignofnether.ability.Abilities;
 import com.solegendary.reignofnether.api.ReignOfNetherRegistries;
 import com.solegendary.reignofnether.building.addon.BuildingAddon;
@@ -93,6 +96,7 @@ public abstract class Building {
         this.structureName = structureName;
         this.cost = cost;
         this.isCapitol = isCapitol;
+        this.abilities.add(new BuildRoad(RoadType.PATH), Keybindings.hotkey10);
     }
 
     public float getMeleeDamageMult() {

@@ -1,5 +1,7 @@
 package com.solegendary.reignofnether.unit.interfaces;
 
+import com.solegendary.reignofnether.road.RoadType;
+import com.solegendary.reignofnether.road.RoadServerEvents;
 import com.solegendary.reignofnether.ability.Abilities;
 import com.solegendary.reignofnether.ability.Ability;
 import com.solegendary.reignofnether.ability.heroAbilities.enchanter.ProtectiveEnchantment;
@@ -486,6 +488,14 @@ public interface Unit {
             Factions.getFaction(unit).equals(Factions.MONSTERS) &&
             NightUtils.isInRangeOfNightSource(unitMob.getEyePosition(), unitMob.level().isClientSide)) {
             unitMob.addEffect(new MobEffectInstance(MobEffectRegistrar.MINOR_MOVEMENT_SPEED.get(), 15, 1, true, false));
+        }
+
+        if (unitMob.tickCount % 10 == 0 && !unitMob.level().isClientSide()) {
+            RoadType roadType = RoadServerEvents.getRoadTypeAt(unitMob.getOnPos());
+            if (roadType != null) {
+                int amplifier = Math.max(0, Math.round(roadType.speedBonus / 0.05f) - 1);
+                unitMob.addEffect(new MobEffectInstance(MobEffectRegistrar.ROAD_MOVEMENT_SPEED.get(), 15, amplifier, true, false, false));
+            }
         }
 
         if (unitMob.tickCount % 80 == 0) {

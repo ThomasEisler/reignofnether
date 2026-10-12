@@ -2363,5 +2363,21 @@
     "research.reignofnether.level_upgrade.range": "Garrison attack range: %s -> %s",
     "research.reignofnether.level_upgrade.production": "Production speed: %s%% -> %s%%",
     "hud.reignofnether.level_upgrade_unavailable": "This building can't be upgraded right now",
-    "commands.reignofnether.building.rebuild": "Rebuilt %d building(s) of type %s"
+    "commands.reignofnether.building.rebuild": "Rebuilt %d building(s) of type %s",
+    "hud.reignofnether.road_invalid_buildings": "A road must connect two different buildings",
+    "hud.reignofnether.road_not_owned": "You can only connect your own buildings",
+    "hud.reignofnether.road_not_built": "Both buildings must be finished first",
+    "hud.reignofnether.road_already_exists": "These buildings are already connected",
+    "hud.reignofnether.road_too_long": "This road is too long",
+    "hud.reignofnether.road_too_short": "These buildings are too close for a road",
+    "hud.reignofnether.road_blocked_water": "Roads can't cross water, build a bridge first",
+    "hud.reignofnether.road_blocked_building": "Another building is in the way",
+    "effect.reignofnether.road_speed": "Road Speed",
+    "abilities.reignofnether.build_road": "Build Road",
+    "abilities.reignofnether.build_road.tooltip1": "Click another of your buildings to connect it by road.",
+    "abilities.reignofnether.build_road.tooltip2": "Costs %s wood and %s ore per block of length. Units move faster on roads.",
+    "abilities.reignofnether.build_road.tooltip3": "Click two buildings already connected to upgrade their road:",
+    "abilities.reignofnether.build_road.tooltip4": "- Paved road: %s wood and %s ore per block, +25%% speed",
+    "abilities.reignofnether.build_road.tooltip5": "- Advanced road: %s wood and %s ore per block, +35%% speed",
+    "hud.reignofnether.road_max_level": "This road is already at its highest level"
 }

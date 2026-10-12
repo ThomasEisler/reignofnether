@@ -47,6 +47,10 @@ public class MobEffectRegistrar {
     public static final RegistryObject<MobEffect> MINOR_MOVEMENT_SPEED = MOB_EFFECTS.register("minor_speed", () -> new InstantenousMobEffect(MobEffectCategory.BENEFICIAL, 3402751)
             .addAttributeModifier(Attributes.MOVEMENT_SPEED, "e6b9720b-131d-4c17-b029-ab8161e8da97", 0.05, AttributeModifier.Operation.MULTIPLY_BASE));
 
+    // +5% movement speed per amplifier level, applied to units walking on a road (amplifier depends on the RoadType)
+    public static final RegistryObject<MobEffect> ROAD_MOVEMENT_SPEED = MOB_EFFECTS.register("road_speed", () -> new InstantenousMobEffect(MobEffectCategory.BENEFICIAL, 0xA08060)
+            .addAttributeModifier(Attributes.MOVEMENT_SPEED, "5b0b6a2e-8f43-4c41-9d0e-2f3a7c1b9e44", 0.05, AttributeModifier.Operation.MULTIPLY_BASE));
+
     public static final RegistryObject<MobEffect> MINOR_MOVEMENT_SLOWDOWN = MOB_EFFECTS.register("minor_slowdown", () -> new InstantenousMobEffect(MobEffectCategory.HARMFUL, 3402751)
             .addAttributeModifier(Attributes.MOVEMENT_SPEED, "eb256076-43e6-470e-a907-434a389da860", -0.05, AttributeModifier.Operation.MULTIPLY_BASE));
 

@@ -1,5 +1,7 @@
 package com.solegendary.reignofnether.building;
 
+import com.solegendary.reignofnether.road.RoadType;
+import com.solegendary.reignofnether.road.RoadServerEvents;
 import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBlockData;
 import static com.solegendary.reignofnether.building.BuildingUtils.getMaxCorner;
 import static com.solegendary.reignofnether.building.BuildingUtils.getMinCorner;
@@ -897,6 +899,8 @@ public class BuildingPlacement {
             RTSPlayer rtsPlayer = PlayerServerEvents.getRTSPlayer(ownerName);
             if (rtsPlayer != null)
                 rtsPlayer.scores.addToScore(RTSPlayerScoresEnum.TOTAL_BUILDINGS_CONSTRUCTED);
+            if (!(getBuilding() instanceof AbstractBridge) && !ownerName.isEmpty())
+                RoadServerEvents.placeApron((ServerLevel) level, this);
         } else {
             TutorialClientEvents.updateStage();
             if (this.isCapitol && !SandboxClientEvents.isSandboxPlayer() &&
@@ -1083,6 +1087,11 @@ public class BuildingPlacement {
         BuildingBlock nextBlock = blockPlaceQueue.get(0);
         BlockPos bp = nextBlock.getBlockPos();
         BlockState bs = nextBlock.getBlockState();
+        if (!level.isClientSide() && RoadType.isRoadFloorMarker(bs)) {
+            RoadType floorType = RoadServerEvents.getFloorType(originPos);
+            if (floorType != null)
+                bs = floorType.block.defaultBlockState();
+        }
         Block blockBelow = level.getBlockState(bp.below()).getBlock();
         CompoundTag bNbt = nextBlock.getBlockNbt();
         if (level.isLoaded(bp)) {

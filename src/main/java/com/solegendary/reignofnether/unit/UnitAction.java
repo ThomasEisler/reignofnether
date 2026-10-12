@@ -151,6 +151,7 @@ public enum UnitAction {
     STARTRTS_PIGLINS,
 
     SET_ATTACK_COUNT, // for marauders
+    BUILD_ROAD, // building ability: click another owned building to connect them with a road
 
     DEBUG1,
     DEBUG2

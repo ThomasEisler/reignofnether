@@ -71,6 +71,8 @@ public final class PathfinderConfig {
     // malus marks fire dangerous). fire-immune units pay 1x (see RtsPathfinder.fireCostFor) and cross freely.
     public static final float FIRE_AVOID_COST = 50.0f;
     public static final float SLIME_AVOID_COST = 10.0f;
+    // cost multiplier of walking on a road vs plain land (1.0); below 1 so paths detour onto nearby roads
+    public static final float ROAD_COST = 0.7f;
 
     // A* over an immutable snapshot is embarrassingly parallel; scale workers with cores.
     public static final int WORKER_THREADS = Math.max(1, Runtime.getRuntime().availableProcessors() / 2);

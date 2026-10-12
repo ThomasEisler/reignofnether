@@ -1,5 +1,6 @@
 package com.solegendary.reignofnether.building;
 
+import com.solegendary.reignofnether.road.RoadType;
 import com.solegendary.reignofnether.building.buildings.placements.SculkCatalystPlacement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -92,6 +93,9 @@ public class BuildingBlock {
             (block1 instanceof WallBlock && block2 instanceof WallBlock) ||
             (block1 instanceof IronBarsBlock && block2 instanceof IronBarsBlock) ||
             (block1 instanceof TallGrassBlock && block2 instanceof TallGrassBlock))
+            return true;
+
+        if (RoadType.isRoadFloorMarker(this.blockState) && RoadType.isRoadBlock(bs))
             return true;
 
         return !this.blockState.isAir() && (bs == this.blockState || isMatchingWallBlock);

@@ -1515,5 +1515,21 @@
     "research.reignofnether.level_upgrade.range": "Portée de tir de la garnison : %s -> %s",
     "research.reignofnether.level_upgrade.production": "Vitesse de production : %s%% -> %s%%",
     "hud.reignofnether.level_upgrade_unavailable": "Ce bâtiment ne peut pas être amélioré pour l'instant",
-    "commands.reignofnether.building.rebuild": "%d bâtiment(s) de type %s reconstruit(s)"
+    "commands.reignofnether.building.rebuild": "%d bâtiment(s) de type %s reconstruit(s)",
+    "hud.reignofnether.road_invalid_buildings": "Une route doit relier deux bâtiments différents",
+    "hud.reignofnether.road_not_owned": "Vous ne pouvez relier que vos propres bâtiments",
+    "hud.reignofnether.road_not_built": "Les deux bâtiments doivent d'abord être terminés",
+    "hud.reignofnether.road_already_exists": "Ces bâtiments sont déjà reliés",
+    "hud.reignofnether.road_too_long": "Cette route est trop longue",
+    "hud.reignofnether.road_too_short": "Ces bâtiments sont trop proches pour une route",
+    "hud.reignofnether.road_blocked_water": "Une route ne peut pas traverser l'eau, construisez d'abord un pont",
+    "hud.reignofnether.road_blocked_building": "Un autre bâtiment bloque le passage",
+    "effect.reignofnether.road_speed": "Vitesse sur route",
+    "abilities.reignofnether.build_road": "Construire une route",
+    "abilities.reignofnether.build_road.tooltip1": "Cliquez sur un autre de vos bâtiments pour les relier par une route.",
+    "abilities.reignofnether.build_road.tooltip2": "Coûte %s bois et %s minerai par bloc de longueur. Les unités vont plus vite sur les routes.",
+    "abilities.reignofnether.build_road.tooltip3": "Cliquez deux bâtiments déjà reliés pour améliorer leur route :",
+    "abilities.reignofnether.build_road.tooltip4": "- Route pavée : %s bois et %s minerai par bloc, +25%% de vitesse",
+    "abilities.reignofnether.build_road.tooltip5": "- Route avancée : %s bois et %s minerai par bloc, +35%% de vitesse",
+    "hud.reignofnether.road_max_level": "Cette route est déjà au niveau maximum"
 }
