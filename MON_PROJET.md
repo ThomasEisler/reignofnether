@@ -48,7 +48,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Un bâtiment est fait de vrais blocs, enregistrés dans un fichier `.nbt` avec un **bloc de structure** en jeu.
 - **Reconstruction automatique** : chaque bâtiment retient une « empreinte » de sa forme. Si je modifie une forme et mets le mod à jour, le serveur reconstruit tout seul les bâtiments déjà posés au redémarrage.
 - **Fondations** : si une forme n'a aucun des blocs de fondation prévus par le mod, toute la rangée du bas sert de fondation (corrige la défaite immédiate).
-- **Sol** : les cases de sol en **chemin de terre** prennent le matériau de la route reliée au bâtiment. Les autres blocs de sol restent comme je les ai construits.
+- **Sol** : dans mes structures, les cases de sol en **chemin de terre** sont « adaptables » : elles sont posées dans le matériau de la route reliée au bâtiment (ou « chemin » s'il n'y a pas de route). Les autres blocs de sol restent comme je les ai construits.
 
 ### Routes
 - Sélectionner un bâtiment → bouton **« Construire une route »** (touche **H**) → cliquer un autre de mes bâtiments.
@@ -56,14 +56,15 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Le **prix dépend de la longueur**.
 - Recliquer sur deux bâtiments déjà reliés **améliore la route** :
 
-| Niveau | Matériau | Prix par bloc de longueur | Vitesse des unités |
+| Niveau | Mélange de blocs | Prix par bloc de longueur | Vitesse des unités |
 |---|---|---|---|
-| Chemin | chemin de terre | 1 bois | +15 % |
-| Pavée | pavés | 1 bois + 1 minerai | +25 % |
-| Avancée | andésite polie | 3 minerais | +35 % |
+| Chemin | gravier + terre grossière | 1 bois | +15 % |
+| Pavée | andésite + gravier | 1 bois + 1 minerai | +25 % |
+| Avancée | andésite + briques de pierre + pierre | 3 minerais | +35 % |
 
-- Une **place irrégulière** (0 à 2 blocs) en chemin de terre entoure chaque bâtiment terminé, et prend le matériau de la route quand elle arrive.
-- Les unités **préfèrent passer par les routes** (uniquement avec le déplacement propre au mod, actif sur les cartes avec une bordure de 1280 blocs ou moins).
+- Le mélange est fixe pour chaque case : une route reconstruite garde le même motif.
+- Une **place irrégulière** (0 à 2 blocs) entoure chaque bâtiment terminé, en matériau « chemin », et prend le matériau de la route quand elle arrive.
+- Les unités **préfèrent passer par les routes** (uniquement avec le déplacement propre au mod, actif sur les cartes avec une bordure de 1280 blocs ou moins). Les routes sont reconnues par leur position : le gravier ou la pierre naturels ne comptent pas.
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
 
 ---
@@ -120,3 +121,4 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | 12/10/2026 | Tectonic pour le type de monde « Default » |
 | 12/10/2026 | Bâtiments à niveaux (caserne, Town Centre), empreinte des structures, commande de reconstruction |
 | 13/10/2026 | Correction des fondations, routes (tracé, prix, vitesse, réseau, niveaux, place autour des bâtiments, préférence des unités) |
+| 13/10/2026 | Routes en mélanges de blocs (gravier, terre grossière, andésite, pierre), journal `MON_PROJET.md` |

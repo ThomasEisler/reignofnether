@@ -1,6 +1,6 @@
 package com.solegendary.reignofnether.unit.pathfinding;
 
-import com.solegendary.reignofnether.road.RoadType;
+import com.solegendary.reignofnether.road.RoadServerEvents;
 import com.solegendary.reignofnether.blocks.BlockUtils;
 import com.solegendary.reignofnether.util.MiscUtil;
 import net.minecraft.core.BlockPos;
@@ -64,7 +64,7 @@ public final class WalkabilityBuilder {
         // the unit routes around and stands on the real ground below. BlockTags.LEAVES is allocation-free, unlike
         // BlockUtils.isLeafBlock whose List.of fallback would allocate on this hot path for every solid floor.
         if (MiscUtil.isSolidBlocking(level, floor) && !isFenceLike(floorBs) && !floorBs.is(BlockTags.LEAVES))
-            return RoadType.isRoadBlock(floorBs) ? KIND_ROAD : KIND_LAND;
+            return RoadServerEvents.isRoadPos(wx, y - 1, wz) ? KIND_ROAD : KIND_LAND;
         if (floorBs.getFluidState().is(FluidTags.LAVA)) return KIND_LAVA;
         if (!floorBs.getFluidState().isEmpty()) return KIND_WATER;
         return KIND_BLOCKED; // no floor support

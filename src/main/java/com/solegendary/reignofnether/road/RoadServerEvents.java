@@ -1,5 +1,6 @@
 package com.solegendary.reignofnether.road;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedHashSet;
 import com.solegendary.reignofnether.building.BuildingBlock;
 import com.solegendary.reignofnether.building.BuildingPlacement;
@@ -35,12 +36,17 @@ import java.util.Set;
 public class RoadServerEvents {
 
     private static final List<RoadConnection> connections = new ArrayList<>();
-    private static final Map<Long, RoadConnection> roadBlocks = new HashMap<>();
+    // read from pathfinding worker threads, hence concurrent
+    private static final Map<Long, RoadConnection> roadBlocks = new ConcurrentHashMap<>();
     private static ServerLevel serverLevel = null;
     private static int saveTicks = 0;
 
     public static List<RoadConnection> getConnections() {
         return connections;
+    }
+
+    public static boolean isRoadPos(int x, int y, int z) {
+        return roadBlocks.containsKey(BlockPos.asLong(x, y, z));
     }
 
     @Nullable
@@ -92,8 +98,8 @@ public class RoadServerEvents {
         roadBlocksToPlace.addAll(RoadPathTracer.traceApron(level, to));
         roadBlocksToPlace.removeIf(bp -> roadBlocks.containsKey(bp.asLong()));
         RoadConnection connection = new RoadConnection(from.originPos, to.originPos, ownerName, type, new ArrayList<>(roadBlocksToPlace), path.length);
-        placeRoadBlocks(level, connection);
         addConnection(connection);
+        placeRoadBlocks(level, connection);
         adaptBuildingFloor(level, from);
         adaptBuildingFloor(level, to);
         saveRoads(level);
@@ -114,10 +120,9 @@ public class RoadServerEvents {
         connections.remove(existing);
         addConnection(upgraded);
         // only replace blocks that are still road, in case something was built over part of it since
-        BlockState roadState = nextType.block.defaultBlockState();
         for (BlockPos bp : upgraded.blocks)
             if (RoadType.isRoadBlock(level.getBlockState(bp)))
-                level.setBlockAndUpdate(bp, roadState);
+                level.setBlockAndUpdate(bp, nextType.getStateAt(bp));
         adaptBuildingFloor(level, from);
         adaptBuildingFloor(level, to);
         saveRoads(level);
@@ -138,9 +143,8 @@ public class RoadServerEvents {
     }
 
     private static void placeRoadBlocks(ServerLevel level, RoadConnection connection) {
-        BlockState roadState = connection.type.block.defaultBlockState();
         for (BlockPos bp : connection.blocks) {
-            level.setBlockAndUpdate(bp, roadState);
+            level.setBlockAndUpdate(bp, connection.type.getStateAt(bp));
             // clear grass, flowers, snow layers etc. sitting on the road
             BlockPos above = bp.above();
             if (level.getBlockState(above).canBeReplaced() && level.getBlockState(above).getFluidState().isEmpty())
@@ -164,24 +168,23 @@ public class RoadServerEvents {
         RoadType type = getFloorType(placement.originPos);
         if (type == null)
             return;
-        BlockState roadState = type.block.defaultBlockState();
         for (BuildingBlock block : placement.getBlocks())
             if (RoadType.isRoadFloorMarker(block.getBlockState()) && block.isPlaced(level))
-                level.setBlockAndUpdate(block.getBlockPos(), roadState);
+                level.setBlockAndUpdate(block.getBlockPos(), type.getStateAt(block.getBlockPos()));
         for (BlockPos bp : RoadPathTracer.traceApron(level, placement))
             if (RoadType.isRoadBlock(level.getBlockState(bp)))
-                level.setBlockAndUpdate(bp, roadState);
+                level.setBlockAndUpdate(bp, type.getStateAt(bp));
     }
 
-    // a dirt path apron around a newly finished building, inviting the player to connect it by road;
+    // a path apron around a newly finished building, inviting the player to connect it by road;
     // it takes the road's material once a road reaches the building
     public static void placeApron(ServerLevel level, BuildingPlacement placement) {
-        RoadType type = getFloorType(placement.originPos);
-        BlockState state = (type != null ? type.block : RoadType.PATH.block).defaultBlockState();
+        RoadType floorType = getFloorType(placement.originPos);
+        RoadType type = floorType != null ? floorType : RoadType.PATH;
         for (BlockPos bp : RoadPathTracer.traceApron(level, placement)) {
             if (RoadType.isRoadBlock(level.getBlockState(bp)))
                 continue;
-            level.setBlockAndUpdate(bp, state);
+            level.setBlockAndUpdate(bp, type.getStateAt(bp));
             BlockPos above = bp.above();
             if (level.getBlockState(above).canBeReplaced() && level.getBlockState(above).getFluidState().isEmpty())
                 level.setBlockAndUpdate(above, Blocks.AIR.defaultBlockState());

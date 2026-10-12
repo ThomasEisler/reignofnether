@@ -1089,8 +1089,7 @@ public class BuildingPlacement {
         BlockState bs = nextBlock.getBlockState();
         if (!level.isClientSide() && RoadType.isRoadFloorMarker(bs)) {
             RoadType floorType = RoadServerEvents.getFloorType(originPos);
-            if (floorType != null)
-                bs = floorType.block.defaultBlockState();
+            bs = (floorType != null ? floorType : RoadType.PATH).getStateAt(bp);
         }
         Block blockBelow = level.getBlockState(bp.below()).getBlock();
         CompoundTag bNbt = nextBlock.getBlockNbt();
