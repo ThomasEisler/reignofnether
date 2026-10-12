@@ -404,6 +404,22 @@ public class CommandsServerEvents {
 				)
 		);
 
+		// barbarians AI: automatic camps on/off, and placing a camp by hand (level 1-3) for testing
+		dispatcher.register(Commands.literal("rts-barbarians")
+				.requires(source -> source.hasPermission(2))
+				.then(Commands.literal("on").executes(ctx -> setBarbarians(ctx, true)))
+				.then(Commands.literal("off").executes(ctx -> setBarbarians(ctx, false)))
+		);
+		dispatcher.register(Commands.literal("rts-barbarian-camp")
+				.requires(source -> source.hasPermission(2))
+				.then(Commands.argument("pos", BlockPosArgument.blockPos())
+					.executes(ctx -> placeBarbarianCamp(ctx, 1))
+					.then(Commands.argument("level", IntegerArgumentType.integer(1, 3))
+						.executes(ctx -> placeBarbarianCamp(ctx, IntegerArgumentType.getInteger(ctx, "level")))
+					)
+				)
+		);
+
 		// replaces the blocks of every placed building of a type with its current structure (e.g. after editing its NBT)
 		dispatcher.register(Commands.literal("rts-rebuild-buildings")
 				.requires(source -> source.hasPermission(2))
@@ -773,6 +789,23 @@ public class CommandsServerEvents {
 		boolean built = RoadServerEvents.tryBuildRoad(ctx.getSource().getLevel(), player.getName().getString(),
 			BlockPosArgument.getLoadedBlockPos(ctx, "from"), BlockPosArgument.getLoadedBlockPos(ctx, "to"), type);
 		return built ? 1 : 0;
+	}
+
+	private static int setBarbarians(CommandContext<CommandSourceStack> ctx, boolean enabled) {
+		com.solegendary.reignofnether.barbarian.BarbarianServerEvents.setEnabled(enabled);
+		ctx.getSource().sendSuccess(() -> Component.literal(enabled ?
+			"Barbarians enabled: camps will appear away from your bases" : "Barbarians disabled"), true);
+		return 1;
+	}
+
+	private static int placeBarbarianCamp(CommandContext<CommandSourceStack> ctx, int level) throws CommandSyntaxException {
+		BuildingPlacement camp = com.solegendary.reignofnether.barbarian.BarbarianServerEvents.placeCamp(
+			BlockPosArgument.getLoadedBlockPos(ctx, "pos"), level - 1);
+		if (camp == null) {
+			ctx.getSource().sendFailure(Component.literal("Could not place a barbarian camp here"));
+			return 0;
+		}
+		return 1;
 	}
 
 	public static int rebuildBuildings(ResourceLocation buildingKey, CommandSourceStack source) {

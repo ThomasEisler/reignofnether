@@ -1540,5 +1540,7 @@
     "hud.reignofnether.road_cost_ore": "%s minerai",
     "hud.reignofnether.road_type.paved": "route pavée",
     "hud.reignofnether.road_type.advanced": "route avancée",
-    "hud.reignofnether.road_no_path": "Aucun chemin possible : eau, bâtiments ou pentes trop raides"
+    "hud.reignofnether.road_no_path": "Aucun chemin possible : eau, bâtiments ou pentes trop raides",
+    "hud.reignofnether.barbarian_camp_destroyed": "Camp barbare détruit ! Vous pillez ses réserves.",
+    "buildings.reignofnether.barbarian_camp": "Camp barbare"
 }

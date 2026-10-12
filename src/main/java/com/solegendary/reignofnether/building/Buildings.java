@@ -61,6 +61,7 @@ public class Buildings {
     public static final MonsterMarket MONSTER_MARKET = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "monster_market"), new MonsterMarket());
     public static final PiglinMarket PIGLIN_MARKET = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "piglin_market"), new PiglinMarket());
     public static final VillagerMarket VILLAGER_MARKET = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "villager_market"), new VillagerMarket());
+    public static final BarbarianCamp BARBARIAN_CAMP = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_camp"), new BarbarianCamp());
 
     private static <T extends Building> T register(ResourceLocation id, T building) {
         return Registry.register(ReignOfNetherRegistries.BUILDING, id, building);

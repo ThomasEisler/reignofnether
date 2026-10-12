@@ -86,6 +86,15 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Les unités **préfèrent passer par les routes** (uniquement avec le déplacement propre au mod, actif sur les cartes avec une bordure de 1280 blocs ou moins). Les routes sont reconnues par leur position : le gravier ou la pierre naturels ne comptent pas.
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
 
+### Barbares (première version)
+- Faction contrôlée par l'ordinateur, **ennemie de tous**. S'active avec `/rts-barbarians on` (désactiver : `off`), réglage sauvegardé avec le monde.
+- **Camps** : un nouveau camp toutes les 4 minutes, à 70-100 blocs des bases, jusqu'à 2 camps + 1 par joueur. Plus la partie avance, plus les nouveaux camps commencent haut (un niveau de plus toutes les 15 minutes).
+- **3 niveaux** : un camp gagne un niveau toutes les 10 minutes (200, 350 puis 500 PV).
+- **Garnison** : 3 / 5 / 8 soldats selon le niveau (milice, vindicateurs, puis arbalétriers, puis parfois un ravageur). Un soldat perdu est remplacé toutes les 30 s. Ils patrouillent autour du camp et attaquent toute unité qui approche à moins de 18 blocs.
+- **Raids** : à partir du niveau 2, toutes les 6 minutes, la moitié de la garnison part attaquer le bâtiment de joueur le plus proche.
+- **Butin** : détruire un camp rapporte 100 / 200 / 350 de nourriture, bois et minerai (au joueur dont une unité est la plus proche). Les survivants partent en raid.
+- ⚠️ Les **formes des camps sont provisoires** (copies de la caserne et du Town Centre) : à construire par moi.
+
 ---
 
 ## Ajouter ou modifier un bâtiment
@@ -97,6 +106,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
    - niveau 1 : `reignofnether:barracks`
    - niveau 2 : `reignofnether:barracks_lvl2`
    - niveau 3 : `reignofnether:barracks_lvl3`
+   - camps barbares : `reignofnether:barbarian_camp`, `reignofnether:barbarian_camp_lvl2`, `reignofnether:barbarian_camp_lvl3`
 5. Le fichier est dans `saves/<monde>/generated/reignofnether/structures/` : le copier dans le mod (dossiers `assets` **et** `data`), puis reconstruire le mod.
 
 ## Commandes utiles (triches activées)
@@ -108,6 +118,8 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | `modifythephasevariance` | ignore les bâtiments requis |
 | `/rts-rebuild-buildings reignofnether:barracks` | reconstruit tous les bâtiments d'un type avec leur forme actuelle |
 | `/rts-road <pos A> <pos B> [path\|paved\|advanced]` | construit une route entre deux bâtiments (test) |
+| `/rts-barbarians on` / `off` | active / désactive les barbares |
+| `/rts-barbarian-camp <pos> [1\|2\|3]` | pose un camp barbare du niveau choisi (test) |
 
 ---
 
@@ -129,8 +141,9 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 ### Arbre des technologies
 - [ ] Un **arbre des technologies** comme dans Civilization (écran avec les recherches reliées entre elles). Le mod n'a pour l'instant que des recherches séparées, achetées dans chaque bâtiment (façon Age of Empires), sans arbre.
 
-### Barbares (faction IA)
-- [ ] Camps barbares générés sur la carte, plusieurs niveaux, unités qui patrouillent et attaquent, récompenses à la destruction, nouveaux camps loin des bases. S'appuyer sur le mode Survie existant.
+### Barbares
+- [ ] Construire mes propres formes de camps (niveaux 1, 2, 3).
+- [ ] Plus tard : d'autres bâtiments dans les camps, unités barbares à eux (apparence propre), réglages de difficulté.
 
 ### Terrain
 - [ ] Monde généré **beaucoup plus plat**.
@@ -139,6 +152,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Town Centre).
 - [ ] Routes : tracé, prix, place autour des bâtiments, passage aux niveaux pavée / avancée, sol des bâtiments qui change de matériau.
 - [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
+- [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin (`/rts-barbarians on`, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
 - [ ] Routes qui contournent les obstacles (eau, bâtiments, falaises, arbres).
 - [ ] Chantier de route par les ouvriers (envoi automatique, aide des ouvriers proches, nouvel ordre = quitte le chantier) et aperçu du tracé/prix.
 - [ ] Les unités vont plus vite sur la route et la préfèrent pour leurs trajets.
@@ -149,7 +163,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 ## Notes techniques pour reprendre (pour Claude)
 
-**Prochaine étape prévue** : faire tester le chantier de route et l'aperçu, puis le reste de la liste « À faire » (limite de distance, terrain plat, remparts, arbre des technologies, formes niveaux 2/3, barbares). Je préfère des réponses courtes, en français, sans jargon.
+**Prochaine étape prévue** : faire tester le chantier de route et l'aperçu, puis le reste de la liste « À faire » (limite de distance, terrain plat, remparts, arbre des technologies, formes niveaux 2/3 et camps barbares). Je préfère des réponses courtes, en français, sans jargon.
 
 **Où est le code de mes ajouts** (`src/main/java/com/solegendary/reignofnether/`) :
 - Niveaux de bâtiments : `building/level/BuildingLevel.java` (fiche d'un niveau), `building/level/BuildingLevelUpgrade.java` (bouton d'amélioration, réutilise la file de production) ; `Building.setLevels(...)`, `BuildingPlacement.applyLevel(...)`, action réseau `BuildingAction.CHANGE_LEVEL`. Boutons déclarés dans `building/production/ProductionItems.java` (`BARRACKS_LEVEL_2`…).
@@ -157,6 +171,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Fondations de secours : `BuildingServerEvents` (placement d'un bâtiment, après la boucle sur `startingBlockTypes`).
 - Routes : dossier `road/` — `RoadType` (niveaux, mélanges, prix, vitesse), `RoadConnection`, `RoadPathTracer` (tracé A* qui contourne les obstacles + place autour des bâtiments), `RoadServerEvents` (réseau, paiement, sauvegarde, sol adaptable), `RoadSaveData`, `RoadServerboundPacket`. Chantier par les ouvriers : `RoadServerEvents.tickRoadWorkers` (toutes les 10 ticks ; `RoadConnection.built` = avancement, `upgradeTo` = amélioration en cours ; seuls les blocs posés comptent pour la vitesse et l'itinéraire). Aperçu : `RoadClientEvents` (tracé calculé côté joueur, réseau reçu par `RoadClientboundPacket`). Bouton : `ability/abilities/BuildRoad.java` (ajouté à tous les bâtiments dans le constructeur de `Building`, touche `hotkey10` = H). Vitesse : effet `ROAD_MOVEMENT_SPEED` dans `MobEffectRegistrar`, appliqué dans `Unit.tick`. Itinéraire : `KIND_ROAD` dans `unit/pathfinding/WalkabilityBuilder.java`, coût `PathfinderConfig.ROAD_COST`.
 - Chantiers : `building/BuildTimes.java` (tableau des durées), `building/ConstructionSiteServerEvents.java` (tours d'échafaudage), `BuildingPlacement.CONSTRUCTION_TIME_MULTIPLIER` (bâtiments hors tableau), `HealthBarClientEvents.renderConstructionBars` (barre).
+- Barbares : dossier `barbarian/` (`BarbarianServerEvents` : camps, garnisons, raids, butin ; `BarbarianSaveData`), bâtiment `building/buildings/neutral/BarbarianCamp.java` (propriétaire « Barbarians »).
 - Commandes : `commands/CommandsServerEvents.java` (`rts-rebuild-buildings`, `rts-road`).
 - Terrain : `src/main/resources/data/minecraft/worldgen/world_preset/normal.json` (`settings` = `minecraft:overworld`).
 
@@ -183,3 +198,4 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 13/10/2026 | Barbares : camps à 3 niveaux, garnisons, raids, butin |
