@@ -4,7 +4,7 @@
       "type": "minecraft:overworld",
       "generator": {
         "type": "minecraft:noise",
-        "settings": "reignofnether:custom_overworld",
+        "settings": "minecraft:overworld",
         "biome_source": {
           "type": "minecraft:multi_noise",
           "biomes": [
