@@ -6,6 +6,9 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.building.BuildingPlacement;
+import com.solegendary.reignofnether.building.BuildingClientEvents;
+import com.solegendary.reignofnether.building.buildings.shared.AbstractBridge;
+import com.solegendary.reignofnether.fogofwar.FogOfWarClientEvents;
 import com.solegendary.reignofnether.orthoview.OrthoviewClientEvents;
 import com.solegendary.reignofnether.unit.interfaces.HeroUnit;
 import com.solegendary.reignofnether.unit.interfaces.Unit;
@@ -107,14 +110,13 @@ public class HealthBarClientEvents {
             return;
         }
 
-        if (renderedEntities.isEmpty())
-            return;
-
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE,
                 GL11.GL_ZERO);
+
+        renderConstructionBars(matrix, camera);
 
         for (LivingEntity entity : renderedEntities) {
             float scaleToGui = 0.025f;
@@ -158,6 +160,42 @@ public class HealthBarClientEvents {
         RenderSystem.disableBlend();
 
         renderedEntities.clear();
+    }
+
+    private static final double CONSTRUCTION_BAR_MAX_DIST = 160;
+
+    // progress bar floating above each building site that can be seen
+    private static void renderConstructionBars(PoseStack matrix, Camera camera) {
+        Vec3 camPos = camera.getPosition();
+        for (BuildingPlacement building : BuildingClientEvents.getBuildings()) {
+            if (building.isBuilt || building.ownerName.isEmpty() || building.getBlocksTotal() <= 0 ||
+                building.getBuilding() instanceof AbstractBridge)
+                continue;
+            if (FogOfWarClientEvents.isEnabled() && !FogOfWarClientEvents.isInBrightChunk(building.centrePos))
+                continue;
+            double x = building.centrePos.getX() + 0.5;
+            double y = building.maxCorner.getY() + 2;
+            double z = building.centrePos.getZ() + 0.5;
+            if (camPos.distanceToSqr(x, y, z) > CONSTRUCTION_BAR_MAX_DIST * CONSTRUCTION_BAR_MAX_DIST)
+                continue;
+
+            float scale = 0.05f;
+            int footprint = Math.min(building.maxCorner.getX() - building.minCorner.getX(),
+                building.maxCorner.getZ() - building.minCorner.getZ()) + 1;
+            float barWidth = Math.max(2, Math.min(footprint * 0.6f, 8)) / scale;
+            float percent = Math.min(1, building.getBlocksPlacedPercent());
+
+            matrix.pushPose();
+            matrix.translate(x - camPos.x(), y - camPos.y(), z - camPos.z());
+            matrix.mulPose(Axis.YP.rotationDegrees(-camera.getYRot()));
+            matrix.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
+            matrix.scale(-scale, -scale, scale);
+            // golden bar on a grey background, distinct from the green/red health bars
+            render(matrix, percent, percent, 0, 0, barWidth,
+                OrthoviewClientEvents.isEnabled() ? RenderMode.IN_WORLD_ORTHOVIEW : RenderMode.IN_WORLD_FIRST_PERSON,
+                BarState.BarStateType.HEALTH, 1f, 0.75f, 0.1f, 0.5f, 0.38f, 0.05f);
+            matrix.popPose();
+        }
     }
 
     public static void renderForEntity(PoseStack matrix, LivingEntity entity, double x, double y,

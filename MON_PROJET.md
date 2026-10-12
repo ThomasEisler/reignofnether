@@ -44,6 +44,11 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Mes nouvelles formes de **niveau 1** sont en place (caserne en bois, Town Centre en campement).
 - ⚠️ Les formes des **niveaux 2 et 3 sont provisoires** (copies des anciens bâtiments de pierre) : à construire.
 
+### Chantiers
+- La construction d'un bâtiment dure **1,5 fois plus longtemps** que dans le mod d'origine (les réparations ne changent pas).
+- Des **échafaudages** de hauteur aléatoire entourent le bâtiment à certains endroits pendant le chantier. Ils sont retirés quand il est terminé ou détruit.
+- Une **barre de progression dorée** flotte au-dessus de chaque chantier visible.
+
 ### Formes des bâtiments (structures)
 - Un bâtiment est fait de vrais blocs, enregistrés dans un fichier `.nbt` avec un **bloc de structure** en jeu.
 - **Reconstruction automatique** : chaque bâtiment retient une « empreinte » de sa forme. Si je modifie une forme et mets le mod à jour, le serveur reconstruit tout seul les bâtiments déjà posés au redémarrage.
@@ -102,12 +107,15 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 ### Bâtiments
 - [ ] Construire les formes des niveaux 2 et 3 (caserne, Town Centre).
-- [ ] **Chantiers plus réalistes** pendant la construction d'un bâtiment :
-  - durée de construction un peu plus longue ;
-  - échafaudages (scaffolding) de hauteur aléatoire autour du bâtiment, à certains endroits, retirés à la fin ;
-  - **barre de progression** du chantier au-dessus du bâtiment (comme une barre de vie).
 - [ ] Tours de guet améliorables (portée et dégâts par niveau).
 - [ ] **Limite de distance** pour poser un bâtiment : il faut être assez proche d'un de ses bâtiments (pas de construction dans une base ennemie), sauf entrepôts et quelques autres.
+
+### Remparts
+- [ ] Construire des **remparts** comme les routes : choisir deux points, **aperçu** du tracé et du prix, construits par les ouvriers.
+- [ ] Pouvoir **intégrer une tour de garde** dans les remparts.
+
+### Arbre des technologies
+- [ ] Un **arbre des technologies** comme dans Civilization (écran avec les recherches reliées entre elles). Le mod n'a pour l'instant que des recherches séparées, achetées dans chaque bâtiment (façon Age of Empires), sans arbre.
 
 ### Barbares (faction IA)
 - [ ] Camps barbares générés sur la carte, plusieurs niveaux, unités qui patrouillent et attaquent, récompenses à la destruction, nouveaux camps loin des bases. S'appuyer sur le mode Survie existant.
@@ -118,6 +126,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Town Centre).
 - [ ] Routes : tracé, prix, place autour des bâtiments, passage aux niveaux pavée / avancée, sol des bâtiments qui change de matériau.
+- [ ] Chantiers : durée plus longue, échafaudages autour, barre de progression dorée.
 - [ ] Routes qui contournent les obstacles (eau, bâtiments, falaises, arbres).
 - [ ] Chantier de route par les ouvriers (envoi automatique, aide des ouvriers proches, nouvel ordre = quitte le chantier) et aperçu du tracé/prix.
 - [ ] Les unités vont plus vite sur la route et la préfèrent pour leurs trajets.
@@ -128,13 +137,14 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 ## Notes techniques pour reprendre (pour Claude)
 
-**Prochaine étape prévue** : faire tester le chantier de route et l'aperçu, puis le reste de la liste « À faire » (limite de distance, terrain plat, formes niveaux 2/3, barbares). Je préfère des réponses courtes, en français, sans jargon.
+**Prochaine étape prévue** : faire tester le chantier de route et l'aperçu, puis le reste de la liste « À faire » (limite de distance, terrain plat, remparts, arbre des technologies, formes niveaux 2/3, barbares). Je préfère des réponses courtes, en français, sans jargon.
 
 **Où est le code de mes ajouts** (`src/main/java/com/solegendary/reignofnether/`) :
 - Niveaux de bâtiments : `building/level/BuildingLevel.java` (fiche d'un niveau), `building/level/BuildingLevelUpgrade.java` (bouton d'amélioration, réutilise la file de production) ; `Building.setLevels(...)`, `BuildingPlacement.applyLevel(...)`, action réseau `BuildingAction.CHANGE_LEVEL`. Boutons déclarés dans `building/production/ProductionItems.java` (`BARRACKS_LEVEL_2`…).
 - Empreinte des structures : `BuildingPlacement.getStructureHash()` / `rebuildBlocksInWorld()`, sauvegardée dans `BuildingSaveData` (`structureHash`), comparée au chargement dans `BuildingServerEvents`.
 - Fondations de secours : `BuildingServerEvents` (placement d'un bâtiment, après la boucle sur `startingBlockTypes`).
 - Routes : dossier `road/` — `RoadType` (niveaux, mélanges, prix, vitesse), `RoadConnection`, `RoadPathTracer` (tracé A* qui contourne les obstacles + place autour des bâtiments), `RoadServerEvents` (réseau, paiement, sauvegarde, sol adaptable), `RoadSaveData`, `RoadServerboundPacket`. Chantier par les ouvriers : `RoadServerEvents.tickRoadWorkers` (toutes les 10 ticks ; `RoadConnection.built` = avancement, `upgradeTo` = amélioration en cours ; seuls les blocs posés comptent pour la vitesse et l'itinéraire). Aperçu : `RoadClientEvents` (tracé calculé côté joueur, réseau reçu par `RoadClientboundPacket`). Bouton : `ability/abilities/BuildRoad.java` (ajouté à tous les bâtiments dans le constructeur de `Building`, touche `hotkey10` = H). Vitesse : effet `ROAD_MOVEMENT_SPEED` dans `MobEffectRegistrar`, appliqué dans `Unit.tick`. Itinéraire : `KIND_ROAD` dans `unit/pathfinding/WalkabilityBuilder.java`, coût `PathfinderConfig.ROAD_COST`.
+- Chantiers : `building/ConstructionSiteServerEvents.java` (échafaudages), `BuildingPlacement.CONSTRUCTION_TIME_MULTIPLIER` (durée), `HealthBarClientEvents.renderConstructionBars` (barre).
 - Commandes : `commands/CommandsServerEvents.java` (`rts-rebuild-buildings`, `rts-road`).
 - Terrain : `src/main/resources/data/minecraft/worldgen/world_preset/normal.json` (`settings` = `minecraft:overworld`).
 
@@ -160,3 +170,4 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | 13/10/2026 | Routes en mélanges de blocs (gravier, terre grossière, andésite, pierre), journal `MON_PROJET.md` |
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
+| 13/10/2026 | Chantiers : durée x1,5, échafaudages, barre de progression |

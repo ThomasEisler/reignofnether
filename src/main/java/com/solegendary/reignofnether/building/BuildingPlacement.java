@@ -185,6 +185,7 @@ public class BuildingPlacement {
 
     public boolean isDiagonalBridge = false;
 
+    public static final float CONSTRUCTION_TIME_MULTIPLIER = 1.5f; // building sites last longer than in the original mod
     public boolean selfBuilding = false; // if set to true, will build itself quickly without workers (but not repair)
     public int maxBlocksPerTick = 1; // maximum number of blocks that can be built per tick
 
@@ -899,6 +900,7 @@ public class BuildingPlacement {
             RTSPlayer rtsPlayer = PlayerServerEvents.getRTSPlayer(ownerName);
             if (rtsPlayer != null)
                 rtsPlayer.scores.addToScore(RTSPlayerScoresEnum.TOTAL_BUILDINGS_CONSTRUCTED);
+            ConstructionSiteServerEvents.onBuildingFinished(this);
             if (!(getBuilding() instanceof AbstractBridge) && !ownerName.isEmpty())
                 RoadServerEvents.placeApron((ServerLevel) level, this);
         } else {
@@ -1028,7 +1030,7 @@ public class BuildingPlacement {
                 // 5 builders - 3/7 (43%)
                 float msPerBuild = (float) (3 * baseMsPerBuild) / (builderCount + 2);
                 if (!isBuilt) {
-                    msPerBuild *= building.buildTimeModifier;
+                    msPerBuild *= building.buildTimeModifier * CONSTRUCTION_TIME_MULTIPLIER;
                     if (isCapitol && BuildingUtils.getTotalCompletedBuildingsOwned(false, ownerName) > 0)
                         msPerBuild *= 2;
                 } else {

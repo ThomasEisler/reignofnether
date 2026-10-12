@@ -145,5 +145,6 @@ public class ClientEventRegistrar {
         vanillaEventBus.register(ItemServerEvents.class);
         vanillaEventBus.register(TaskSchedulerServerEvents.class);
         vanillaEventBus.register(RoadServerEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.building.ConstructionSiteServerEvents.class);
     }
 }
