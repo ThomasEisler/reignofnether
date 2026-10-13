@@ -179,7 +179,7 @@ Hauteurs (depuis le 14/10/2026) : palissade 2 ou 3 blocs, pierre 4 (créneaux co
 
 ### Arbre des technologies
 - Pendant une recherche, un **bandeau au-dessus de la fenêtre de l'arbre** (pas sur l'écran principal) montre son icône, son nom en grand, une grande barre de progression (pourcentage) et le temps restant (« en pause » sans Bibliothèque).
-- Bouton **« Technologies x/8 »** à gauche de l'écran RTS (une barre bleue montre la recherche en cours), ou bouton **« Technologies »** de la **Bibliothèque** (touche **P**) : ouvre l'arbre presque plein écran (Échap pour fermer).
+- Bouton **« Technologies x/18 »** à gauche de l'écran RTS (une barre bleue montre la recherche en cours), ou bouton **« Technologies »** de la **Bibliothèque** (touche **P**) : ouvre l'arbre presque plein écran (Échap pour fermer).
 - Écran **dans le style des Progrès** de Minecraft : même fenêtre, fond en planches de chêne noir, cadres (carré, arrondi, pointu selon le rang) avec une icône par technologie, traits blancs entre elles, cadre doré quand c'est découvert, assombri quand c'est verrouillé. **Au survol** : barre de titre (bleue, dorée au fur et à mesure de la recherche) et encadré avec l'état, le prix, la durée et **les images des bâtiments débloqués** (les mêmes que dans le menu de construction, avec leur nom). On **fait glisser** l'arbre à la souris. Clic = lancer la recherche ; « Annuler » (sous la fenêtre) rembourse tout.
 - **Une seule recherche à la fois**, et elle n'avance que si on a une **Bibliothèque terminée** (sinon en pause). Sauvegardée avec le monde, effacée par `/rts-reset`. `warpten` accélère, `modifythephasevariance` ignore les technologies.
 - Les bâtiments verrouillés sont **cachés du menu de construction** ; les niveaux 2 et 3 de la caserne et du Hôtel de ville demandent Architecture / Ingénierie.
@@ -194,6 +194,23 @@ Hauteurs (depuis le 14/10/2026) : palissade 2 ou 3 blocs, pierre 4 (créneaux co
 | Fortifications | Métallurgie | Château | 300 bois, 400 minerai | 10 min |
 | Ingénierie | Architecture + Métallurgie | Caserne niv. 3, Hôtel de ville niv. 3 | 400 bois, 400 minerai | 8 min |
 | Arcanes | Mysticisme | Tour arcanique | 300 nourr., 200 bois, 300 minerai | 8 min |
+
+**Recherches du jeu d'origine intégrées à l'arbre** (14/10/2026) : elles ne s'achètent plus dans les bâtiments ; leurs effets s'appliquent dès que la technologie est découverte. Métallurgie donne aussi la Forge de golems et débloque l'amélioration « Forgeron supérieur » ; Mysticisme débloque « Grande bibliothèque ». Les 4 améliorations de bâtiment (forgeron, bibliothèque, château, marché) restent dans leur bâtiment mais n'apparaissent qu'une fois la technologie découverte.
+
+| Recherche | Il faut d'abord | Effet (recherche d'origine) | Prix | Durée |
+|---|---|---|---|---|
+| Commandement | Fortifications | Amélioration du château : drapeau de capitaine | 200 nourr., 150 bois, 150 minerai | 4 min |
+| Artillerie de siège | Commandement | Pillards sur ravageurs (flèches explosives) | 400 nourr., 350 minerai | 5 min |
+| Tir à l'arc | — | Milice archère | 250 nourr., 500 bois | 5 min |
+| Invocations vexantes | Arcanes | Les invocateurs appellent des Vex | 500 nourr., 300 minerai | 4 min |
+| Porté par le vent | Invocations vexantes | Mande-vents améliorés | 300 nourr., 150 bois, 150 minerai | 4 min 40 |
+| Grand commerce | Commerce | Amélioration du marché : Grand marché | 100 nourr., 150 bois, 100 minerai | 5 min |
+| Alchimie | Mysticisme | Fioles d'eau + potions persistantes étendues | 400 bois, 400 minerai | 5 min |
+| Potions de soin | Alchimie | Potions de soin des sorcières | 350 bois, 350 minerai | 5 min |
+| Sacs de récolte | — | Ouvriers portent 200 au lieu de 100 | 200 nourr., 200 bois | 3 min |
+| Sacs à dos | Sacs de récolte | Les unités portent des objets | 100 bois, 100 minerai | 3 min |
+
+- **Zoom** dans l'arbre : molette (de 50 % à 150 %). Fenêtre de l'arbre agrandie.
 
 Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèque, pont.
 
@@ -247,7 +264,8 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [x] Tour de rempart intégrable dans les murs.
 
 ### Arbre des technologies
-- [ ] Plus tard : zoom, plus de technologies, effets autres que débloquer.
+- [x] Zoom à la molette ; recherches d'origine intégrées (effets).
+- [ ] Plus tard : encore plus de technologies.
 
 ### Barbares
 - [ ] Construire mes propres formes de camps (niveaux 1, 2, 3), de la tente et de la tour.
@@ -274,6 +292,8 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Chantier de route par les ouvriers (envoi automatique, aide des ouvriers proches, nouvel ordre = quitte le chantier) et aperçu du tracé/prix.
 - [ ] Les unités vont plus vite sur la route et la préfèrent pour leurs trajets.
 - [ ] Reconstruction automatique d'un bâtiment après modification de sa forme.
+- [ ] Arbre des technologies : nouvelles recherches et leurs effets (milice archère, Vex, potions, sacs…), améliorations visibles seulement après la technologie, zoom à la molette.
+- [ ] Caméra RTS (F12) : zoom à la molette seule (sauf pendant la pose d'un pont).
 - [ ] Arbre des technologies : bouton à gauche, écran, recherche une à la fois, bâtiments cachés tant que non découverts, niveaux bloqués.
 - [ ] Traduction française : vérifier les textes trop longs pour leurs cases.
 - [ ] La commande `/rts-rebuild-buildings` n'était pas reconnue lors d'un essai : probablement triches non activées dans ce monde, cause non confirmée.
@@ -331,6 +351,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Barbares : camps à 3 niveaux, garnisons, raids, butin |
 | 13/10/2026 | Camps barbares : bâtiments annexes et remparts (palissade puis pierre) |
 | 13/10/2026 | Point rouge au-dessus des barbares ; une seule faction (villageois), Survie retirée, nations façon Civilization avec bonus |
+| 14/10/2026 | Arbre des technologies : 10 recherches du jeu d'origine intégrées, améliorations de bâtiments verrouillées, zoom à la molette ; caméra RTS : la molette seule zoome, plus près et plus loin qu'avant |
 | 13/10/2026 | Arbre des technologies (8 recherches dans la Bibliothèque, bâtiments et niveaux à débloquer) |
 | 13/10/2026 | Dossier `readme/` (journal + liste des bâtiments) |
 | 13/10/2026 | Traduction française complète, jeu en français |

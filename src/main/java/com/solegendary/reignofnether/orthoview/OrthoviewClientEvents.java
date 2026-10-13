@@ -79,8 +79,8 @@ public class OrthoviewClientEvents {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final float ZOOM_STEP_KEY = 5;
     private static final float ZOOM_STEP_SCROLL = 1;
-    private static final float ZOOM_MIN = 10;
-    private static final float ZOOM_MAX = 90;
+    private static final float ZOOM_MIN = 6;
+    private static final float ZOOM_MAX = 100;
     private static final float CAMROTY_MAX = -20;
     private static final float CAMROTY_MIN = -90;
     private static final float CAMROT_MOUSE_SENSITIVITY = 0.12f;
@@ -560,12 +560,15 @@ public class OrthoviewClientEvents {
     }
 
     @SubscribeEvent
-    public static void onMouseScroll(ScreenEvent.MouseScrolled evt) {
+    // the mouse wheel zooms (Post: not when a menu such as the technology tree took the scroll); while placing a
+    // bridge the wheel turns it instead, unless Alt is held
+    public static void onMouseScroll(ScreenEvent.MouseScrolled.Post evt) {
         if (!enabled || isCameraLocked()) {
             return;
         }
-        if (Keybindings.altMod.isDown()) {
-            zoomCam((float) sign(evt.getScrollDelta()) * -ZOOM_STEP_SCROLL);
+        if (Keybindings.altMod.isDown() || !(com.solegendary.reignofnether.building.BuildingClientEvents.getBuildingToPlace()
+                instanceof com.solegendary.reignofnether.building.buildings.shared.AbstractBridge)) {
+            zoomCam((float) sign(evt.getScrollDelta()) * -ZOOM_STEP_SCROLL * 2);
         }
     }
 

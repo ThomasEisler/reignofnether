@@ -261,7 +261,11 @@ public class ProductionPlacement extends BuildingPlacement {
                     case ALLOW -> true;
                 };
 
-                if (!prodItem.canProduce(this)) {
+                if (!com.solegendary.reignofnether.tech.Tech.hasTech(false, ownerName,
+                        com.solegendary.reignofnether.tech.Tech.getRequiredForProduction(prodItem))) {
+                    HudClientboundPacket.showTempMessageI18n(ownerName, "building.reignofnether.needs_tech");
+                }
+                else if (!prodItem.canProduce(this)) {
                     String errorMsg = prodItem.getProduceErrorMsg(this);
                     if (errorMsg != null) {
                         HudClientboundPacket.showTempMessageI18n(ownerName, errorMsg);

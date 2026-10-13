@@ -124,20 +124,30 @@ public class TechClientEvents {
             case FORTIFICATIONS -> net.minecraft.world.item.Items.STONE_BRICK_WALL;
             case ENGINEERING -> net.minecraft.world.item.Items.PISTON;
             case ARCANA -> net.minecraft.world.item.Items.ENCHANTED_BOOK;
+            case COMMAND -> net.minecraft.world.item.Items.WHITE_BANNER;
+            case SIEGE -> net.minecraft.world.item.Items.TNT;
+            case ARCHERY -> net.minecraft.world.item.Items.BOW;
+            case VEXES -> net.minecraft.world.item.Items.TOTEM_OF_UNDYING;
+            case WINDS -> net.minecraft.world.item.Items.FEATHER;
+            case TRADE -> net.minecraft.world.item.Items.EMERALD_BLOCK;
+            case ALCHEMY -> net.minecraft.world.item.Items.GLASS_BOTTLE;
+            case HEALING -> net.minecraft.world.item.Items.GLISTERING_MELON_SLICE;
+            case CARRY_BAGS -> net.minecraft.world.item.Items.CHEST;
+            case BACKPACKS -> net.minecraft.world.item.Items.BUNDLE;
         });
     }
 
     // frame shape like advancements: square, rounded for the second tier, spiky for the last
     private static int frameU(Tech tech) {
-        return tech.column == 0 ? 0 : tech.column == 1 ? 52 : 26;
+        return tech.column == 0 ? 0 : tech.column <= 2 ? 52 : 26;
     }
 
     private static int screenW() { return MC.getWindow().getGuiScaledWidth(); }
     private static int screenH() { return MC.getWindow().getGuiScaledHeight(); }
 
     // window
-    private static int winW() { return Math.min(screenW() - 32, 400); }
-    private static int winH() { return Math.min(screenH() - 70 - (current != null ? BANNER_H : 0), 240); }
+    private static int winW() { return Math.min(screenW() - 32, 560); }
+    private static int winH() { return Math.min(screenH() - 70 - (current != null ? BANNER_H : 0), 320); }
     private static int winX() { return (screenW() - winW()) / 2; }
     private static int winY() {
         int y = Math.max(8, (screenH() - winH()) / 2 - 14);
@@ -149,8 +159,21 @@ public class TechClientEvents {
     private static int inX1() { return winX() + winW() - 14; }
     private static int inY1() { return winY() + winH() - 15; }
 
-    private static int treeW() { return 2 * COL_SPACING + FRAME; }
-    private static int treeH() { return 2 * ROW_SPACING + FRAME; }
+    private static int maxColumn() { int m = 0; for (Tech t : Tech.values()) m = Math.max(m, t.column); return m; }
+    private static int maxRow() { int m = 0; for (Tech t : Tech.values()) m = Math.max(m, t.row); return m; }
+    private static int treeW() { return maxColumn() * COL_SPACING + FRAME; }
+    private static int treeH() { return maxRow() * ROW_SPACING + FRAME; }
+
+    // zoom with the mouse wheel; the tree is scaled around the centre of the window
+    private static final float ZOOM_MIN = 0.5f, ZOOM_MAX = 1.5f, ZOOM_STEP = 0.1f;
+    private static float zoom = 1f;
+    private static float centreX() { return (inX0() + inX1()) / 2f; }
+    private static float centreY() { return (inY0() + inY1()) / 2f; }
+    // tree coordinates -> screen, and back
+    private static int toScreenX(float x) { return Math.round(centreX() + (x - centreX()) * zoom); }
+    private static int toScreenY(float y) { return Math.round(centreY() + (y - centreY()) * zoom); }
+    private static double toTreeX(double x) { return centreX() + (x - centreX()) / zoom; }
+    private static double toTreeY(double y) { return centreY() + (y - centreY()) / zoom; }
     private static int nodeX(Tech t) { return (inX0() + inX1() - treeW()) / 2 + (int) scrollX + t.column * COL_SPACING; }
     private static int nodeY(Tech t) { return (inY0() + inY1() - treeH()) / 2 + (int) scrollY + t.row * ROW_SPACING; }
 
@@ -168,6 +191,8 @@ public class TechClientEvents {
     private static Tech getNodeAt(double mx, double my) {
         if (mx < inX0() || mx > inX1() || my < inY0() || my > inY1())
             return null;
+        mx = toTreeX(mx);
+        my = toTreeY(my);
         for (Tech t : Tech.values())
             if (mx >= nodeX(t) && mx <= nodeX(t) + FRAME && my >= nodeY(t) && my <= nodeY(t) + FRAME)
                 return t;
@@ -245,9 +270,25 @@ public class TechClientEvents {
         }
     }
 
+    private static String researchLangKey(String id) {
+        return "research.reignofnether." + (id.equals("research_market_upgrade_villager") ? "villager_market_upgrade" : id);
+    }
+
+    // an original research: its name, then what it does
+    private static void addResearchLines(java.util.function.BiConsumer<String, Integer> add, String id, boolean isDone) {
+        String key = researchLangKey(id);
+        add.accept("• " + net.minecraft.client.resources.language.I18n.get(key), isDone ? 0xD4AF37 : 0xE0E0E0);
+        StringBuilder desc = new StringBuilder();
+        for (int i = 1; i <= 3; i++)
+            if (net.minecraft.client.resources.language.I18n.exists(key + ".tooltip" + i))
+                desc.append(net.minecraft.client.resources.language.I18n.get(key + ".tooltip" + i).trim()).append(' ');
+        if (!desc.isEmpty())
+            add.accept("  " + desc.toString().trim(), 0xA0A0A0);
+    }
+
     // hover: a title bar coming out of the frame and a description box under it, like advancements
     private static void drawHover(GuiGraphics g, Tech tech) {
-        int x = nodeX(tech), y = nodeY(tech);
+        int x = toScreenX(nodeX(tech) + FRAME / 2f) - FRAME / 2, y = toScreenY(nodeY(tech) + FRAME / 2f) - FRAME / 2;
         boolean isDone = done.contains(tech), isCurrent = tech == current, available = isAvailable(tech);
 
         List<FormattedCharSequence> lines = new ArrayList<>();
@@ -272,6 +313,10 @@ public class TechClientEvents {
             add.accept("Durée : " + formatTime(tech.seconds), 0xE0E0E0);
         }
         add.accept("Débloque :", 0xAAAAAA);
+        for (String id : tech.grantedResearch)
+            addResearchLines(add, id, isDone);
+        for (String id : tech.unlockedUpgrades)
+            addResearchLines(add, id, isDone);
         List<Building> unlockBuildings = new ArrayList<>();
         List<String> unlockLabels = new ArrayList<>();
         for (String b : tech.unlockedBuildings) {
@@ -337,10 +382,15 @@ public class TechClientEvents {
             for (int ty = inY0() + oy; ty < inY1(); ty += 16)
                 g.blit(BACKGROUND, tx, ty, 0, 0, 16, 16, 16, 16);
         g.fill(inX0(), inY0(), inX1(), inY1(), 0x55000000);
+        g.pose().pushPose();
+        g.pose().translate(centreX(), centreY(), 0);
+        g.pose().scale(zoom, zoom, 1);
+        g.pose().translate(-centreX(), -centreY(), 0);
         drawLinks(g, true);
         drawLinks(g, false);
         for (Tech tech : Tech.values())
             drawNode(g, tech);
+        g.pose().popPose();
         g.disableScissor();
 
         // window frame and title
@@ -370,7 +420,7 @@ public class TechClientEvents {
             info = "Construisez une Bibliothèque pour faire des recherches";
             infoColour = 0xFF8080;
         } else {
-            info = "Cliquez une technologie pour la rechercher — glissez pour déplacer l'arbre";
+            info = "Cliquez une technologie pour la rechercher — glissez pour déplacer, molette pour zoomer";
         }
         g.drawCenteredString(MC.font, info, screenW() / 2, winY() + winH() + 5, infoColour);
         if (current != null) {
@@ -475,15 +525,17 @@ public class TechClientEvents {
         if (inside(evt.getMouseX(), evt.getMouseY(), inX0(), inY0(), inX1() - inX0(), inY1() - inY0())) {
             int limitX = Math.max(20, (treeW() - (inX1() - inX0())) / 2 + 40);
             int limitY = Math.max(20, (treeH() - (inY1() - inY0())) / 2 + 40);
-            scrollX = Mth.clamp(scrollX + evt.getDragX(), -limitX, limitX);
-            scrollY = Mth.clamp(scrollY + evt.getDragY(), -limitY, limitY);
+            scrollX = Mth.clamp(scrollX + evt.getDragX() / zoom, -limitX, limitX);
+            scrollY = Mth.clamp(scrollY + evt.getDragY() / zoom, -limitY, limitY);
         }
     }
 
     @SubscribeEvent
     public static void onMouseScroll(ScreenEvent.MouseScrolled.Pre evt) {
-        if (open)
-            evt.setCanceled(true);
+        if (!open)
+            return;
+        evt.setCanceled(true);
+        zoom = Mth.clamp(zoom + (evt.getScrollDelta() > 0 ? ZOOM_STEP : -ZOOM_STEP), ZOOM_MIN, ZOOM_MAX);
     }
 
     @SubscribeEvent

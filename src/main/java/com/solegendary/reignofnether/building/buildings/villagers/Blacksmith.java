@@ -85,8 +85,6 @@ public class Blacksmith extends ProductionBuilding implements RangeIndicatorAddo
         this.abilities.add(EQUIP_CHAINMAIL_CHESTPLATE, Keybindings.abilitySlot6);
 
         this.productions.add(ProductionItems.IRON_GOLEM, Keybindings.abilitySlot1);
-        this.productions.add(ProductionItems.RESEARCH_GOLEM_SMITHING, Keybindings.abilitySlot2);
-        this.productions.add(ProductionItems.RESEARCH_MILITIA_BOWS, Keybindings.abilitySlot3);
         this.productions.add(ProductionItems.RESEARCH_SUPERIOR_BLACKSMITH, Keybindings.abilitySlot4);
 
         setActiveAddon(RangeIndicatorAddon.class, this, true);

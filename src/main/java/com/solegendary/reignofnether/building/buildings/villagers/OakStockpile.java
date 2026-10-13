@@ -1,5 +1,7 @@
 package com.solegendary.reignofnether.building.buildings.villagers;
 
+import com.solegendary.reignofnether.building.production.ProductionItems;
+
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.api.ReignOfNetherRegistries;
 import com.solegendary.reignofnether.building.BuildingClientEvents;
@@ -31,6 +33,9 @@ public class OakStockpile extends AbstractStockpile {
 
     public OakStockpile() {
         super(structureName);
+        // carry bags and backpacks are researched in the technology tree for villagers
+        this.productions.remove(ProductionItems.RESEARCH_RESOURCE_CAPACITY);
+        this.productions.remove(ProductionItems.RESEARCH_ITEM_BACKPACKS);
         this.name = buildingName;
         this.startingBlockTypes.add(Blocks.OAK_LOG);
         this.maxHealth = 95d;

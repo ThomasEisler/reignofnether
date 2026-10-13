@@ -111,6 +111,15 @@ public class TechServerEvents {
         TechClientboundPacket.sync(player, state);
     }
 
+    // the original game's researches a technology gives: their effects (and the game's checks) then apply
+    private static void grantResearch(String player, Tech tech) {
+        for (String id : tech.grantedResearch) {
+            var item = Tech.getProductionItem(id);
+            if (item != null && !ResearchServerEvents.playerHasResearch(player, item))
+                ResearchServerEvents.addResearch(player, item);
+        }
+    }
+
     // cancelling refunds the full cost
     public static void cancelResearch(String player) {
         PlayerTech state = get(player);
@@ -154,6 +163,7 @@ public class TechServerEvents {
             if (state.ticksLeft <= 0) {
                 Tech tech = state.current;
                 state.done.add(tech);
+                grantResearch(player, tech);
                 state.current = null;
                 state.ticksLeft = 0;
                 HudClientboundPacket.showTempMessageI18n(player, "Recherche terminée : " + tech.displayName);
@@ -170,6 +180,7 @@ public class TechServerEvents {
         players.clear();
         if (serverLevel != null)
             players.putAll(TechSaveData.getInstance(serverLevel).players);
+        players.forEach((player, state) -> state.done.forEach(tech -> grantResearch(player, tech)));
     }
 
     @SubscribeEvent

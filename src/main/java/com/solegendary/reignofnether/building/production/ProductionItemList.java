@@ -22,10 +22,17 @@ public class ProductionItemList {
         productions.put(production, keybind);
     }
 
+    public void remove(ProductionItem production) {
+        productions.remove(production);
+    }
+
     public List<Button> getButtons(ProductionPlacement placement) {
         List<Button> buttons = new ArrayList<>();
         if (FMLEnvironment.dist == Dist.CLIENT) {
             for (Map.Entry<ProductionItem, Keybinding> production : productions.entrySet()) {
+                if (!com.solegendary.reignofnether.tech.Tech.hasTech(true, placement.ownerName,
+                        com.solegendary.reignofnether.tech.Tech.getRequiredForProduction(production.getKey())))
+                    continue; // building upgrade not discovered yet in the technology tree
                 StartProductionButton button = production.getKey().getStartButton(placement, production.getValue());
                 if (button != null)
                     buttons.add(button);

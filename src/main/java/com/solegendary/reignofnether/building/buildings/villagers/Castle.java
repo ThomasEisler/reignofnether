@@ -79,7 +79,6 @@ public class Castle extends ProductionBuilding implements GarrisonableBuildingAd
         this.abilities.add(promoteIllager, Keybindings.abilitySlot3);
 
         this.productions.add(ProductionItems.RAVAGER, Keybindings.abilitySlot1);
-        this.productions.add(ProductionItems.RESEARCH_RAVAGER_CAVALRY, Keybindings.abilitySlot2);
         this.productions.add(ProductionItems.RESEARCH_CASTLE_FLAG, Keybindings.abilitySlot3);
 
         setActiveAddon(GarrisonableBuildingAddon.class, this, true);
