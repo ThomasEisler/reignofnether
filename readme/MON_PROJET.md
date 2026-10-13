@@ -65,7 +65,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Un bâtiment est fait de vrais blocs, enregistrés dans un fichier `.nbt` avec un **bloc de structure** en jeu.
 - **Reconstruction automatique** : chaque bâtiment retient une « empreinte » de sa forme. Si je modifie une forme et mets le mod à jour, le serveur reconstruit tout seul les bâtiments déjà posés au redémarrage.
 - **Fondations** : si une forme n'a aucun des blocs de fondation prévus par le mod, toute la rangée du bas sert de fondation (corrige la défaite immédiate).
-- **Modèles avec sol** : pour les modèles refaits par moi, la rangée du bas (y = 0 dans le bloc de structure) **est le sol** : elle remplace la couche d'herbe du terrain au lieu d'être posée dessus. Si le bâtiment est détruit, ce sol redevient de la terre (pas de trou). Les modèles concernés sont listés dans `BuildingBlockData.GROUND_ROW_STRUCTURES` (pour l'instant : ferme de blé) ; les autres sont encore posés sur l'herbe, comme avant.
+- **Modèles avec sol** : pour les modèles refaits par moi, la rangée du bas (y = 0 dans le bloc de structure) **est le sol** : elle remplace la couche d'herbe du terrain au lieu d'être posée dessus. Si le bâtiment est détruit, ce sol redevient de la terre (pas de trou). Les modèles concernés sont listés dans `BuildingBlockData.GROUND_ROW_STRUCTURES` (pour l'instant : ferme de blé, Hôtel de ville niveau 1) ; les autres sont encore posés sur l'herbe, comme avant.
 - **Fermes** : la terre labourée reste humide toute seule, pas besoin d'eau.
 - **Sol** : dans mes structures, les cases de sol en **chemin de terre** sont « adaptables » : elles sont posées dans le matériau de la route reliée au bâtiment (ou « chemin » s'il n'y a pas de route). Les autres blocs de sol restent comme je les ai construits.
 
@@ -196,7 +196,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Remboursement si un bâtiment relié est détruit pendant le chantier (pour l'instant : perdu).
 
 ### Bâtiments
-- [ ] Refaire tous les modèles avec leur sol en y = 0 (fait : ferme de blé).
+- [ ] Refaire tous les modèles avec leur sol en y = 0 (fait : ferme de blé, Hôtel de ville niveau 1).
 - [ ] Construire les formes des niveaux 2 et 3 (caserne, Hôtel de ville).
 - [ ] Tours de guet améliorables (portée et dégâts par niveau).
 
@@ -289,3 +289,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Remparts des camps barbares en cercle irrégulier ; fenêtre des technologies corrigée |
 | 13/10/2026 | Un peu plus d'arbres dans les plaines |
 | 13/10/2026 | Remparts en segments attaquables (palissade, pierre, porte en bois, herse) ; camps barbares fermés avec 2 portes coulissantes |
+| 13/10/2026 | Nouvel Hôtel de ville niveau 1 avec son sol |

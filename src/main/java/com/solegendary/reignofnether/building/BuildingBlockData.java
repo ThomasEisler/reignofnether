@@ -27,7 +27,8 @@ public class BuildingBlockData {
     // Structures whose bottom row (y = 0 in the structure block) is the ground itself: it replaces the terrain's top
     // layer instead of sitting on top of it. Add a structure here when its model has been remade with its floor.
     public static final java.util.Set<String> GROUND_ROW_STRUCTURES = java.util.Set.of(
-        "wheat_farm"
+        "wheat_farm",
+        "town_centre"
     );
 
     public static ArrayList<BuildingBlock> getBuildingBlocksFromNbt(String structureName, LevelAccessor level) {

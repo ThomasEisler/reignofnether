@@ -73,7 +73,8 @@ Les bâtiments des **monstres** et des **piglins** existent toujours dans le cod
 | Fichier de structure | État |
 |---|---|
 | `wheat_farm` | ✅ refaite avec son sol (y = 0) |
-| `barracks`, `town_centre` | ✅ faites (niveau 1), sol à refaire |
+| `town_centre` | ✅ refait avec son sol (y = 0), 11 × 10 × 11 |
+| `barracks` | ✅ faite (niveau 1), sol à refaire |
 | `barracks_lvl2`, `barracks_lvl3`, `town_centre_lvl2`, `town_centre_lvl3` | ⚠️ provisoires |
 | `barbarian_camp`, `_lvl2`, `_lvl3`, `barbarian_tent`, `barbarian_tower` | ⚠️ provisoires |
 
