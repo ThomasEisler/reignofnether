@@ -245,6 +245,7 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 - Les structures `.nbt` vont dans **`assets/` et `data/`** `reignofnether/structures/`.
 - `lang/fr_fr.json` a des fins de ligne Windows (CRLF) : ajouter des lignes sans reformater le fichier.
 - Je ne peux pas cliquer dans la fenêtre du jeu (processus « java » non pilotable) : c'est l'utilisateur qui teste en jeu.
+- Mes documents sont dans le dossier `readme/` : ce journal et `BATIMENTS.md` (liste des bâtiments, à tenir à jour quand un bâtiment change).
 - Enregistrer sur GitHub (`git push` sur `ma-version`) quand l'utilisateur le demande, et mettre ce fichier à jour à chaque étape.
 
 ---
@@ -265,3 +266,4 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 | 13/10/2026 | Camps barbares : bâtiments annexes et remparts (palissade puis pierre) |
 | 13/10/2026 | Point rouge au-dessus des barbares ; une seule faction (villageois), Survie retirée, nations façon Civilization avec bonus |
 | 13/10/2026 | Arbre des technologies (8 recherches dans la Bibliothèque, bâtiments et niveaux à débloquer) |
+| 13/10/2026 | Dossier `readme/` (journal + liste des bâtiments) |
