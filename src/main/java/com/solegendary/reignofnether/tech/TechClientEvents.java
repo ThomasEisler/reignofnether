@@ -117,7 +117,7 @@ public class TechClientEvents {
             case METALLURGY -> net.minecraft.world.item.Items.IRON_INGOT;
             case ARCHITECTURE -> net.minecraft.world.item.Items.BRICKS;
             case MYSTICISM -> net.minecraft.world.item.Items.BREWING_STAND;
-            case FORTIFICATIONS -> net.minecraft.world.item.Items.SHIELD;
+            case FORTIFICATIONS -> net.minecraft.world.item.Items.STONE_BRICK_WALL;
             case ENGINEERING -> net.minecraft.world.item.Items.PISTON;
             case ARCANA -> net.minecraft.world.item.Items.ENCHANTED_BOOK;
         });
@@ -136,10 +136,11 @@ public class TechClientEvents {
     private static int winH() { return Math.min(screenH() - 70, 240); }
     private static int winX() { return (screenW() - winW()) / 2; }
     private static int winY() { return Math.max(8, (screenH() - winH()) / 2 - 14); }
-    private static int inX0() { return winX() + 9; }
-    private static int inY0() { return winY() + 18; }
-    private static int inX1() { return winX() + winW() - 9; }
-    private static int inY1() { return winY() + winH() - 9; }
+    // the window texture's see-through hole (its frame is 15 px left, 23 top, 14 right, 15 bottom)
+    private static int inX0() { return winX() + 15; }
+    private static int inY0() { return winY() + 23; }
+    private static int inX1() { return winX() + winW() - 14; }
+    private static int inY1() { return winY() + winH() - 15; }
 
     private static int treeW() { return 2 * COL_SPACING + FRAME; }
     private static int treeH() { return 2 * ROW_SPACING + FRAME; }
@@ -314,7 +315,7 @@ public class TechClientEvents {
         // window frame and title
         g.pose().pushPose();
         g.pose().translate(0, 0, 250);
-        g.blitNineSliced(WINDOW, winX(), winY(), winW(), winH(), 9, 18, 9, 9, 252, 140, 0, 0);
+        g.blitNineSliced(WINDOW, winX(), winY(), winW(), winH(), 15, 23, 14, 15, 252, 140, 0, 0);
         g.drawString(MC.font, "Arbre des technologies", winX() + 8, winY() + 6, 0x404040, false);
         String count = done.size() + "/" + Tech.values().length;
         g.drawString(MC.font, count, winX() + winW() - 8 - MC.font.width(count), winY() + 6, 0x404040, false);
