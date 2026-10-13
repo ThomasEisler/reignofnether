@@ -229,3 +229,13 @@ tasks.register('relocatedEssentialPartnerModJar', com.github.jengelman.gradle.pl
 tasks.jar {
     from(relocatedEssentialPartnerModJar.archiveFile.map { zipTree(it) })
 }
+// My version: the mod's texts are in French even when Minecraft itself is in English. en_us.json stays as the author
+// made it in the sources (so their updates merge cleanly), but in the built mod it is replaced by the French one.
+processResources {
+    exclude 'assets/reignofnether/lang/en_us.json'
+    from('src/main/resources/assets/reignofnether/lang') {
+        include 'fr_fr.json'
+        into 'assets/reignofnether/lang'
+        rename { 'en_us.json' }
+    }
+}

@@ -113,7 +113,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - **Aperçu** : pendant le placement d'un bâtiment, le sol trop loin est **teinté en rouge** autour du curseur, et le bâtiment fantôme devient rouge avec le message « Trop loin de vos bâtiments ». Vérifié aussi par le serveur.
 
 ### Français
-- **Tous les textes du mod sont traduits** en français (`lang/fr_fr.json` complet : 815 textes ajoutés, 57 restés en anglais traduits), et le jeu du profil RTS est réglé en français (`options.txt` : `lang:fr_fr`). Noms choisis : Windcaller = « Mande-vent », Bogged = « Embourbé ».
+- **Tous les textes du mod sont traduits** en français (`lang/fr_fr.json` complet : 815 textes ajoutés, 57 restés en anglais traduits), **Minecraft reste en anglais mais le mod est en français** : au moment de fabriquer le mod, `build.gradle` (bloc `processResources` à la fin) remplace son `en_us.json` par `fr_fr.json`. Le vrai `en_us.json` de l'auteur reste dans les sources, pour récupérer ses mises à jour. Noms choisis : Windcaller = « Mande-vent », Bogged = « Embourbé ».
 - Restent en anglais : quelques messages de débogage ou d'erreur technique écrits directement dans le code.
 
 ### Monde
@@ -295,3 +295,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Nouvel Hôtel de ville niveau 1 avec son sol |
 | 13/10/2026 | Nouvel entrepôt avec son sol |
 | 13/10/2026 | Bandeau de recherche en haut de l'écran ; noms des bâtiments corrigés dans les boutons ; remparts qui ne creusent plus le terrain |
+| 13/10/2026 | Mod en français même avec Minecraft en anglais |
