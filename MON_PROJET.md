@@ -163,6 +163,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 ### Bâtiments
 - [ ] Construire les formes des niveaux 2 et 3 (caserne, Town Centre).
+- [ ] **Tours d'échafaudage trop hautes** (constaté en jeu le 13/10) : les limiter (aujourd'hui jusqu'à 120 % de la hauteur du bâtiment, réglage dans `ConstructionSiteServerEvents.planTowers`).
 - [ ] Tours de guet améliorables (portée et dégâts par niveau).
 - [ ] **Limite de distance** pour poser un bâtiment : il faut être assez proche d'un de ses bâtiments (pas de construction dans une base ennemie), sauf entrepôts et quelques autres.
 
@@ -193,7 +194,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - [ ] Plus tard : d'autres bâtiments dans les camps, unités barbares à eux (apparence propre), réglages de difficulté.
 
 ### Terrain
-- [ ] Monde généré **beaucoup plus plat**.
+- [ ] **PRIORITÉ** — Monde généré **beaucoup plus plat** : constaté en jeu le 13/10, le relief actuel est impraticable pour les troupes et pour construire.
 
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Town Centre).
