@@ -3,18 +3,34 @@
     "": [
       {
         "model": "reignofnether:block/stone_rampart",
-        "weight": 5
+        "weight": 4
       },
       {
         "model": "reignofnether:block/stone_rampart_mossy",
-        "weight": 2
+        "weight": 3
       },
       {
         "model": "reignofnether:block/stone_rampart_cracked",
-        "weight": 2
+        "weight": 3
       },
       {
         "model": "reignofnether:block/stone_rampart_cobble",
+        "weight": 3
+      },
+      {
+        "model": "reignofnether:block/stone_rampart_mossy_cobble",
+        "weight": 2
+      },
+      {
+        "model": "reignofnether:block/stone_rampart_andesite",
+        "weight": 2
+      },
+      {
+        "model": "reignofnether:block/stone_rampart_stone",
+        "weight": 2
+      },
+      {
+        "model": "reignofnether:block/stone_rampart_tuff",
         "weight": 1
       }
     ]
