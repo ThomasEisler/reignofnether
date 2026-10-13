@@ -86,6 +86,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | Avancée | andésite + briques de pierre + pierre | 3 minerais | +35 % |
 
 - Le mélange est fixe pour chaque case : une route reconstruite garde le même motif.
+- **Petits détails au bord des routes**, rares et espacés (au moins 7 blocs entre deux) : quelques buissons de feuilles le long des chemins, quelques barrières le long des routes pavées, quelques murets surmontés d'une lanterne le long des routes avancées. Posés à la fin du chantier ; remplacés quand la route est améliorée. Réglages : `DECORATION_RARITY` et `DECORATION_SPACING` dans `RoadServerEvents`.
 - Une **place irrégulière** (0 à 2 blocs) entoure chaque bâtiment terminé, en matériau « chemin », et prend le matériau de la route quand elle arrive.
 - Les unités **préfèrent passer par les routes** (uniquement avec le déplacement propre au mod, actif sur les cartes avec une bordure de 1280 blocs ou moins). Les routes sont reconnues par leur position : le gravier ou la pierre naturels ne comptent pas.
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
@@ -334,3 +335,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes : remboursement de la partie non construite si un bâtiment relié est détruit |
 | 13/10/2026 | Tour de rempart (3 × 3, garnison de 2), posable sur un mur |
 | 13/10/2026 | Niveaux de bâtiments plus grands centrés sur le bâtiment (décision : agrandir tous les bâtiments) |
+| 13/10/2026 | Détails rares au bord des routes (feuillage, barrières, lanternes) |

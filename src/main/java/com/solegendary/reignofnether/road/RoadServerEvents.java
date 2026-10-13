@@ -24,6 +24,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -253,10 +254,15 @@ public class RoadServerEvents {
     }
 
     private static void finishConstruction(ServerLevel level, RoadConnection connection) {
+        RoadType oldType = null;
         if (connection.upgradeTo != null) {
+            oldType = connection.type;
             connection.type = connection.upgradeTo;
             connection.upgradeTo = null;
         }
+        if (oldType != null)
+            removeDecorations(level, connection, oldType);
+        placeDecorations(level, connection, connection.type);
         connection.built = connection.blocks.size();
         workerRoads.values().removeIf(c -> c == connection);
         workerTargets.keySet().removeIf(id -> !workerRoads.containsKey(id));
@@ -267,6 +273,95 @@ public class RoadServerEvents {
         }
         saveRoads(level);
         syncToClients();
+    }
+
+    // ---- little details along the road's edges: a few bushes by paths, fences by paved roads, lantern posts by
+    // advanced roads. Spots are picked from the position, so the same ones come back when the road is upgraded.
+
+    private static final int[] DECORATION_RARITY = { 30, 25, 30 }; // one edge spot in N, per road tier
+    private static final int DECORATION_SPACING = 7; // min blocks between two details, so they never form a line
+
+    // ground blocks right next to the road, where a decoration could stand
+    private static Set<BlockPos> getEdgeSpots(ServerLevel level, RoadConnection connection) {
+        Set<Long> road = new HashSet<>();
+        for (BlockPos bp : connection.blocks)
+            road.add(bp.asLong());
+        Set<BlockPos> spots = new java.util.LinkedHashSet<>();
+        int[][] sides = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+        for (BlockPos bp : connection.blocks) {
+            for (int[] side : sides) {
+                for (int dy = 1; dy >= -1; dy--) {
+                    BlockPos ground = bp.offset(side[0], dy, side[1]);
+                    if (road.contains(ground.asLong()) || isRoadPos(ground.getX(), ground.getY(), ground.getZ()))
+                        break;
+                    if (RoadPathTracer.isGround(level.getBlockState(ground)) && !RoadType.isRoadBlock(level.getBlockState(ground))) {
+                        spots.add(ground);
+                        break;
+                    }
+                }
+            }
+        }
+        return spots;
+    }
+
+    private static boolean isDecorationSpot(BlockPos ground, RoadType type) {
+        long hash = Mth.getSeed(ground.getX(), 77, ground.getZ());
+        return Math.floorMod(hash >> 8, (long) DECORATION_RARITY[type.ordinal()]) == 0;
+    }
+
+    private static boolean isNearBuilding(BlockPos bp) {
+        for (BuildingPlacement b : BuildingServerEvents.getBuildings())
+            if (b.isPosInsideBuilding(bp, 2))
+                return true;
+        return false;
+    }
+
+    private static boolean isFree(ServerLevel level, BlockPos bp) {
+        BlockState bs = level.getBlockState(bp);
+        return bs.canBeReplaced() && bs.getFluidState().isEmpty();
+    }
+
+    private static void placeDecorations(ServerLevel level, RoadConnection connection, RoadType type) {
+        List<BlockPos> placed = new ArrayList<>();
+        for (BlockPos ground : getEdgeSpots(level, connection)) {
+            BlockPos above = ground.above();
+            if (!isDecorationSpot(ground, type) || isNearBuilding(above) || !isFree(level, above))
+                continue;
+            if (placed.stream().anyMatch(p -> p.distSqr(ground) < DECORATION_SPACING * DECORATION_SPACING))
+                continue;
+            placed.add(ground);
+            switch (type) {
+                case PATH -> level.setBlockAndUpdate(above, (Math.floorMod(ground.getX() + ground.getZ(), 3) == 0 ? Blocks.AZALEA_LEAVES : Blocks.OAK_LEAVES)
+                    .defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true));
+                case PAVED -> level.setBlockAndUpdate(above, Blocks.OAK_FENCE.defaultBlockState());
+                case ADVANCED -> {
+                    if (!isFree(level, above.above()))
+                        continue;
+                    level.setBlockAndUpdate(above, Blocks.STONE_BRICK_WALL.defaultBlockState());
+                    level.setBlockAndUpdate(above.above(), Blocks.LANTERN.defaultBlockState());
+                }
+            }
+        }
+    }
+
+    // takes away the previous tier's details (only where they still stand)
+    private static void removeDecorations(ServerLevel level, RoadConnection connection, RoadType type) {
+        for (BlockPos ground : getEdgeSpots(level, connection)) {
+            if (!isDecorationSpot(ground, type))
+                continue;
+            BlockPos above = ground.above();
+            BlockState bs = level.getBlockState(above);
+            boolean ours = switch (type) {
+                case PATH -> bs.is(Blocks.OAK_LEAVES) || bs.is(Blocks.AZALEA_LEAVES);
+                case PAVED -> bs.is(Blocks.OAK_FENCE);
+                case ADVANCED -> bs.is(Blocks.STONE_BRICK_WALL);
+            };
+            if (!ours)
+                continue;
+            if (type == RoadType.ADVANCED && level.getBlockState(above.above()).is(Blocks.LANTERN))
+                level.setBlockAndUpdate(above.above(), Blocks.AIR.defaultBlockState());
+            level.setBlockAndUpdate(above, Blocks.AIR.defaultBlockState());
+        }
     }
 
     // a road whose building was destroyed during the works: the part not built yet is paid back
