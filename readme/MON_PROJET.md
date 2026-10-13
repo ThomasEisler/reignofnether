@@ -141,6 +141,8 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Construits par les **ouvriers sélectionnés**, morceau par morceau (5 blocs). Chaque morceau a de la vie : les barbares (et les ennemis) peuvent les attaquer et faire une brèche.
 - Le mur suit le terrain sans le creuser, s'arrête à l'eau, et s'accroche aux murs et bâtiments existants. Il faut rester à portée de ses bâtiments (24 blocs).
 
+Hauteurs (depuis le 14/10/2026) : palissade 2 ou 3 blocs, pierre 4 (créneaux compris), porte en bois 3, herse 4, tour 6. Les remparts déjà posés gardent leur ancienne hauteur.
+
 | Sorte | Prix | PV par morceau |
 |---|---|---|
 | Palissade | 4 bois par bloc de long | 150 |
@@ -323,6 +325,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Remparts moins hauts : palissade 2-3, pierre 4, porte en bois 3, herse 4, tour 6 |
 | 14/10/2026 | Barbares : apparence propre, cavaliers au niveau 3, difficulté (facile / normal / difficile) |
 | 13/10/2026 | Barbares : camps à 3 niveaux, garnisons, raids, butin |
 | 13/10/2026 | Camps barbares : bâtiments annexes et remparts (palissade puis pierre) |

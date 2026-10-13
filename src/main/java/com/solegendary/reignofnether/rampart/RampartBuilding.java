@@ -52,11 +52,11 @@ public class RampartBuilding extends Building {
     // default height of a column of this kind (stone walls have a row of crenels on top)
     public int columnHeight(int x, int z) {
         return switch (kind) {
-            case PALISADE -> 3 + (int) Math.floorMod(Mth.getSeed(x, 21, z) >> 16, 2L);
-            case STONE -> 5;
-            case WOODEN_GATE -> 4;
-            case IRON_GATE -> 5;
-            case TOWER -> 8;
+            case PALISADE -> 2 + (int) Math.floorMod(Mth.getSeed(x, 21, z) >> 16, 2L);
+            case STONE -> 4;
+            case WOODEN_GATE -> 3;
+            case IRON_GATE -> 4;
+            case TOWER -> 6;
         };
     }
 
