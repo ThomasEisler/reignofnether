@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": ["minecraft:plains", "minecraft:sunflower_plains", "minecraft:meadow"],
+  "features": "reignofnether:extra_plains_trees",
+  "step": "vegetal_decoration"
+}

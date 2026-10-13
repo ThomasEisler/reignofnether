@@ -117,6 +117,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Restent en anglais : quelques messages de débogage ou d'erreur technique écrits directement dans le code.
 
 ### Monde
+- **Un peu plus d'arbres dans les plaines** (et les prairies) : environ un arbre isolé tous les deux chunks en plus, pour avoir assez de bois (`data/reignofnether/forge/biome_modifier/extra_plains_trees.json` ; densité réglée par `chance` dans `worldgen/placed_feature/extra_plains_trees.json`). Seulement dans les nouvelles zones.
 - **Plus de villages Minecraft** générés (seulement dans les nouvelles zones / nouveaux mondes).
 
 ### Une seule faction : les villageois
@@ -283,3 +284,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | « Town Centre » renommé « Hôtel de ville » en français ; écran des technologies façon Progrès |
 | 13/10/2026 | Modèles avec sol (y = 0 = sol du terrain) ; nouvelle ferme de blé (10 × 10, 29 cases) ; terre des fermes toujours humide |
 | 13/10/2026 | Remparts des camps barbares en cercle irrégulier ; fenêtre des technologies corrigée |
+| 13/10/2026 | Un peu plus d'arbres dans les plaines |
