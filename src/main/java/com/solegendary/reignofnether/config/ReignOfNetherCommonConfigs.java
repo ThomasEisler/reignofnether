@@ -45,6 +45,7 @@ public class ReignOfNetherCommonConfigs {
         UnitCosts.PILLAGER.define(BUILDER);
         UnitCosts.WINDCALLER.define(BUILDER);
         UnitCosts.VINDICATOR.define(BUILDER);
+        UnitCosts.CAVALIER.define(BUILDER);
         UnitCosts.WITCH.define(BUILDER);
         UnitCosts.EVOKER.define(BUILDER);
         UnitCosts.RAVAGER.define(BUILDER);
@@ -228,6 +229,7 @@ public class ReignOfNetherCommonConfigs {
         public static final ResourceCostConfigEntry PILLAGER = ResourceCostConfigEntry.Unit(110,80,0,32,3, ResourceCosts.PILLAGER, "Pillager Config");
         public static final ResourceCostConfigEntry WINDCALLER = ResourceCostConfigEntry.Unit(140,60,60,35,3, ResourceCosts.WINDCALLER, "Windcaller Config");
         public static final ResourceCostConfigEntry VINDICATOR = ResourceCostConfigEntry.Unit(160,0,0,32,3, ResourceCosts.VINDICATOR, "Vindicator Config");
+        public static final ResourceCostConfigEntry CAVALIER = ResourceCostConfigEntry.Unit(250,100,75,50,5, ResourceCosts.CAVALIER, "Cavalier Config");
         public static final ResourceCostConfigEntry WITCH = ResourceCostConfigEntry.Unit(90,90,90,35,3, ResourceCosts.WITCH, "Witch Config");
         public static final ResourceCostConfigEntry EVOKER = ResourceCostConfigEntry.Unit(140,0,120,35,3, ResourceCosts.EVOKER, "Evoker Config");
         public static final ResourceCostConfigEntry RAVAGER = ResourceCostConfigEntry.Unit(400,50,150,60,7, ResourceCosts.RAVAGER, "Ravager Config");

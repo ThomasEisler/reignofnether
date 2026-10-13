@@ -189,6 +189,12 @@ public class EntityRegistrar {
                     .clientTrackingRange(UNIT_CLIENT_TRACKING_RANGE)
                     .build(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "ravager_unit").toString()));
 
+    public static final RegistryObject<EntityType<com.solegendary.reignofnether.unit.units.villagers.HorseUnit>> HORSE_UNIT = ENTITIES.register("horse_unit",
+            () -> EntityType.Builder.of(com.solegendary.reignofnether.unit.units.villagers.HorseUnit::new, MobCategory.CREATURE)
+                    .sized(EntityType.HORSE.getWidth(), EntityType.HORSE.getHeight())
+                    .clientTrackingRange(UNIT_CLIENT_TRACKING_RANGE)
+                    .build(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "horse_unit").toString()));
+
     public static final RegistryObject<EntityType<WardenUnit>> WARDEN_UNIT = ENTITIES.register("warden_unit",
             () -> EntityType.Builder.of(WardenUnit::new, MobCategory.CREATURE)
                     .sized(EntityType.WARDEN.getWidth(), EntityType.WARDEN.getHeight())
@@ -486,6 +492,7 @@ public class EntityRegistrar {
             case SlimeProd.itemName -> EntityRegistrar.SLIME_UNIT.get();
             case WardenProd.itemName -> EntityRegistrar.WARDEN_UNIT.get();
             case RavagerProd.itemName -> EntityRegistrar.RAVAGER_UNIT.get();
+            case com.solegendary.reignofnether.unit.units.villagers.CavalierProd.itemName -> EntityRegistrar.HORSE_UNIT.get();
             case GruntProd.itemName -> EntityRegistrar.GRUNT_UNIT.get();
             case StriderProd.itemName -> EntityRegistrar.STRIDER_UNIT.get();
             case BruteProd.itemName -> EntityRegistrar.BRUTE_UNIT.get();

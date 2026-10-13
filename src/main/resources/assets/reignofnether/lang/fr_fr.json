@@ -2368,5 +2368,8 @@
     "block.reignofnether.palisade_top": "Pointe de palissade",
     "block.reignofnether.stone_rampart": "Rempart de pierre",
     "block.reignofnether.wooden_gate": "Porte en bois de rempart",
-    "block.reignofnether.iron_gate": "Herse"
+    "block.reignofnether.iron_gate": "Herse",
+    "entity.reignofnether.cavalier_unit": "Cavalier",
+    "entity.reignofnether.cavalier_unit.tooltip1": "Un vindicateur sur un cheval de guerre en armure. Rapide et puissant, il charge l'ennemi.",
+    "entity.reignofnether.horse_unit": "Cheval de guerre"
 }

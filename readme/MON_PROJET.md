@@ -120,6 +120,11 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - **Un peu plus d'arbres dans les plaines** (et les prairies) : environ un arbre isolé tous les deux chunks en plus, pour avoir assez de bois (`data/reignofnether/forge/biome_modifier/extra_plains_trees.json` ; densité réglée par `chance` dans `worldgen/placed_feature/extra_plains_trees.json`). Seulement dans les nouvelles zones.
 - **Plus de villages Minecraft** générés (seulement dans les nouvelles zones / nouveaux mondes).
 
+### Cavalier (nouvelle unité)
+- Produit dans la **caserne** (touche **R**) : un **vindicateur sur un cheval de guerre** (brun, sellé, armure de fer). Plus fort que le vindicateur et le pillard : 250 nourriture, 100 bois, 75 minerai, 50 s, 5 de population.
+- Le **cheval est l'unité** qu'on sélectionne : il se déplace vite (0,34 contre 0,28 pour le vindicateur), a 120 PV + armure, et frappe fort au corps à corps (10 dégâts). Le vindicateur est assis dessus ; si le cheval meurt, il descend et continue à pied.
+- Code : `unit/units/villagers/HorseUnit.java` (le cheval, statistiques en haut du fichier), `CavalierProd.java` (production : cheval + cavalier), coût `UnitCosts.CAVALIER` dans `ReignOfNetherCommonConfigs`. Icônes `textures/mobheads/cavalier.png`, `horse.png`, `horse_half.png`.
+
 ### Une seule faction : les villageois
 - Les boutons de départ **Monstres** et **Piglins** sont cachés : on ne joue plus que les villageois (leur code reste dans le mod, simplement inaccessible, pour pouvoir récupérer les mises à jour de l'auteur).
 - Le **mode Survie** est retiré du choix des modes de jeu (les barbares le remplacent).
@@ -220,6 +225,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Hôtel de ville).
 - [ ] Routes : tracé, prix, place autour des bâtiments, passage aux niveaux pavée / avancée, sol des bâtiments qui change de matériau.
 - [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
+- [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
 - [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin, bâtiments annexes, remparts (actifs par défaut, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
 - [ ] Limite de distance (24 blocs) et zone rouge pendant le placement ; plus de villages.
@@ -297,3 +303,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Bandeau de recherche en haut de l'écran ; noms des bâtiments corrigés dans les boutons ; remparts qui ne creusent plus le terrain |
 | 13/10/2026 | Mod en français même avec Minecraft en anglais |
 | 13/10/2026 | Correction : les camps barbares commençaient trop haut (temps compté depuis la création du monde) |
+| 13/10/2026 | Nouvelle unité : le Cavalier (vindicateur sur un cheval de guerre), produit à la caserne |

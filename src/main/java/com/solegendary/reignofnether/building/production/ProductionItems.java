@@ -36,6 +36,7 @@ public class ProductionItems {
     public static final ZombieVillagerProd ZOMBIE_VILLAGER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "zombie_villager"), new ZombieVillagerProd());
     public static final BatProd BAT = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "bat"), new BatProd());
     public static final VindicatorProd VINDICATOR = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "vindicator"), new VindicatorProd());
+    public static final com.solegendary.reignofnether.unit.units.villagers.CavalierProd CAVALIER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "cavalier"), new com.solegendary.reignofnether.unit.units.villagers.CavalierProd());
     public static final PillagerProd PILLAGER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "pillager"), new PillagerProd());
     public static final IronGolemProd IRON_GOLEM = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "iron_golem"), new IronGolemProd());
     public static final WitchProd WITCH = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "witch"), new WitchProd());
@@ -161,6 +162,7 @@ public class ProductionItems {
         ZOMBIE_VILLAGER,
         BAT,
         VINDICATOR,
+        CAVALIER,
         PILLAGER,
         IRON_GOLEM,
         WITCH,

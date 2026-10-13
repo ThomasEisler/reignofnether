@@ -19,7 +19,7 @@ La colonne **« Nom dans le bloc de structure »** donne le nom exact à taper d
 | **Maison** | `reignofnether:villager_house` | 90 bois | 40 s | 175 | — | +10 population |
 | **Ferme de blé** | `reignofnether:wheat_farm` | 150 bois | 30 s | 65 | — | Nourriture : 29 cases de blé, semées et récoltées par les villageois (1 bois par case ressemée). 10 × 10 blocs, avec son sol |
 | **Entrepôt** | `reignofnether:stockpile_oak` | 75 bois | 40 s | 95 | — | Dépôt des ressources. Peut être construit loin de la base |
-| **Caserne** | `reignofnether:barracks` · niv. 2 : `reignofnether:barracks_lvl2` · niv. 3 : `reignofnether:barracks_lvl3` | 150 bois | 60 s | 150 (niv. 2 : 225, niv. 3 : 300) | — | Vindicateurs, pillards. Améliorable niv. 2 et 3 |
+| **Caserne** | `reignofnether:barracks` · niv. 2 : `reignofnether:barracks_lvl2` · niv. 3 : `reignofnether:barracks_lvl3` | 150 bois | 60 s | 150 (niv. 2 : 225, niv. 3 : 300) | — | Vindicateurs, pillards, **cavaliers**. Améliorable niv. 2 et 3 |
 | **Bibliothèque** | `reignofnether:library` · après la recherche « Grande bibliothèque » : `reignofnether:library_grand` | 300 bois, 100 minerai | 90 s | 125 | — | **Arbre des technologies** ; enchantements des unités ; recherches (vex des évocateurs, grande bibliothèque…) |
 | **Pont en chêne** | `reignofnether:bridge_oak_orthogonal` · en diagonale : `reignofnether:bridge_oak_diagonal` | 100 bois | — | 350 | — | Traverser l'eau. Peut être construit loin de la base |
 | **Tour de guet** | `reignofnether:watchtower` | 100 bois, 75 minerai | 75 s | 240 | Maçonnerie | Garnison qui tire de loin |

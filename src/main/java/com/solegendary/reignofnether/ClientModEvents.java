@@ -130,6 +130,7 @@ public class ClientModEvents {
         evt.registerEntityRenderer(EntityRegistrar.ENDERMAN_UNIT.get(), EndermanRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.WARDEN_UNIT.get(), WardenRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.RAVAGER_UNIT.get(), RavagerRenderer::new);
+        evt.registerEntityRenderer(EntityRegistrar.HORSE_UNIT.get(), (net.minecraft.client.renderer.entity.EntityRendererProvider) net.minecraft.client.renderer.entity.HorseRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.SILVERFISH_UNIT.get(), SilverfishRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.GRUNT_UNIT.get(), PiglinUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.STRIDER_UNIT.get(), StriderRenderer::new);

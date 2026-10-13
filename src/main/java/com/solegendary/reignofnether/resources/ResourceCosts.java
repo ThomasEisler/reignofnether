@@ -35,6 +35,7 @@ public class ResourceCosts {
     public static final ResourceCost PILLAGER = new ResourceCost(ID, "PILLAGER");
     public static final ResourceCost WINDCALLER = new ResourceCost(ID, "WINDCALLER");
     public static final ResourceCost VINDICATOR = new ResourceCost(ID, "VINDICATOR");
+    public static final ResourceCost CAVALIER = new ResourceCost(ID, "CAVALIER");
     public static final ResourceCost WITCH = new ResourceCost(ID, "WITCH");
     public static final ResourceCost EVOKER = new ResourceCost(ID, "EVOKER");
     public static final ResourceCost RAVAGER = new ResourceCost(ID, "RAVAGER");
@@ -248,6 +249,7 @@ public class ResourceCosts {
         PILLAGER.bakeValues(ReignOfNetherCommonConfigs.UnitCosts.PILLAGER);
         WINDCALLER.bakeValues(ReignOfNetherCommonConfigs.UnitCosts.WINDCALLER);
         VINDICATOR.bakeValues(ReignOfNetherCommonConfigs.UnitCosts.VINDICATOR);
+        CAVALIER.bakeValues(ReignOfNetherCommonConfigs.UnitCosts.CAVALIER);
         WITCH.bakeValues(ReignOfNetherCommonConfigs.UnitCosts.WITCH);
         EVOKER.bakeValues(ReignOfNetherCommonConfigs.UnitCosts.EVOKER);
         RAVAGER.bakeValues(ReignOfNetherCommonConfigs.UnitCosts.RAVAGER);

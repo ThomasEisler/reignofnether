@@ -2401,5 +2401,8 @@
     "block.reignofnether.palisade_top": "Palisade Tip",
     "block.reignofnether.stone_rampart": "Stone Rampart",
     "block.reignofnether.wooden_gate": "Rampart Wooden Gate",
-    "block.reignofnether.iron_gate": "Portcullis"
+    "block.reignofnether.iron_gate": "Portcullis",
+    "entity.reignofnether.cavalier_unit": "Cavalier",
+    "entity.reignofnether.cavalier_unit.tooltip1": "A Vindicator on an armoured war horse. Fast and powerful, it charges the enemy.",
+    "entity.reignofnether.horse_unit": "War Horse"
 }

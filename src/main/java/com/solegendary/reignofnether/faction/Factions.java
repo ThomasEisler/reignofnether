@@ -100,6 +100,7 @@ public class Factions {
 		registerEntity(VILLAGERS, EntityRegistrar.EVOKER_UNIT.get(), ProductionItems.EVOKER);
 		registerEntity(VILLAGERS, EntityRegistrar.WINDCALLER_UNIT.get(), ProductionItems.WINDCALLER);
 		registerEntity(VILLAGERS, EntityRegistrar.RAVAGER_UNIT.get(), ProductionItems.RAVAGER);
+		registerEntity(VILLAGERS, EntityRegistrar.HORSE_UNIT.get(), ProductionItems.CAVALIER);
 		registerEntity(VILLAGERS, EntityRegistrar.ROYAL_GUARD_UNIT.get(), ProductionItems.ROYAL_GUARD);
 		registerEntity(VILLAGERS, EntityRegistrar.ENCHANTER_UNIT.get(), ProductionItems.ENCHANTER);
 		

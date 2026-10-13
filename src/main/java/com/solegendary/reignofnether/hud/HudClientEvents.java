@@ -219,6 +219,9 @@ public class HudClientEvents {
             Entity passenger = entity.getPassengers().get(0);
             if (entity instanceof RavagerUnit && passenger instanceof PillagerUnit) {
                 name = I18n.get("entity.reignofnether.ravager_artillery");
+            } else if (entity instanceof com.solegendary.reignofnether.unit.units.villagers.HorseUnit &&
+                    passenger instanceof com.solegendary.reignofnether.unit.units.villagers.VindicatorUnit) {
+                name = I18n.get("entity.reignofnether.cavalier_unit");
             } else if (entity instanceof PoisonSpiderUnit && (
                     passenger instanceof SkeletonUnit || passenger instanceof StrayUnit
             )) {
