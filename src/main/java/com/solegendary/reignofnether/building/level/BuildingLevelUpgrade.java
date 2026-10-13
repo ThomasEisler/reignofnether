@@ -97,6 +97,9 @@ public class BuildingLevelUpgrade extends ProductionItem {
         if (next.attackRange > 0 && next.attackRange != current.attackRange)
             tooltip.add(FormattedCharSequence.forward(I18n.get("research.reignofnether.level_upgrade.range",
                 current.attackRange, next.attackRange), Style.EMPTY));
+        if (next.garrisonDamage != current.garrisonDamage)
+            tooltip.add(FormattedCharSequence.forward(I18n.get("research.reignofnether.level_upgrade.garrison_damage",
+                Math.round(current.garrisonDamage * 100), Math.round(next.garrisonDamage * 100)), Style.EMPTY));
         if (next.productionSpeed != current.productionSpeed)
             tooltip.add(FormattedCharSequence.forward(I18n.get("research.reignofnether.level_upgrade.production",
                 Math.round(current.productionSpeed * 100), Math.round(next.productionSpeed * 100)), Style.EMPTY));

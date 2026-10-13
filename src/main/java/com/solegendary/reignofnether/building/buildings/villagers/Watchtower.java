@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 
-public class Watchtower extends Building implements GarrisonableBuildingAddon {
+public class Watchtower extends com.solegendary.reignofnether.building.production.ProductionBuilding implements GarrisonableBuildingAddon {
     public final static int MAX_OCCUPANTS = 3;
 
     public final static String buildingName = "Watchtower";
@@ -43,6 +43,19 @@ public class Watchtower extends Building implements GarrisonableBuildingAddon {
         this.startingBlockTypes.add(Blocks.STONE_BRICK_SLAB);
 
         setActiveAddon(GarrisonableBuildingAddon.class, this, true);
+
+        // levels: more health, a longer reach and harder hits for the units inside
+        // PLACEHOLDER structures: watchtower_lvl2/watchtower_lvl3 are copies of watchtower.nbt until real ones are made
+        this.canSetRallyPoint = false;
+        setLevels(
+            com.solegendary.reignofnether.building.level.BuildingLevel.of(structureName).maxHealth(240d).attackRange(24).build(),
+            com.solegendary.reignofnether.building.level.BuildingLevel.of("watchtower_lvl2").maxHealth(340d).attackRange(28).garrisonDamage(1.25f)
+                .upgradeCost(ResourceCost.Research(0, 100, 150, 45)).build(),
+            com.solegendary.reignofnether.building.level.BuildingLevel.of("watchtower_lvl3").maxHealth(450d).attackRange(32).garrisonDamage(1.5f)
+                .upgradeCost(ResourceCost.Research(0, 150, 250, 60)).build()
+        );
+        this.productions.add(com.solegendary.reignofnether.building.production.ProductionItems.WATCHTOWER_LEVEL_2, com.solegendary.reignofnether.keybinds.Keybindings.abilitySlot3);
+        this.productions.add(com.solegendary.reignofnether.building.production.ProductionItems.WATCHTOWER_LEVEL_3, com.solegendary.reignofnether.keybinds.Keybindings.abilitySlot3);
     }
 
 

@@ -2404,5 +2404,6 @@
     "block.reignofnether.iron_gate": "Portcullis",
     "entity.reignofnether.cavalier_unit": "Cavalier",
     "entity.reignofnether.cavalier_unit.tooltip1": "A Vindicator on an armoured war horse. Fast and powerful, it charges the enemy.",
-    "entity.reignofnether.horse_unit": "War Horse"
+    "entity.reignofnether.horse_unit": "War Horse",
+    "research.reignofnether.level_upgrade.garrison_damage": "Garrison damage: %s%% -> %s%%"
 }

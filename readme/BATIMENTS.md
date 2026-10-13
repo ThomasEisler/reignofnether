@@ -22,7 +22,7 @@ La colonne **« Nom dans le bloc de structure »** donne le nom exact à taper d
 | **Caserne** | `reignofnether:barracks` · niv. 2 : `reignofnether:barracks_lvl2` · niv. 3 : `reignofnether:barracks_lvl3` | 150 bois | 60 s | 150 (niv. 2 : 225, niv. 3 : 300) | — | Vindicateurs, pillards, **cavaliers**. Améliorable niv. 2 et 3 |
 | **Bibliothèque** | `reignofnether:library` · après la recherche « Grande bibliothèque » : `reignofnether:library_grand` | 300 bois, 100 minerai | 90 s | 125 | — | **Arbre des technologies** ; enchantements des unités ; recherches (vex des évocateurs, grande bibliothèque…) |
 | **Pont en chêne** | `reignofnether:bridge_oak_orthogonal` · en diagonale : `reignofnether:bridge_oak_diagonal` | 100 bois | — | 350 | — | Traverser l'eau. Peut être construit loin de la base |
-| **Tour de guet** | `reignofnether:watchtower` | 100 bois, 75 minerai | 75 s | 240 | Maçonnerie | Garnison qui tire de loin |
+| **Tour de guet** | `reignofnether:watchtower` · niv. 2 : `reignofnether:watchtower_lvl2` · niv. 3 : `reignofnether:watchtower_lvl3` | 100 bois, 75 minerai | 75 s | 240 | Maçonnerie | Garnison qui tire de loin. Améliorable niv. 2 (340 PV, portée 28, dégâts +25 %) et niv. 3 (450 PV, portée 32, dégâts +50 %, recherche Fortifications) |
 | **Forge** | `reignofnether:blacksmith` · après « Forge supérieure » : `reignofnether:blacksmith_superior` | 100 bois, 300 minerai | 90 s | 300 | Maçonnerie | Golem de fer ; recherches (arcs de milice, forge supérieure…) |
 | **Marché** | `reignofnether:market_villagers1` · amélioré : `reignofnether:market_villagers2` | 75 bois, 75 minerai | 90 s | 300 | Commerce | Échanger des ressources |
 | **Golem de fer** (bâtiment) | `reignofnether:iron_golem` | 50 bois, 250 minerai | 60 s | — | Métallurgie | Se transforme en golem de fer une fois construit |
@@ -78,6 +78,7 @@ Les bâtiments des **monstres** et des **piglins** existent toujours dans le cod
 | `villager_house` | ✅ refaite avec son sol (y = 0), 7 × 7 × 5 |
 | `barracks` | ✅ faite (niveau 1), sol à refaire |
 | `barracks_lvl2`, `barracks_lvl3`, `town_centre_lvl2`, `town_centre_lvl3` | ⚠️ provisoires |
+| `watchtower_lvl2`, `watchtower_lvl3` | ⚠️ provisoires (copies de la tour) |
 | `barbarian_camp`, `_lvl2`, `_lvl3`, `barbarian_tent`, `barbarian_tower` | ⚠️ provisoires |
 
 Comment faire : voir « Ajouter ou modifier un bâtiment » dans [MON_PROJET.md](MON_PROJET.md).

@@ -100,7 +100,15 @@ public interface AttackerUnit {
         if (strMei != null && strMei.getDuration() > 0) {
             str = (strMei.getAmplifier() + 1) * ATTACK_DAMAGE_INCREASE_PER_STRENGTH;
         }
-        return Math.max(0, value * (1 - weak + str));
+        float garrisonMult = 1;
+        if (this instanceof Unit unit) {
+            com.solegendary.reignofnether.building.BuildingPlacement garrison =
+                com.solegendary.reignofnether.building.addon.GarrisonableBuildingAddon.getGarrison(unit);
+            com.solegendary.reignofnether.building.level.BuildingLevel level = garrison != null ? garrison.getBuilding().getLevel(garrison) : null;
+            if (level != null)
+                garrisonMult = level.garrisonDamage;
+        }
+        return Math.max(0, value * (1 - weak + str) * garrisonMult);
     }
 
     public default float getCriticalChance() {

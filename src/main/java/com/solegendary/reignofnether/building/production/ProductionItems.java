@@ -135,6 +135,8 @@ public class ProductionItems {
     public static final BuildingLevelUpgrade BARRACKS_LEVEL_2 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barracks_level_2"), new BuildingLevelUpgrade(() -> Buildings.BARRACKS, 1));
     public static final BuildingLevelUpgrade BARRACKS_LEVEL_3 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barracks_level_3"), new BuildingLevelUpgrade(() -> Buildings.BARRACKS, 2));
 
+    public static final BuildingLevelUpgrade WATCHTOWER_LEVEL_2 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "watchtower_level_2"), new BuildingLevelUpgrade(() -> Buildings.WATCHTOWER, 1));
+    public static final BuildingLevelUpgrade WATCHTOWER_LEVEL_3 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "watchtower_level_3"), new BuildingLevelUpgrade(() -> Buildings.WATCHTOWER, 2));
     public static final BuildingLevelUpgrade TOWN_CENTRE_LEVEL_2 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "town_centre_level_2"), new BuildingLevelUpgrade(() -> Buildings.TOWN_CENTRE, 1));
     public static final BuildingLevelUpgrade TOWN_CENTRE_LEVEL_3 = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "town_centre_level_3"), new BuildingLevelUpgrade(() -> Buildings.TOWN_CENTRE, 2));
 

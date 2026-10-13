@@ -12,6 +12,7 @@ public class BuildingLevel {
     public final double maxHealth; // 0 = use the Building's maxHealth
     public final int attackRange; // garrisoned units' attack range; 0 = use the Building's own range
     public final float productionSpeed; // multiplier on production speed, 1.0 = normal
+    public final float garrisonDamage; // multiplier on garrisoned units' damage, 1.0 = normal
     @Nullable
     public final ResourceCost upgradeCost; // cost and duration of upgrading TO this level; null for level 1
 
@@ -20,6 +21,7 @@ public class BuildingLevel {
         this.maxHealth = builder.maxHealth;
         this.attackRange = builder.attackRange;
         this.productionSpeed = builder.productionSpeed;
+        this.garrisonDamage = builder.garrisonDamage;
         this.upgradeCost = builder.upgradeCost;
     }
 
@@ -32,6 +34,7 @@ public class BuildingLevel {
         private double maxHealth = 0;
         private int attackRange = 0;
         private float productionSpeed = 1.0f;
+        private float garrisonDamage = 1.0f;
         private ResourceCost upgradeCost = null;
 
         private Builder(String structureName) {
@@ -50,6 +53,11 @@ public class BuildingLevel {
 
         public Builder productionSpeed(float productionSpeed) {
             this.productionSpeed = productionSpeed;
+            return this;
+        }
+
+        public Builder garrisonDamage(float garrisonDamage) {
+            this.garrisonDamage = garrisonDamage;
             return this;
         }
 
