@@ -270,7 +270,11 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 ### Barbares
 - [ ] Construire mes propres formes de camps (niveaux 1, 2, 3), de la tente et de la tour.
 - [x] Apparence propre, cavaliers au niveau 3, réglages de difficulté.
-- [ ] Plus tard : d'autres bâtiments dans les camps.
+- [ ] Nouveaux bâtiments des camps (idées validées le 14/10/2026, pas encore codées ; formes provisoires en attendant les miennes) :
+  - Niveau 1 : **feu de camp** (soigne les barbares autour) ; **réserve de butin** (les raids volent vraiment des ressources aux joueurs et les y entassent ; la détruire les rend, en plus du butin).
+  - Niveau 2 : **cor d'alarme** (ennemi proche : toute la garnison accourt, et celle d'un camp voisin) ; **forge barbare** (tant qu'elle tient : barbares plus forts et en armure) ; **cages à prisonniers** (villageois capturés en raid ; casser les cages les libère et ils rejoignent le libérateur).
+  - Niveau 3 : **écurie** (produit les cavaliers) ; **enclos à ravageurs** (produit les ravageurs) ; **tente du chef** (un chef barbare fort et unique ; le tuer affaiblit ou fait fuir la garnison).
+  - Préférés : réserve de butin + vol en raid, cor d'alarme, forge, tente du chef.
 
 ### Terrain
 - [ ] Vérifier en jeu (nouveau monde) si le relief est assez plat ; sinon baisser encore `vertical_scale`.
