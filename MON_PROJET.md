@@ -29,7 +29,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 ### Terrain
 - Le type de monde « Default » utilise le terrain de **Tectonic** (au lieu du générateur propre à Reign of Nether), en gardant les biomes de Reign of Nether.
-- Réglages du relief : `config/tectonic.json` du profil RTS (moins haut, plus de plaines, moins de forêts).
+- Réglages du relief : `config/tectonic.json` du profil RTS (moins haut, plus de plaines, moins de forêts). Le 13/10, relief **beaucoup plus plat** : `vertical_scale` 0,6 → **0,25** et `flat_terrain_skew` 0,6 → **1,0** (ancien réglage gardé dans `tectonic.json.bak-2026-10-13`). ⚠️ Ne vaut que pour les **nouveaux mondes** (ou les zones pas encore explorées).
 
 ### Bâtiments à niveaux (1, 2, 3)
 - Système générique : chaque niveau a sa propre forme (structure) et ses statistiques : points de vie, portée de tir de la garnison, vitesse de production, coût et durée de l'amélioration.
@@ -58,7 +58,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | Town Centre | 150 s | | Château | 180 s |
 
   Les bâtiments des autres factions (monstres, piglins) gardent le calcul d'origine, ralenti 1,5 fois. Les réparations ne changent pas.
-- **Tours d'échafaudage** dans la case du bâtiment et juste autour : elles poussent au fur et à mesure du chantier, chacune à son rythme (un peu au hasard), et montent devant les murs. Retirées quand le bâtiment est terminé ou détruit.
+- **Tours d'échafaudage** dans la case du bâtiment et juste autour (entre 30 % et 70 % de la hauteur du bâtiment, jamais au-dessus) : elles poussent au fur et à mesure du chantier, chacune à son rythme (un peu au hasard), et montent devant les murs. Retirées quand le bâtiment est terminé ou détruit.
 - Une **barre de progression dorée** flotte au-dessus de chaque chantier visible.
 
 ### Formes des bâtiments (structures)
@@ -132,7 +132,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 1. En jeu (créatif, triches activées) : `/give @s minecraft:structure_block`.
 2. Bloc de structure en mode **Load**, nom `reignofnether:barracks` (par exemple) → Load : le bâtiment actuel apparaît.
-3. Le modifier. **Inclure la rangée de sol** sous le bâtiment, en chemin de terre (sauf les blocs à garder tels quels).
+3. Le modifier. **Inclure la rangée de sol** sous le bâtiment, en **chemin de terre** (`minecraft:dirt_path` : `/give @s dirt_path`, ou clic droit avec une pelle sur de l'herbe) : ces cases prendront le matériau de la route reliée. Les autres blocs de sol restent tels quels.
 4. Mode **Save**, nom du fichier :
    - niveau 1 : `reignofnether:barracks`
    - niveau 2 : `reignofnether:barracks_lvl2`
@@ -163,7 +163,6 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 ### Bâtiments
 - [ ] Construire les formes des niveaux 2 et 3 (caserne, Town Centre).
-- [ ] **Tours d'échafaudage trop hautes** (constaté en jeu le 13/10) : les limiter (aujourd'hui jusqu'à 120 % de la hauteur du bâtiment, réglage dans `ConstructionSiteServerEvents.planTowers`).
 - [ ] Tours de guet améliorables (portée et dégâts par niveau).
 - [ ] **Limite de distance** pour poser un bâtiment : il faut être assez proche d'un de ses bâtiments (pas de construction dans une base ennemie), sauf entrepôts et quelques autres.
 
@@ -194,7 +193,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - [ ] Plus tard : d'autres bâtiments dans les camps, unités barbares à eux (apparence propre), réglages de difficulté.
 
 ### Terrain
-- [ ] **PRIORITÉ** — Monde généré **beaucoup plus plat** : constaté en jeu le 13/10, le relief actuel est impraticable pour les troupes et pour construire.
+- [ ] Vérifier en jeu (nouveau monde) si le relief est assez plat ; sinon baisser encore `vertical_scale`.
 
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Town Centre).

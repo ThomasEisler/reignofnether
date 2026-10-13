@@ -88,7 +88,8 @@ public class ConstructionSiteServerEvents {
                     tooClose = true;
             if (tooClose)
                 continue;
-            int targetHeight = Math.max(2, Math.round(buildingHeight * (0.5f + 0.7f * random01(x, 5, z))));
+            // between 30% and 70% of the building's height, never above it
+            int targetHeight = Math.max(2, Math.min(buildingHeight - 1, Math.round(buildingHeight * (0.3f + 0.4f * random01(x, 5, z)))));
             float speed = 0.8f + 0.6f * random01(x, 9, z);
             float delay = 0.25f * random01(x, 11, z);
             towers.add(new Tower(x, z, targetHeight, speed, delay));
@@ -145,7 +146,7 @@ public class ConstructionSiteServerEvents {
             if (tower.bottomY == Integer.MIN_VALUE)
                 continue;
             // top down, so no part of the tower is left floating (which would make it fall and drop items)
-            for (int y = tower.bottomY + tower.targetHeight + 1; y >= tower.bottomY; y--) {
+            for (int y = tower.bottomY + 40; y >= tower.bottomY; y--) { // generous, also clears towers planned taller by older versions
                 BlockPos bp = new BlockPos(tower.x, y, tower.z);
                 if (level.getBlockState(bp).is(Blocks.SCAFFOLDING))
                     level.setBlockAndUpdate(bp, Blocks.AIR.defaultBlockState());
