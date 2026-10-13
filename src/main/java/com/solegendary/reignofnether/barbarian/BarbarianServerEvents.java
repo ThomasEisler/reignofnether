@@ -56,7 +56,7 @@ public class BarbarianServerEvents {
     // up to one camp per such player plus one
     public static final int CAMP_SPAWN_INTERVAL = 20 * 60 * 5;
     public static final int EXTRA_CAMPS = 1;
-    public static final int CAMP_UPGRADE_INTERVAL = 20 * 60 * 10; // a camp gains a level every 10 minutes
+    public static final int CAMP_UPGRADE_INTERVAL = 20 * 60 * 20; // a camp gains a level every 20 minutes
     public static final int NEW_CAMP_LEVEL_INTERVAL = 20 * 60 * 15; // new camps start one level higher every 15 minutes
     public static final int RAID_INTERVAL = 20 * 60 * 6; // from level 2, a raid every 6 minutes
     public static final int UNIT_SPAWN_INTERVAL = 20 * 30; // a camp replaces one missing defender every 30 seconds

@@ -91,7 +91,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 ### Barbares (première version)
 - Faction contrôlée par l'ordinateur, **ennemie de tous**. **Actifs par défaut** dans tous les mondes ; `/rts-barbarians off` pour les désactiver (`on` pour les remettre), réglage sauvegardé avec le monde.
 - **Camps** : rien tant qu'aucun joueur n'a de caserne terminée. **5 minutes** après la première caserne d'un joueur, un camp apparaît (à 70-100 blocs des bases), puis un autre 5 minutes plus tard, etc., jusqu'à **n + 1 camps** (n = joueurs ayant une caserne depuis 5 minutes). Un joueur qui perd toutes ses casernes ne compte plus. Un camp détruit est remplacé au plus tôt 5 minutes après. Le **premier camp commence toujours au niveau 1** ; les camps suivants commencent un niveau plus haut toutes les 15 minutes, comptées à partir de l'arrivée possible du premier camp (et non de la création du monde).
-- **3 niveaux** : un camp gagne un niveau toutes les 10 minutes (200, 350 puis 500 PV).
+- **3 niveaux** : un camp gagne un niveau toutes les 20 minutes (200, 350 puis 500 PV).
 - **Garnison** : 3 / 5 / 8 soldats selon le niveau (milice, vindicateurs, puis arbalétriers, puis parfois un ravageur). Un soldat perdu est remplacé toutes les 30 s. Ils patrouillent autour du camp et attaquent toute unité qui approche à moins de 18 blocs.
 - **Raids** : à partir du niveau 2, toutes les 6 minutes, la moitié de la garnison part attaquer le bâtiment de joueur le plus proche.
 - **Point rouge** au-dessus de chaque soldat barbare, pour les reconnaître d'un coup d'œil (caché dans le brouillard de guerre).
