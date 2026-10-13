@@ -465,9 +465,11 @@ public class BuildingServerEvents {
                 }
             }
 
-            if (fromCommand ||
+            // ramparts sit on the landscape as it is: clearing their box would dig trenches along slopes
+            if ((fromCommand ||
                     (serverLevel.getGameRules().getRule(GameRuleRegistrar.SLANTED_BUILDING).get() &&
-                            !(newBuilding.getBuilding() instanceof AbstractBridge))) {
+                            !(newBuilding.getBuilding() instanceof AbstractBridge))) &&
+                    !(newBuilding.getBuilding() instanceof com.solegendary.reignofnether.rampart.RampartBuilding)) {
                 BuildingUtils.clearBuildingArea(newBuilding);
             }
             buildings.add(newBuilding);

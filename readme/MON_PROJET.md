@@ -105,7 +105,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | 3 | + 1 tente |
 
   Ils se construisent tout seuls. Si le bâtiment principal est détruit, les annexes s'effondrent avec lui.
-- **Remparts** dès le niveau 2 : un **cercle irrégulier fermé** (rayon 20 à 26 blocs, forme propre à chaque camp), fait de **segments de 5 colonnes qui sont des bâtiments** : ils ont de la vie, les unités les attaquent et ils s'effondrent quand ils sont trop abîmés (brèche). **2 portes** (5 blocs de large, à peu près opposées) qui **coulissent sur le côté** pour laisser passer les barbares et se referment derrière eux ; les autres doivent les casser. Niveau 2 : palissade en rondins pointus (150 PV par segment) et porte en bois (220 PV). Niveau 3 : remplacés au même endroit par un rempart de pierre crénelé (300 PV) et une herse en fer (450 PV). Quand le camp est détruit, ses remparts s'effondrent avec lui.
+- **Remparts** dès le niveau 2 : un **cercle irrégulier fermé** (rayon 20 à 26 blocs, forme propre à chaque camp), fait de **segments de 5 colonnes qui sont des bâtiments** : ils ont de la vie, les unités les attaquent et ils s'effondrent quand ils sont trop abîmés (brèche). **2 portes** (5 blocs de large, à peu près opposées) qui **coulissent sur le côté** pour laisser passer les barbares et se referment derrière eux ; les autres doivent les casser. Niveau 2 : palissade en rondins pointus (150 PV par segment) et porte en bois (220 PV). Niveau 3 : remplacés au même endroit par un rempart de pierre crénelé (300 PV) et une herse en fer (450 PV). Quand le camp est détruit, ses remparts s'effondrent avec lui. Les remparts se posent sur le terrain tel qu'il est, sans le creuser.
 - ⚠️ Les **formes des camps sont provisoires** (copies de la caserne, du Hôtel de ville, de la maison et de la tour de guet) : à construire par moi.
 
 ### Limite de distance pour construire
@@ -142,6 +142,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | Suède | Gustave II Adolphe | Unités 10 % plus rapides |
 
 ### Arbre des technologies
+- Pendant une recherche, un **bandeau en haut de l'écran** montre son icône, son nom en grand, une grande barre de progression (pourcentage) et le temps restant (« en pause » sans Bibliothèque).
 - Bouton **« Technologies x/8 »** à gauche de l'écran RTS (une barre bleue montre la recherche en cours), ou bouton **« Technologies »** de la **Bibliothèque** (touche **P**) : ouvre l'arbre presque plein écran (Échap pour fermer).
 - Écran **dans le style des Progrès** de Minecraft : même fenêtre, fond en planches de chêne noir, cadres (carré, arrondi, pointu selon le rang) avec une icône par technologie, traits blancs entre elles, cadre doré quand c'est découvert, assombri quand c'est verrouillé. **Au survol** : barre de titre (bleue, dorée au fur et à mesure de la recherche) et encadré avec l'état, le prix, la durée et **les images des bâtiments débloqués** (les mêmes que dans le menu de construction, avec leur nom). On **fait glisser** l'arbre à la souris. Clic = lancer la recherche ; « Annuler » (sous la fenêtre) rembourse tout.
 - **Une seule recherche à la fois**, et elle n'avance que si on a une **Bibliothèque terminée** (sinon en pause). Sauvegardée avec le monde, effacée par `/rts-reset`. `warpten` accélère, `modifythephasevariance` ignore les technologies.
@@ -235,6 +236,8 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 ## Notes techniques pour reprendre (pour Claude)
 
+- Les noms des boutons de construction utilisaient des clés de traduction inexistantes (`buildings.villagers.reignofnether.…`) : corrigé en `buildings.reignofnether.…` partout (43 endroits).
+
 **Prochaine étape prévue** : faire tester le chantier de route et l'aperçu, puis le reste de la liste « À faire » (limite de distance, terrain plat, remparts, arbre des technologies, formes niveaux 2/3 et camps barbares). Je préfère des réponses courtes, en français, sans jargon.
 
 **Où est le code de mes ajouts** (`src/main/java/com/solegendary/reignofnether/`) :
@@ -291,3 +294,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Remparts en segments attaquables (palissade, pierre, porte en bois, herse) ; camps barbares fermés avec 2 portes coulissantes |
 | 13/10/2026 | Nouvel Hôtel de ville niveau 1 avec son sol |
 | 13/10/2026 | Nouvel entrepôt avec son sol |
+| 13/10/2026 | Bandeau de recherche en haut de l'écran ; noms des bâtiments corrigés dans les boutons ; remparts qui ne creusent plus le terrain |

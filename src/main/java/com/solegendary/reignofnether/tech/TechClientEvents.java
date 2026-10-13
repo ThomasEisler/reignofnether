@@ -391,6 +391,32 @@ public class TechClientEvents {
         }
     }
 
+    // the research in progress, big at the top of the screen (under the nation's name)
+    private static void drawResearchBanner(GuiGraphics g, int mouseX, int mouseY) {
+        if (current == null)
+            return;
+        int w = Math.min(260, screenW() - 40), x = (screenW() - w) / 2, y = 20;
+        float progress = 1f - ticksLeft / (float) (current.seconds * 20);
+        boolean paused = !hasLibrary();
+        g.fill(x - 4, y - 3, x + w + 4, y + 33, 0xAA000000);
+        g.renderFakeItem(getIcon(current), x, y);
+        g.pose().pushPose();
+        g.pose().translate(x + 22, y + 2, 0);
+        g.pose().scale(1.5f, 1.5f, 1);
+        g.drawString(MC.font, current.displayName, 0, 0, 0xFFD27F);
+        g.pose().popPose();
+        String right = paused ? "en pause" : formatTime(Math.max(0, ticksLeft / 20));
+        g.drawString(MC.font, right, x + w - MC.font.width(right), y + 5, paused ? 0xFF8080 : 0xFFFFFF);
+        // big bar
+        int barY = y + 19;
+        g.fill(x - 1, barY - 1, x + w + 1, barY + 10, 0xFF000000);
+        g.fill(x, barY, x + w, barY + 9, 0xFF2A2A2A);
+        g.fill(x, barY, x + (int) (w * progress), barY + 9, paused ? 0xFF9A6A3A : 0xFF4FD34F);
+        g.fill(x, barY, x + (int) (w * progress), barY + 2, paused ? 0xFFC08A50 : 0xFF8FF08F); // shine
+        String pct = Math.round(progress * 100) + " %";
+        g.drawCenteredString(MC.font, pct, x + w / 2, barY + 1, 0xFFFFFF);
+    }
+
     @SubscribeEvent
     public static void onDrawScreen(ScreenEvent.Render.Post evt) {
         if (!OrthoviewClientEvents.isEnabled() || MC.player == null)
@@ -400,8 +426,10 @@ public class TechClientEvents {
         g.pose().translate(0, 0, 400);
         if (open)
             drawTree(g, evt.getMouseX(), evt.getMouseY());
-        else if (hasStarted())
+        else if (hasStarted()) {
             drawHudButton(g, evt.getMouseX(), evt.getMouseY());
+            drawResearchBanner(g, evt.getMouseX(), evt.getMouseY());
+        }
         g.pose().popPose();
     }
 
