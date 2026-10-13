@@ -72,12 +72,30 @@ public class BuildingValidators {
             return "building.reignofnether.build_centre_here";
         } else if (!isSandbox && !com.solegendary.reignofnether.tech.Tech.canBuild(level.isClientSide(), ownerName, building)) {
             return "building.reignofnether.needs_tech";
+        } else if (building == Buildings.PORT && getPortError(level, absoluteBlocks) != null) {
+            return getPortError(level, absoluteBlocks);
         } else if (!isSandbox && !BuildRange.isExempt(building)) {
             BlockPos min = BuildingUtils.getMinCorner(absoluteBlocks);
             BlockPos max = BuildingUtils.getMaxCorner(absoluteBlocks);
             if (!BuildRange.isFootprintInRange(level, ownerName, min.getX(), min.getZ(), max.getX(), max.getZ()))
                 return "building.reignofnether.too_far_from_base";
         }
+        return null;
+    }
+
+    // a port goes on the shore right next to a fishing spot, one per spot
+    private static String getPortError(Level level, List<BuildingBlock> blocks) {
+        BlockPos min = BuildingUtils.getMinCorner(blocks), max = BuildingUtils.getMaxCorner(blocks);
+        double cx = (min.getX() + max.getX() + 1) / 2.0, cz = (min.getZ() + max.getZ() + 1) / 2.0;
+        BlockPos spot = com.solegendary.reignofnether.mapfeatures.MapFeaturesServerEvents.getNearestFishingSpot(level.isClientSide(), cx, cz,
+            com.solegendary.reignofnether.building.buildings.villagers.Port.FISHING_SPOT_RANGE);
+        if (spot == null)
+            return "building.reignofnether.port_needs_fishing_spot";
+        List<BuildingPlacement> buildings = level.isClientSide() ? BuildingClientEvents.getBuildings() : BuildingServerEvents.getBuildings();
+        for (BuildingPlacement b : buildings)
+            if (b.getBuilding() == Buildings.PORT && b.centrePos.distToCenterSqr(spot.getX(), b.centrePos.getY(), spot.getZ()) <
+                (double) com.solegendary.reignofnether.building.buildings.villagers.Port.PORT_SPACING * com.solegendary.reignofnether.building.buildings.villagers.Port.PORT_SPACING)
+                return "building.reignofnether.port_spot_taken";
         return null;
     }
 

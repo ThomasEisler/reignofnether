@@ -130,6 +130,17 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 - ⚠️ **Formes provisoires** : camp (niveaux 4 et 5 = copies du niveau 3), tente et tour (copies), et les 8 nouveaux bâtiments (formes simples faites par programme) : à construire par moi. Noms : `barbarian_camp_lvl4`, `barbarian_camp_lvl5`, `barbarian_campfire`, `barbarian_loot`, `barbarian_forge`, `barbarian_alarm`, `barbarian_cages`, `barbarian_stable`, `barbarian_ravager_pen`, `barbarian_chief_tent` (garder les annexes à 7 × 7 au plus).
 
+### Carte : pêche et troupeaux
+- Repérés la **première fois qu'un morceau de carte (chunk) est chargé**, marche aussi sur un monde existant pour les zones encore jamais chargées depuis. Sauvegardés avec le monde (`MapFeaturesSaveData`).
+- **Coins de pêche** : sur l'eau profonde (2 blocs ou plus) près d'une rive (fleuves, lacs, mers), un emplacement sur 4 morceaux au plus, à 40 blocs au moins l'un de l'autre. On les voit à des **bulles** qui éclatent à la surface et de petites éclaboussures (cachées dans le brouillard de guerre).
+- **Port de pêche** (menu des ouvriers, 150 bois + 25 minerai) : à poser à moins de 10 blocs d'un coin de pêche, **un seul port par coin**. Rapporte **5 nourriture toutes les 5 s** (60 par minute). ⚠️ Forme provisoire (`port`, cabane de pêcheur faite par programme) : à construire par moi.
+- **Troupeaux sauvages** : vaches, moutons, cochons ou poules, **4 à 8 bêtes** ensemble. **Plus de bêtes seules** : tout animal chassable qui n'appartient pas à un troupeau est retiré (sauf dans le tutoriel), et l'Hôtel de ville ne fait plus apparaître d'animaux autour de lui.
+  - Un troupeau sur environ 18 morceaux de prairie, à 80 blocs au moins l'un de l'autre et à 48 blocs au moins des bâtiments.
+  - **Migration** : toutes les 30 s, le troupeau va au point suivant d'un petit cercle (rayon 8 à 14) autour de son coin. S'il est à moins de 48 blocs d'un bâtiment de joueur, son coin s'éloigne de 6 blocs à chaque étape.
+  - **Repousse** : une bête de plus toutes les 90 s tant qu'il en manque ; un troupeau chassé jusqu'à la dernière revient au même endroit 5 min plus tard.
+  - Chaque nouvel Hôtel de ville a **au moins 2 troupeaux à moins de 100 blocs** (créés s'il le faut, à 52-90 blocs).
+- Code : dossier `mapfeatures/` (`MapFeaturesServerEvents` : repérage, troupeaux ; `FishingClientEvents` : bulles), `building/buildings/villagers/Port.java`, règle de pose dans `BuildingValidators.getPortError`.
+
 ### Limite de distance pour construire
 - On ne peut construire qu'à **24 blocs maximum** d'un de ses bâtiments (même en construction). Exceptions : **entrepôts** et **ponts**. Un joueur sans bâtiment construit où il veut (premier Hôtel de ville).
 - **Aperçu** : pendant le placement d'un bâtiment, le sol trop loin est **teinté en rouge** autour du curseur, et le bâtiment fantôme devient rouge avec le message « Trop loin de vos bâtiments ». Vérifié aussi par le serveur.
@@ -287,8 +298,8 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] **Structures neutres générées avec la carte** (demandé le 14/10/2026) :
   - **Ruines avec trésors** : éparpillées sur la carte ; les détruire donne une bonne quantité de ressources pour bien démarrer.
   - **Vraies carrières / filons de minerai** : gisements visibles à exploiter, pour que l'emplacement de l'Hôtel de ville devienne stratégique (près d'une forêt et d'une carrière).
-  - **Coins de pêche** au bord de l'eau (nourriture) ; plus tard, un bâtiment **port** à construire à côté.
-  - **Troupeaux sauvages** : plus de bêtes seules, les animaux se baladent en groupes (chasse, nourriture).
+  - [x] **Coins de pêche** et **port** (faits le 14/10/2026, voir « Carte : pêche et troupeaux »).
+  - [x] **Troupeaux sauvages** (faits le 14/10/2026).
   - **Afficher ces ressources sur la carte** (minicarte / grande carte) avec une icône (un objet : minerai, poisson, viande, coffre…).
   - [ ] **Mes modèles** : plusieurs modèles de **carrières** et plusieurs de **ruines** (et de coins de pêche), choisis au hasard à la génération.
   - Autres pistes nourriture non retenues pour l'instant : prairies fertiles, bosquets de baies, vergers.
@@ -302,6 +313,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Mes remparts : boutons du menu des ouvriers, tracé et aperçu, Maj pour continuer, construction par les ouvriers, portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
+- [ ] Pêche et troupeaux : bulles sur l'eau près des rives, port posé seulement près des bulles et qui rapporte, troupeaux qui tournent en rond, s'éloignent des villes, repoussent ; plus de bêtes seules (nouveau monde conseillé).
 - [ ] Camps à 5 niveaux (`/rts-barbarian-camp ~ ~ ~ 5` pour voir le plus grand) : bâtiments qui apparaissent, remparts qui s'agrandissent, feu qui soigne, vol en raid et réserve qui rend, forge, cor d'alarme, prisonniers libérés, chef et sa défaite ; camps plus loin (130-170 blocs).
 - [ ] Barbares : nouvelle apparence (milice, vindicateur, pillard, ravageur), cavaliers au niveau 3, bouton de difficulté et ses effets.
 - [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin, bâtiments annexes, remparts (actifs par défaut, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
@@ -364,6 +376,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Coins de pêche (bulles), port de pêche, troupeaux sauvages qui migrent et repoussent, plus de bêtes seules |
 | 14/10/2026 | Butin volé et prisonniers des camps sauvegardés avec le monde |
 | 14/10/2026 | Camps barbares à 5 niveaux, 8 nouveaux bâtiments avec leur rôle, remparts plus tardifs qui s'agrandissent, camps plus loin des bases |
 | 14/10/2026 | Pied des remparts : de temps en temps un buisson (feuilles) ou un caillou (pierre taillée, moussue ou non) posé au sol contre le mur |

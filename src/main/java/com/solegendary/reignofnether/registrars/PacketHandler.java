@@ -451,6 +451,12 @@ public final class PacketHandler {
                 .consumerMainThread(RoadClientboundPacket::handle)
                 .add();
 
+        INSTANCE.messageBuilder(com.solegendary.reignofnether.mapfeatures.FishingSpotsClientboundPacket.class, index++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.solegendary.reignofnether.mapfeatures.FishingSpotsClientboundPacket::encode)
+                .decoder(com.solegendary.reignofnether.mapfeatures.FishingSpotsClientboundPacket::new)
+                .consumerMainThread(com.solegendary.reignofnether.mapfeatures.FishingSpotsClientboundPacket::handle)
+                .add();
+
         INSTANCE.messageBuilder(com.solegendary.reignofnether.barbarian.BarbarianServerboundPacket.class, index++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(com.solegendary.reignofnether.barbarian.BarbarianServerboundPacket::encode)
                 .decoder(com.solegendary.reignofnether.barbarian.BarbarianServerboundPacket::new)

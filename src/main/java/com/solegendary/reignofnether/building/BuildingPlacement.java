@@ -907,8 +907,8 @@ public class BuildingPlacement {
         if (!this.level.isClientSide()) {
             FrozenChunkClientboundPacket.setBuildingBuiltServerside(this.originPos);
             if (isCapitol && BuildingUtils.getTotalCompletedBuildingsOwned(false, ownerName) <= 1) {
-                for (int i = 0; i < 3; i++)
-                    spawnHuntableAnimalsNearby(animalSpawnBlockRange / 2);
+                // wild herds replace the lone animals once spawned here
+                com.solegendary.reignofnether.mapfeatures.MapFeaturesServerEvents.ensureHerdsNear((ServerLevel) level, centrePos);
             }
             RTSPlayer rtsPlayer = PlayerServerEvents.getRTSPlayer(ownerName);
             if (rtsPlayer != null)
@@ -979,7 +979,7 @@ public class BuildingPlacement {
         }
 
         // check and do animal spawns around capitols for consistent hunting sources
-        if (!this.level.isClientSide() && isCapitol && isBuilt) {
+        if (!this.level.isClientSide() && isCapitol && isBuilt && false) { // replaced by wild herds (mapfeatures)
             ticksToSpawnAnimals += 1;
             if (ticksToSpawnAnimals >= ticksToSpawnAnimalsMax) {
                 ticksToSpawnAnimals = 0;

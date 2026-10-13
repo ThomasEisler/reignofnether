@@ -61,6 +61,7 @@ public class Buildings {
     public static final MonsterMarket MONSTER_MARKET = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "monster_market"), new MonsterMarket());
     public static final PiglinMarket PIGLIN_MARKET = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "piglin_market"), new PiglinMarket());
     public static final VillagerMarket VILLAGER_MARKET = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "villager_market"), new VillagerMarket());
+    public static final com.solegendary.reignofnether.building.buildings.villagers.Port PORT = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "port"), new com.solegendary.reignofnether.building.buildings.villagers.Port());
     public static final BarbarianCamp BARBARIAN_CAMP = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_camp"), new BarbarianCamp());
     public static final BarbarianOutbuilding BARBARIAN_TENT = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_tent"),
         new BarbarianOutbuilding("Barbarian Tent", "barbarian_tent", 120d, net.minecraft.world.level.block.Blocks.RED_WOOL, "textures/block/red_wool.png"));
