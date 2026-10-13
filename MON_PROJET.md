@@ -150,8 +150,23 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - [ ] Construire des **remparts** comme les routes : choisir deux points, **aperçu** du tracé et du prix, construits par les ouvriers.
 - [ ] Pouvoir **intégrer une tour de garde** dans les remparts.
 
-### Arbre des technologies
-- [ ] Un **arbre des technologies** comme dans Civilization (écran avec les recherches reliées entre elles). Le mod n'a pour l'instant que des recherches séparées, achetées dans chaque bâtiment (façon Age of Empires), sans arbre.
+### Arbre des technologies (en attente de ma décision, rien de codé)
+- [ ] Décidé : recherches dans la **Bibliothèque**, **une seule à la fois** par joueur, **5 min minimum**, l'arbre s'ouvre par un bouton de l'interface principale ou depuis la Bibliothèque ; les technologies **débloquent des bâtiments** et **des niveaux** de bâtiments.
+- [ ] Proposition d'arbre (villageois), à valider, prix non fixés :
+
+| Recherche | Il faut d'abord | Débloque | Durée |
+|---|---|---|---|
+| Maçonnerie | — | Tour de guet, Forge | 5 min |
+| Commerce | — | Marché | 5 min |
+| Métallurgie | Maçonnerie | Golem de fer | 6 min |
+| Architecture | Maçonnerie | Caserne niv. 2, Town Centre niv. 2 | 6 min |
+| Mysticisme | Commerce | Hutte de sorcière, Sanctuaire | 6 min |
+| Fortifications | Métallurgie | Château | 10 min |
+| Ingénierie | Architecture + Métallurgie | Caserne niv. 3, Town Centre niv. 3 | 8 min |
+| Arcanes | Mysticisme | Tour arcanique | 8 min |
+
+  Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque.
+- [ ] Écran prévu : cases reliées par des traits (comme l'écran des Progrès), glisser/zoomer, infobulle (prix, durée, effet), clic = lancer la recherche.
 
 ### Barbares
 - [ ] Construire mes propres formes de camps (niveaux 1, 2, 3), de la tente et de la tour.
