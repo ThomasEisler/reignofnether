@@ -275,6 +275,18 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
   - Niveau 2 : **cor d'alarme** (ennemi proche : toute la garnison accourt, et celle d'un camp voisin) ; **forge barbare** (tant qu'elle tient : barbares plus forts et en armure) ; **cages à prisonniers** (villageois capturés en raid ; casser les cages les libère et ils rejoignent le libérateur).
   - Niveau 3 : **écurie** (produit les cavaliers) ; **enclos à ravageurs** (produit les ravageurs) ; **tente du chef** (un chef barbare fort et unique ; le tuer affaiblit ou fait fuir la garnison).
   - Préférés : réserve de butin + vol en raid, cor d'alarme, forge, tente du chef.
+- [ ] **5 niveaux de camp** au lieu de 3 (validé le 14/10/2026, pas encore codé) :
+
+| Niveau | Nom | Nouveaux bâtiments | Remparts | Garnison | PV |
+|---|---|---|---|---|---|
+| 1 | Campement | 2 tentes, feu de camp | aucun | 3 | 200 |
+| 2 | Repaire | tour, réserve de butin (raids qui volent) | palissade, porte en bois | 5 | 300 |
+| 3 | Fort | forge, cor d'alarme | palissade | 7 | 400 |
+| 4 | Forteresse | cages à prisonniers, écurie (cavaliers) | pierre, herses | 9 | 500 |
+| 5 | Citadelle | enclos à ravageurs, tente du chef | pierre, cercle plus grand | 12 | 650 |
+
+  - Rythme : un niveau toutes les **60 min en facile** (niveau 5 en 4 h), **40 min en normal** (2 h 40), **25 min en difficile** (1 h 40). Les nouveaux camps commencent un niveau plus haut au même rythme.
+  - Le cercle des remparts grandit avec le niveau. Formes `barbarian_camp_lvl4` et `_lvl5` à construire (provisoires en attendant).
 
 ### Terrain
 - [ ] Vérifier en jeu (nouveau monde) si le relief est assez plat ; sinon baisser encore `vertical_scale`.
