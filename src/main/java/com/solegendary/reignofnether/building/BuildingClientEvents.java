@@ -251,7 +251,7 @@ public class BuildingClientEvents {
                         int dx = x - cursor.getX(), dz = z - cursor.getZ();
                         if (dx * dx + dz * dz > RANGE_ZONE_RADIUS * RANGE_ZONE_RADIUS || BuildRange.isColumnInRange(own, x, z))
                             continue;
-                        int y = MC.level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
+                        int y = MC.level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z) - 1;
                         rangeZoneBlocks.add(new BlockPos(x, y, z));
                     }
                 }

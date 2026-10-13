@@ -249,6 +249,7 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 - Installer : copier `build/libs/reignofnether-1.5.0.jar` dans `~/Library/Application Support/PrismLauncher/instances/RTS/.minecraft/mods/` **jeu fermé**.
 - Lancer : `"/Applications/Prism Launcher.app/Contents/MacOS/prismlauncher" --launch RTS`, puis surveiller `.../instances/RTS/.minecraft/logs/latest.log` (« Sound engine started » = prêt).
 - Les structures `.nbt` vont dans **`assets/` et `data/`** `reignofnether/structures/`.
+- Côté joueur (client), Minecraft ne tient à jour que les cartes de hauteur `WORLD_SURFACE` et `MOTION_BLOCKING` : ne jamais utiliser `MOTION_BLOCKING_NO_LEAVES` ou `OCEAN_FLOOR` dans du code qui tourne chez le joueur (bug « Aucun chemin possible » du 13/10).
 - `lang/fr_fr.json` a des fins de ligne Windows (CRLF) : ajouter des lignes sans reformater le fichier. Après une mise à jour de l'auteur, comparer avec `en_us.json` pour traduire les nouveaux textes.
 - Je ne peux pas cliquer dans la fenêtre du jeu (processus « java » non pilotable) : c'est l'utilisateur qui teste en jeu.
 - Mes documents sont dans le dossier `readme/` : ce journal et `BATIMENTS.md` (liste des bâtiments avec le nom à mettre dans le bloc de structure, à tenir à jour quand un bâtiment change).
@@ -275,3 +276,4 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 | 13/10/2026 | Dossier `readme/` (journal + liste des bâtiments) |
 | 13/10/2026 | Traduction française complète, jeu en français |
 | 13/10/2026 | Choix de nation ouvert automatiquement, bannières Minecraft ; noms de structure dans `BATIMENTS.md` |
+| 13/10/2026 | Correction : l'aperçu des routes disait « Aucun chemin possible » partout (et zone rouge à la mauvaise hauteur) |

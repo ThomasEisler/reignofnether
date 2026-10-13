@@ -28,7 +28,7 @@ public class RoadPathTracer {
     public static final int MAX_LENGTH = 256; // max straight distance between the two buildings
     public static final int MAX_PATH_LENGTH = 384; // max length of the winding road itself
     public static final int WIDTH_RADIUS = 1; // 1 = 3 blocks wide
-    private static final int MAX_SURFACE_SEARCH = 16;
+    private static final int MAX_SURFACE_SEARCH = 32; // deep enough to get under tree tops
     private static final int SEARCH_MARGIN = 48; // how far outside the box around both buildings a detour can go
     private static final int MAX_NODES = 60000; // search budget, to keep it fast
     private static final int MAX_STEP_HEIGHT = 1; // roads can't climb more than this per block
@@ -230,7 +230,8 @@ public class RoadPathTracer {
     // highest natural ground block at x,z, skipping trees and plants; null if the surface is liquid
     @Nullable
     private static BlockPos getSurface(Level level, int x, int z) {
-        BlockPos bp = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
+        // MOTION_BLOCKING (not _NO_LEAVES): the only one the client keeps, so the preview traces the same road as the server
+        BlockPos bp = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z) - 1, z);
         for (int i = 0; i < MAX_SURFACE_SEARCH; i++) {
             BlockState bs = level.getBlockState(bp);
             if (!bs.getFluidState().isEmpty())
