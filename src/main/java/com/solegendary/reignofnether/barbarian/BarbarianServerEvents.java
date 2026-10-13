@@ -178,8 +178,12 @@ public class BarbarianServerEvents {
         List<BlockPos> spawns = WaveSpawner.getValidSpawnPoints(1, level, false, 8);
         if (spawns.isEmpty())
             return;
-        long ticksEnabled = BarbarianSaveData.getInstance(level).ticksEnabled;
-        placeCamp(spawns.get(0), (int) (ticksEnabled / NEW_CAMP_LEVEL_INTERVAL));
+        // the clock for stronger camps starts when the first camp could come (5 min after the first barracks),
+        // not when the world was made: the first camp is always level 1, then they grow from there
+        BarbarianSaveData data = BarbarianSaveData.getInstance(level);
+        long firstBarracks = data.barracksSince.values().stream().mapToLong(Long::longValue).min().orElse(data.ticksEnabled);
+        long sinceCampsBegan = Math.max(0, data.ticksEnabled - firstBarracks - CAMP_SPAWN_INTERVAL);
+        placeCamp(spawns.get(0), (int) Math.min(2, sinceCampsBegan / NEW_CAMP_LEVEL_INTERVAL));
         ticksToNextCamp = CAMP_SPAWN_INTERVAL;
     }
 
