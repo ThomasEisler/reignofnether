@@ -43,9 +43,7 @@ public class StartButtons {
         () -> CursorClientEvents.getLeftClickAction() == UnitAction.STARTRTS_VILLAGERS,
         () -> !TutorialClientEvents.isAtOrPastStage(TutorialStage.PLACE_WORKERS_B) || !PlayerClientEvents.canStartRTS,
         () -> true,
-        () -> {
-            CursorClientEvents.setLeftClickAction(UnitAction.STARTRTS_VILLAGERS);
-        },
+        () -> com.solegendary.reignofnether.nation.NationClientEvents.onStartButtonClicked(), // nation choice first
         null,
         List.of(
             fcs(LanguageUtil.getTranslation("hud.startbuttons.villagers.reignofnether.first"), true),
@@ -59,7 +57,7 @@ public class StartButtons {
         ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "textures/mobheads/creeper.png"),
         (Keybinding) null,
         () -> CursorClientEvents.getLeftClickAction() == UnitAction.STARTRTS_MONSTERS,
-        () -> TutorialClientEvents.isEnabled() || !PlayerClientEvents.canStartRTS,
+        () -> true, // only the villagers faction is playable in this version
         () -> !TutorialClientEvents.isEnabled(),
         () -> CursorClientEvents.setLeftClickAction(UnitAction.STARTRTS_MONSTERS),
         null,
@@ -75,7 +73,7 @@ public class StartButtons {
             ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "textures/mobheads/grunt.png"),
             (Keybinding) null,
             () -> CursorClientEvents.getLeftClickAction() == UnitAction.STARTRTS_PIGLINS,
-            () -> TutorialClientEvents.isEnabled() || !PlayerClientEvents.canStartRTS,
+            () -> true, // only the villagers faction is playable in this version
             () -> !TutorialClientEvents.isEnabled(),
             () -> CursorClientEvents.setLeftClickAction(UnitAction.STARTRTS_PIGLINS),
             null,

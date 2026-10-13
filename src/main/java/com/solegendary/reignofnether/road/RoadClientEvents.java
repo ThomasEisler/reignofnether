@@ -119,10 +119,11 @@ public class RoadClientEvents {
 
     private static String getCostText(RoadType type, int length) {
         List<String> parts = new ArrayList<>();
+        float mult = MC.player != null ? com.solegendary.reignofnether.nation.Nation.roadCost(true, MC.player.getName().getString()) : 1f;
         if (type.woodPerLength > 0)
-            parts.add(I18n.get("hud.reignofnether.road_cost_wood", type.woodPerLength * length));
+            parts.add(I18n.get("hud.reignofnether.road_cost_wood", Math.round(type.woodPerLength * length * mult)));
         if (type.orePerLength > 0)
-            parts.add(I18n.get("hud.reignofnether.road_cost_ore", type.orePerLength * length));
+            parts.add(I18n.get("hud.reignofnether.road_cost_ore", Math.round(type.orePerLength * length * mult)));
         return String.join(", ", parts);
     }
 

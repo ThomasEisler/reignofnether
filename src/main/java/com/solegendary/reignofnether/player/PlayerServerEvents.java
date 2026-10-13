@@ -1219,6 +1219,7 @@ public class PlayerServerEvents {
         ReignOfNether.LOGGER.info("[Player] resetRTS: hardReset={}", hardReset);
         StartPosServerEvents.cancelStartGameCountdown(true);
         FogChunkSnapshot.clear();
+        com.solegendary.reignofnether.nation.NationServerEvents.clearNations();
 
         boolean isSandboxOrScenario = SandboxServer.isAnyoneASandboxPlayer() || serverLevel.getGameRules().getRule(GameRuleRegistrar.SCENARIO_MODE).get();
 

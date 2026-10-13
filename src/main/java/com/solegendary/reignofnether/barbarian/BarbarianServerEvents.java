@@ -367,7 +367,7 @@ public class BarbarianServerEvents {
         LivingEntity looter = getNearestPlayerUnit(camp.origin, LOOT_RANGE);
         if (looter != null) {
             String owner = ((Unit) looter).getOwnerName();
-            int loot = LOOT_PER_RESOURCE[camp.level];
+            int loot = Math.round(LOOT_PER_RESOURCE[camp.level] * com.solegendary.reignofnether.nation.Nation.barbarianLoot(false, owner));
             ResourcesServerEvents.addSubtractResources(new Resources(owner, loot, loot, loot));
             HudClientboundPacket.showTempMessageI18n(owner, "hud.reignofnether.barbarian_camp_destroyed");
         }

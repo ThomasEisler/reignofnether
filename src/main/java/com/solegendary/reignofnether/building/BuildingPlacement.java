@@ -1035,6 +1035,7 @@ public class BuildingPlacement {
                         msPerBuild = (3f * seconds * 1000f * Math.max(1, blocksPerBuild) / Math.max(1, getBlocksTotal())) / (builderCount + 2);
                     else
                         msPerBuild *= building.buildTimeModifier * CONSTRUCTION_TIME_MULTIPLIER;
+                    msPerBuild /= com.solegendary.reignofnether.nation.Nation.buildSpeed(false, ownerName);
                     if (isCapitol && BuildingUtils.getTotalCompletedBuildingsOwned(false, ownerName) > 0)
                         msPerBuild *= 2;
                 } else {

@@ -188,7 +188,8 @@ public abstract class ProductionItem {
                     active.ticksLeft -= 10;
             }
             else {
-                float speed = placement.getBuilding().getProductionSpeed(placement);
+                float speed = placement.getBuilding().getProductionSpeed(placement) *
+                    com.solegendary.reignofnether.nation.Nation.productionSpeed(placement.getLevel().isClientSide(), placement.ownerName);
                 if (placement.getLevel().isClientSide())
                     active.ticksLeft -= (RtsDebugClientEvents.getCappedTPS() / 20D) * speed;
                 else

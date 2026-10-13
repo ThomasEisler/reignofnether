@@ -322,6 +322,7 @@ public class GatherResourcesGoal extends MoveToTargetBlockGoal {
                         ticksToProgress *= CivilEnchantment.getEfficiencyMultiplier(vUnit);
                     }
 
+                    ticksToProgress *= com.solegendary.reignofnether.nation.Nation.gatherSpeed(false, ((Unit) mob).getOwnerName());
                     this.gatherTicksLeft -= ticksToProgress;
 
                     gatherTicksLeft = Math.min(gatherTicksLeft, data.targetResourceSource != null ? data.targetResourceSource.ticksToGather : Integer.MAX_VALUE);

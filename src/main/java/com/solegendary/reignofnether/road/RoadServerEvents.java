@@ -218,7 +218,8 @@ public class RoadServerEvents {
             if (dx * dx + dz * dz <= WORK_RANGE * WORK_RANGE) {
                 mob.getLookControl().setLookAt(next.getX() + 0.5, next.getY() + 1, next.getZ() + 0.5);
                 mob.swing(InteractionHand.MAIN_HAND);
-                for (int i = 0; i < BLOCKS_PER_WORKER && connection.isUnderConstruction(); i++)
+                int blocks = BLOCKS_PER_WORKER * com.solegendary.reignofnether.nation.Nation.roadBuild(false, connection.ownerName);
+                for (int i = 0; i < blocks && connection.isUnderConstruction(); i++)
                     if (placeNextBlock(level, connection))
                         finished.add(connection);
             } else {
@@ -269,8 +270,9 @@ public class RoadServerEvents {
     }
 
     private static boolean payForRoad(String ownerName, RoadType type, int length) {
-        int wood = getWoodCost(type, length);
-        int ore = getOreCost(type, length);
+        float nationMult = com.solegendary.reignofnether.nation.Nation.roadCost(false, ownerName);
+        int wood = Math.round(getWoodCost(type, length) * nationMult);
+        int ore = Math.round(getOreCost(type, length) * nationMult);
         boolean canAffordWood = ResourcesServerEvents.canAfford(ownerName, ResourceName.WOOD, wood);
         boolean canAffordOre = ResourcesServerEvents.canAfford(ownerName, ResourceName.ORE, ore);
         if (!canAffordWood || !canAffordOre) {

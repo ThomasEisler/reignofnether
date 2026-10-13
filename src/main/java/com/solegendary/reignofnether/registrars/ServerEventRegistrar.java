@@ -75,5 +75,6 @@ public class ServerEventRegistrar {
         vanillaEventBus.register(RoadServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.building.ConstructionSiteServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.barbarian.BarbarianServerEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.nation.NationServerEvents.class);
     }
 }

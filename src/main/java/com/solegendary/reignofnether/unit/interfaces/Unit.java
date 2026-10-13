@@ -492,8 +492,10 @@ public interface Unit {
 
         if (unitMob.tickCount % 10 == 0 && !unitMob.level().isClientSide()) {
             RoadType roadType = RoadServerEvents.getRoadTypeAt(unitMob.getOnPos());
-            if (roadType != null) {
-                int amplifier = Math.max(0, Math.round(roadType.speedBonus / 0.05f) - 1);
+            float speedBonus = (roadType != null ? roadType.speedBonus : 0f) +
+                com.solegendary.reignofnether.nation.Nation.unitSpeed(false, unit.getOwnerName());
+            if (speedBonus > 0) {
+                int amplifier = Math.max(0, Math.round(speedBonus / 0.05f) - 1);
                 unitMob.addEffect(new MobEffectInstance(MobEffectRegistrar.ROAD_MOVEMENT_SPEED.get(), 15, amplifier, true, false, false));
             }
         }

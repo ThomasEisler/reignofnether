@@ -39,8 +39,8 @@ public class ClientGameModeHelper {
             StartPosServerboundPacket.unreservePos(StartPosClientEvents.getPos().pos);
         }
         switch (gameMode) {
-            case CLASSIC -> gameMode = GameMode.SURVIVAL;
-            case SURVIVAL -> gameMode = GameMode.SANDBOX;
+            // survival mode removed in this version (barbarians replace it)
+            case CLASSIC, SURVIVAL -> gameMode = GameMode.SANDBOX;
             default -> gameMode = GameMode.CLASSIC;
         }
     }

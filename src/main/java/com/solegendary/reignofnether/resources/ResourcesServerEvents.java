@@ -175,9 +175,10 @@ public class ResourcesServerEvents {
                     resources.wood = STARTING_WOOD_READIED;
                     resources.ore = STARTING_ORE_READIED;
                 } else {
-                    resources.food = STARTING_FOOD;
-                    resources.wood = STARTING_WOOD;
-                    resources.ore = STARTING_ORE;
+                    int bonus = com.solegendary.reignofnether.nation.Nation.startingResources(false, playerName);
+                    resources.food = STARTING_FOOD + bonus;
+                    resources.wood = STARTING_WOOD + bonus;
+                    resources.ore = STARTING_ORE + bonus;
                 }
                 ResourcesClientboundPacket.syncResources(resourcesList);
                 break;
