@@ -91,35 +91,43 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Les unités **préfèrent passer par les routes** (uniquement avec le déplacement propre au mod, actif sur les cartes avec une bordure de 1280 blocs ou moins). Les routes sont reconnues par leur position : le gravier ou la pierre naturels ne comptent pas.
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
 
-### Barbares (première version)
+### Barbares
 - Faction contrôlée par l'ordinateur, **ennemie de tous**. **Actifs par défaut** dans tous les mondes ; `/rts-barbarians off` pour les désactiver (`on` pour les remettre), réglage sauvegardé avec le monde.
-- **Camps** : rien tant qu'aucun joueur n'a de caserne terminée. **5 minutes** après la première caserne d'un joueur, un camp apparaît (à 70-100 blocs des bases), puis un autre 5 minutes plus tard, etc., jusqu'à **n + 1 camps** (n = joueurs ayant une caserne depuis 5 minutes). Un joueur qui perd toutes ses casernes ne compte plus. Un camp détruit est remplacé au plus tôt 5 minutes après. Le **premier camp commence toujours au niveau 1** ; les camps suivants commencent un niveau plus haut toutes les 15 minutes, comptées à partir de l'arrivée possible du premier camp (et non de la création du monde).
-- **3 niveaux** : un camp gagne un niveau toutes les 20 minutes (200, 350 puis 500 PV).
-- **Garnison** : 3 / 5 / 8 soldats selon le niveau (milice, vindicateurs, puis arbalétriers, puis parfois un ravageur). Un soldat perdu est remplacé toutes les 30 s. Ils patrouillent autour du camp et attaquent toute unité qui approche à moins de 18 blocs.
-- **Raids** : à partir du niveau 2, toutes les 6 minutes, la moitié de la garnison part attaquer le bâtiment de joueur le plus proche.
-- **Point rouge** au-dessus de chaque soldat barbare, pour les reconnaître d'un coup d'œil (caché dans le brouillard de guerre).
-- **Butin** : détruire un camp rapporte 100 / 200 / 350 de nourriture, bois et minerai (au joueur dont une unité est la plus proche). Les survivants partent en raid.
-- **Plusieurs bâtiments par camp** : le bâtiment principal au centre, et autour (à 13 blocs, à l'est, l'ouest, le nord, le sud) :
+- **Camps** : rien tant qu'aucun joueur n'a de caserne terminée. Après un délai (5 min en normal) suivant la première caserne d'un joueur, un camp apparaît **à 130-170 blocs des bâtiments des joueurs** (et à 110 blocs au moins d'un autre camp), puis un autre après le même délai, etc., jusqu'à **n + 1 camps** (n = joueurs ayant une caserne depuis assez longtemps). Un joueur qui perd toutes ses casernes ne compte plus. Un camp détruit est remplacé au plus tôt après ce délai. Le **premier camp commence toujours au niveau 1** ; les camps suivants commencent un niveau plus haut au même rythme que la montée de niveau, compté à partir de l'arrivée possible du premier camp.
+- **5 niveaux** (depuis le 14/10/2026) ; chaque niveau garde tout ce qu'avait le précédent :
 
-| Niveau | Bâtiments annexes |
-|---|---|
-| 1 | 1 tente |
-| 2 | + 1 tente, + 1 tour |
-| 3 | + 1 tente |
+| Niveau | Nom | Nouveaux bâtiments | Remparts | Garnison (normal) | PV |
+|---|---|---|---|---|---|
+| 1 | Campement | 2 tentes, feu de camp | aucun | 3 | 200 |
+| 2 | Repaire | tour, réserve de butin (les raids commencent) | aucun | 5 | 300 |
+| 3 | Fort | forge, cor d'alarme | palissade, portes en bois (rayon ~23) | 7 | 400 |
+| 4 | Forteresse | cages à prisonniers, écurie | pierre, herses, reconstruits plus loin (rayon ~31) | 9 | 500 |
+| 5 | Citadelle | enclos à ravageurs, tente du chef | pierre, cercle encore agrandi (rayon ~35) | 12 | 650 |
 
-  Ils se construisent tout seuls. Si le bâtiment principal est détruit, les annexes s'effondrent avec lui.
-- **Remparts** dès le niveau 2 : un **cercle irrégulier fermé** (rayon 20 à 26 blocs, forme propre à chaque camp), fait de **segments de 5 colonnes qui sont des bâtiments** : ils ont de la vie, les unités les attaquent et ils s'effondrent quand ils sont trop abîmés (brèche). **2 portes** (5 blocs de large, à peu près opposées) qui **coulissent sur le côté** pour laisser passer les barbares et se referment derrière eux ; les autres doivent les casser. Niveau 2 : palissade en rondins pointus (150 PV par segment) et porte en bois (220 PV). Niveau 3 : remplacés au même endroit par un rempart de pierre crénelé (300 PV) et une herse en fer (450 PV). Quand le camp est détruit, ses remparts s'effondrent avec lui. Les remparts se posent sur le terrain tel qu'il est, sans le creuser.
-- **Apparence propre** : les barbares ont leur propre peau (fourrures, cheveux et barbe, peinture de guerre bleue, yeux rouges) : milice rousse, vindicateurs bruns, pillards blonds ; ravageurs à harnais rouge. Textures `textures/entities/barbarian_*.png`, choisies dans les renderers quand le propriétaire est « Barbarians ».
-- **Cavaliers barbares** dans les camps niveau 3 : barbare sur un cheval noir en armure de cuir rouge (c'est le cheval qui reçoit les ordres, le cavalier ne compte pas dans la garnison).
+- **Rôle des bâtiments** :
+  - **Feu de camp** : les barbares à moins de 10 blocs regagnent 1 PV par seconde.
+  - **Réserve de butin** : les pillards d'un camp qui en a une **volent** 10 de nourriture, bois et minerai de temps en temps quand ils sont près d'un bâtiment de joueur (message « Des barbares pillent vos réserves ! »). Détruire la réserve (ou le camp) donne tout ce qui a été volé au joueur dont une unité est la plus proche.
+  - **Forge** : tant qu'elle tient, les barbares du camp ont Force et Résistance et portent un casque de mailles.
+  - **Cor d'alarme** : un intrus approche → son du cor, **toute** la garnison attaque et le camp voisin le plus proche (140 blocs) envoie la moitié de la sienne. Sans cor, seuls les défenseurs à moins de 12 blocs de l'intrus réagissent.
+  - **Cages** : 2 prisonniers au départ ; un villageois de joueur tué par un barbare de ce camp est **capturé** (8 au plus). Casser les cages (ou le camp) les libère : ils rejoignent le joueur le plus proche.
+  - **Écurie** : sans elle, plus de cavaliers. **Enclos à ravageurs** : sans lui, plus de ravageurs.
+  - **Tente du chef** : un **chef barbare** (vindicateur à casque d'or, 5 fois plus de vie, 2 fois plus de dégâts). S'il tombe : la garnison a Faiblesse et Lenteur pendant 3 min ; il revient 5 min plus tard tant que sa tente tient.
+- **Garnison** : milice et vindicateurs, puis pillards (niv. 2), plus de vindicateurs (niv. 3), cavaliers (niv. 4, avec écurie), ravageurs (niv. 5, avec enclos). Un soldat perdu est remplacé régulièrement. Ils patrouillent autour du camp.
+- **Raids** : à partir du niveau 2, la moitié de la garnison part attaquer le bâtiment de joueur le plus proche.
+- **Point rouge** au-dessus de chaque soldat barbare (caché dans le brouillard de guerre).
+- **Butin** : détruire un camp rapporte 100 / 200 / 300 / 400 / 500 de nourriture, bois et minerai (au joueur dont une unité est la plus proche). Les survivants partent en raid.
+- Les bâtiments se construisent tout seuls, sur deux cercles autour du centre (13 blocs, puis 20 blocs pour l'écurie, l'enclos et la tente du chef). Si le bâtiment principal est détruit, tout s'effondre avec lui.
+- **Remparts** : un **cercle irrégulier fermé** (forme propre à chaque camp), fait de **segments de 5 colonnes qui sont des bâtiments** (vie, brèches). **2 portes** de 5 blocs qui **coulissent** pour les barbares. Palissade 150 PV par segment, porte en bois 220 ; pierre 300, herse 450. Ils se posent sur le terrain sans le creuser.
+- **Apparence propre** : peau propre (fourrures, cheveux et barbe, peinture de guerre bleue, yeux rouges) : milice rousse, vindicateurs bruns, pillards blonds ; ravageurs à harnais rouge. Cavaliers : cheval noir en armure de cuir rouge.
 - **Difficulté** : bouton « Barbares » (hache) dans le menu de départ, clic gauche : facile → normal → difficile → désactivés. Aussi `/rts-barbarians facile|normal|difficile`. Sauvegardé avec le monde.
 
-| Difficulté | Camps (et 1er camp) | Montée de niveau | Raids | Garnison niv. 1/2/3 | Remplacement | Camps en plus |
-|---|---|---|---|---|---|---|
-| Facile | 8 min | 30 min | 10 min | 2 / 3 / 5 | 45 s | 0 |
-| Normal | 5 min | 20 min | 6 min | 3 / 5 / 8 | 30 s | 1 |
-| Difficile | 3 min 30 | 14 min | 4 min | 4 / 7 / 11 | 18 s | 2 |
+| Difficulté | Camps (et 1er camp) | Montée de niveau | Niveau 5 après | Raids | Garnison niv. 1→5 | Remplacement | Camps en plus |
+|---|---|---|---|---|---|---|---|
+| Facile | 8 min | 60 min | 4 h | 10 min | 2 / 3 / 5 / 6 / 8 | 45 s | 0 |
+| Normal | 5 min | 40 min | 2 h 40 | 6 min | 3 / 5 / 7 / 9 / 12 | 30 s | 1 |
+| Difficile | 3 min 30 | 25 min | 1 h 40 | 4 min | 4 / 7 / 10 / 12 / 15 | 18 s | 2 |
 
-- ⚠️ Les **formes des camps sont provisoires** (copies de la caserne, du Hôtel de ville, de la maison et de la tour de guet) : à construire par moi.
+- ⚠️ **Formes provisoires** : camp (niveaux 4 et 5 = copies du niveau 3), tente et tour (copies), et les 8 nouveaux bâtiments (formes simples faites par programme) : à construire par moi. Noms : `barbarian_camp_lvl4`, `barbarian_camp_lvl5`, `barbarian_campfire`, `barbarian_loot`, `barbarian_forge`, `barbarian_alarm`, `barbarian_cages`, `barbarian_stable`, `barbarian_ravager_pen`, `barbarian_chief_tent` (garder les annexes à 7 × 7 au plus).
 
 ### Limite de distance pour construire
 - On ne peut construire qu'à **24 blocs maximum** d'un de ses bâtiments (même en construction). Exceptions : **entrepôts** et **ponts**. Un joueur sans bâtiment construit où il veut (premier Hôtel de ville).
@@ -240,7 +248,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | `/rts-road <pos A> <pos B> [path\|paved\|advanced]` | construit une route entre deux bâtiments (test) |
 | `/rts-barbarians on` / `off` | active / désactive les barbares |
 | `/rts-barbarians facile` / `normal` / `difficile` | choisit la difficulté des barbares |
-| `/rts-barbarian-camp <pos> [1\|2\|3]` | pose un camp barbare du niveau choisi (test) |
+| `/rts-barbarian-camp <pos> [1-5]` | pose un camp barbare du niveau choisi (test) |
 
 ---
 
@@ -268,25 +276,9 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Plus tard : encore plus de technologies.
 
 ### Barbares
-- [ ] Construire mes propres formes de camps (niveaux 1, 2, 3), de la tente et de la tour.
+- [ ] Construire mes propres formes de camps (niveaux 1 à 5), de la tente, de la tour et des 8 nouveaux bâtiments.
 - [x] Apparence propre, cavaliers au niveau 3, réglages de difficulté.
-- [ ] Nouveaux bâtiments des camps (idées validées le 14/10/2026, pas encore codées ; formes provisoires en attendant les miennes) :
-  - Niveau 1 : **feu de camp** (soigne les barbares autour) ; **réserve de butin** (les raids volent vraiment des ressources aux joueurs et les y entassent ; la détruire les rend, en plus du butin).
-  - Niveau 2 : **cor d'alarme** (ennemi proche : toute la garnison accourt, et celle d'un camp voisin) ; **forge barbare** (tant qu'elle tient : barbares plus forts et en armure) ; **cages à prisonniers** (villageois capturés en raid ; casser les cages les libère et ils rejoignent le libérateur).
-  - Niveau 3 : **écurie** (produit les cavaliers) ; **enclos à ravageurs** (produit les ravageurs) ; **tente du chef** (un chef barbare fort et unique ; le tuer affaiblit ou fait fuir la garnison).
-  - Préférés : réserve de butin + vol en raid, cor d'alarme, forge, tente du chef.
-- [ ] **5 niveaux de camp** au lieu de 3 (validé le 14/10/2026, pas encore codé) :
-
-| Niveau | Nom | Nouveaux bâtiments | Remparts | Garnison | PV |
-|---|---|---|---|---|---|
-| 1 | Campement | 2 tentes, feu de camp | aucun | 3 | 200 |
-| 2 | Repaire | tour, réserve de butin (raids qui volent) | palissade, porte en bois | 5 | 300 |
-| 3 | Fort | forge, cor d'alarme | palissade | 7 | 400 |
-| 4 | Forteresse | cages à prisonniers, écurie (cavaliers) | pierre, herses | 9 | 500 |
-| 5 | Citadelle | enclos à ravageurs, tente du chef | pierre, cercle plus grand | 12 | 650 |
-
-  - Rythme : un niveau toutes les **60 min en facile** (niveau 5 en 4 h), **40 min en normal** (2 h 40), **25 min en difficile** (1 h 40). Les nouveaux camps commencent un niveau plus haut au même rythme.
-  - Le cercle des remparts grandit avec le niveau. Formes `barbarian_camp_lvl4` et `_lvl5` à construire (provisoires en attendant).
+- [x] Camps à 5 niveaux et 8 nouveaux bâtiments (feu de camp, réserve de butin, forge, cor d'alarme, cages, écurie, enclos à ravageurs, tente du chef).
 
 ### Terrain
 - [ ] Vérifier en jeu (nouveau monde) si le relief est assez plat ; sinon baisser encore `vertical_scale`.
@@ -300,6 +292,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Mes remparts : boutons du menu des ouvriers, tracé et aperçu, Maj pour continuer, construction par les ouvriers, portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
+- [ ] Camps à 5 niveaux (`/rts-barbarian-camp ~ ~ ~ 5` pour voir le plus grand) : bâtiments qui apparaissent, remparts qui s'agrandissent, feu qui soigne, vol en raid et réserve qui rend, forge, cor d'alarme, prisonniers libérés, chef et sa défaite ; camps plus loin (130-170 blocs).
 - [ ] Barbares : nouvelle apparence (milice, vindicateur, pillard, ravageur), cavaliers au niveau 3, bouton de difficulté et ses effets.
 - [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin, bâtiments annexes, remparts (actifs par défaut, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
 - [ ] Limite de distance (24 blocs) et zone rouge pendant le placement ; plus de villages.
@@ -329,7 +322,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - Routes : dossier `road/` — `RoadType` (niveaux, mélanges, prix, vitesse), `RoadConnection`, `RoadPathTracer` (tracé A* qui contourne les obstacles + place autour des bâtiments), `RoadServerEvents` (réseau, paiement, sauvegarde, sol adaptable), `RoadSaveData`, `RoadServerboundPacket`. Chantier par les ouvriers : `RoadServerEvents.tickRoadWorkers` (toutes les 10 ticks ; `RoadConnection.built` = avancement, `upgradeTo` = amélioration en cours ; seuls les blocs posés comptent pour la vitesse et l'itinéraire). Aperçu : `RoadClientEvents` (tracé calculé côté joueur, réseau reçu par `RoadClientboundPacket`). Bouton : `ability/abilities/BuildRoad.java` (ajouté à tous les bâtiments dans le constructeur de `Building`, touche `hotkey10` = H). Vitesse : effet `ROAD_MOVEMENT_SPEED` dans `MobEffectRegistrar`, appliqué dans `Unit.tick`. Itinéraire : `KIND_ROAD` dans `unit/pathfinding/WalkabilityBuilder.java`, coût `PathfinderConfig.ROAD_COST`.
 - Chantiers : `building/BuildTimes.java` (tableau des durées), `building/ConstructionSiteServerEvents.java` (tours d'échafaudage), `BuildingPlacement.CONSTRUCTION_TIME_MULTIPLIER` (bâtiments hors tableau), `HealthBarClientEvents.renderConstructionBars` (barre).
 - Remparts : dossier `rampart/` — `RampartBuilding` (un segment = un bâtiment ; 4 sortes, blocs générés depuis les colonnes), `RampartShapes` (colonnes de chaque segment, sauvegardées dans `RampartSaveData` et envoyées aux joueurs avant les segments par `RampartShapeClientboundPacket`), `RampartServerEvents` (`placeSegment`, `removeSegment`, portes qui coulissent), `RampartGateBlock` (bloc de porte, propriété `OPEN`), `RampartTowerBuilding` (tour 3 × 3 avec garnison ; le mur est coupé par `RampartServerEvents.cutWallsUnder`). Remparts des joueurs : `RampartLine` (tracé, prix, découpe en morceaux ; commun au joueur et au serveur), `RampartClientEvents` (mode de tracé, aperçu), `RampartServerboundPacket` → `RampartServerEvents.buildPlayerRampart` ; boutons dans `RampartBuilding.getBuildButton`, touches dans `Factions`. Blocs dans `BlockRegistrar` (`PALISADE`, `PALISADE_TOP`, `STONE_RAMPART`, `WOODEN_GATE`, `IRON_GATE`), bâtiments dans `Buildings`. Les portes comptent comme passables pour le calcul des chemins (`WalkabilityBuilder`).
-- Barbares : dossier `barbarian/` (`BarbarianServerEvents` : camps, garnisons, raids, butin ; `BarbarianSaveData` ; `BarbarianDifficulty` = réglages par difficulté ; `BarbarianClientEvents` = bouton ; paquets `Barbarian*boundPacket`), bâtiments `building/buildings/neutral/BarbarianCamp.java` et `BarbarianOutbuilding.java` (tente, tour ; propriétaire « Barbarians »). Point rouge : `HealthBarClientEvents.renderBarbarianMarkers`. Annexes : `ensureOutbuildings` (emplacements `SLOT_*`) ; remparts : `planWalls` / `buildWalls` (`WALL_RADIUS`, `WALL_RADIUS_VARIATION`, forme dans `wallRadius`).
+- Barbares : dossier `barbarian/` (`BarbarianServerEvents` : camps, garnisons, raids, butin, table `SLOTS` des bâtiments annexes et leurs rôles (`tickCampfire`, `tickForge`, `soundAlarm`, `spawnChief`, `steal`, `freePrisoners`), `findCampSpot` (distance), `WALL_RADIUS` par niveau ; `BarbarianSaveData` ; `BarbarianDifficulty` = réglages par difficulté ; `BarbarianClientEvents` = bouton ; paquets `Barbarian*boundPacket`), bâtiments `building/buildings/neutral/BarbarianCamp.java` et `BarbarianOutbuilding.java` (tente, tour ; propriétaire « Barbarians »). Point rouge : `HealthBarClientEvents.renderBarbarianMarkers`. Annexes : `ensureOutbuildings` (emplacements `SLOT_*`) ; remparts : `planWalls` / `buildWalls` (`WALL_RADIUS`, `WALL_RADIUS_VARIATION`, forme dans `wallRadius`).
 - Limite de distance : `building/BuildRange.java` (rayon `RANGE`, exceptions), vérifiée dans `BuildingValidators.getPlacementValidityError`, zone rouge dans `BuildingClientEvents.drawBuildRangeZone`. Villages : tags vides `data/minecraft/tags/worldgen/biome/has_structure/village_*.json`.
 - Nations : dossier `nation/` (`Nation` = liste, dirigeants, couleurs, bonus ; `NationServerEvents` = qui joue quoi, sauvegarde ; `NationClientEvents` = fenêtre de choix et nom en haut de l'écran). Bonus branchés dans `BuildingPlacement` (construction), `RoadServerEvents`/`RoadClientEvents` (routes), `BarbarianServerEvents` (butin), `ProductionItem` (production), `GatherResourcesGoal` (récolte), `ResourcesServerEvents.resetResources` (départ), `Unit.tick` (vitesse). Factions cachées dans `hud/buttons/StartButtons.java`, Survie retirée dans `ClientGameModeHelper.cycleGameMode`.
 - Technologies : dossier `tech/` (`Tech` = liste, prix, durées, déblocages, position dans l'écran ; `TechServerEvents` = recherches des joueurs, sauvegarde `TechSaveData` ; `TechClientEvents` = écran et bouton à gauche). Bâtiments cachés dans `BuildingPlaceButton`, vérifié dans `BuildingValidators` ; niveaux dans `BuildingLevelUpgrade`. Bouton Bibliothèque : `OpenTechTree`.
@@ -361,6 +354,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Camps barbares à 5 niveaux, 8 nouveaux bâtiments avec leur rôle, remparts plus tardifs qui s'agrandissent, camps plus loin des bases |
 | 14/10/2026 | Pied des remparts : de temps en temps un buisson (feuilles) ou un caillou (pierre taillée, moussue ou non) posé au sol contre le mur |
 | 14/10/2026 | Remparts moins hauts : palissade 2-3, pierre 4, porte en bois 3, herse 4, tour 6 |
 | 14/10/2026 | Barbares : apparence propre, cavaliers au niveau 3, difficulté (facile / normal / difficile) |

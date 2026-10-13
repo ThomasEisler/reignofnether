@@ -417,7 +417,7 @@ public class CommandsServerEvents {
 				.requires(source -> source.hasPermission(2))
 				.then(Commands.argument("pos", BlockPosArgument.blockPos())
 					.executes(ctx -> placeBarbarianCamp(ctx, 1))
-					.then(Commands.argument("level", IntegerArgumentType.integer(1, 3))
+					.then(Commands.argument("level", IntegerArgumentType.integer(1, 5))
 						.executes(ctx -> placeBarbarianCamp(ctx, IntegerArgumentType.getInteger(ctx, "level")))
 					)
 				)

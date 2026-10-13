@@ -66,6 +66,22 @@ public class Buildings {
         new BarbarianOutbuilding("Barbarian Tent", "barbarian_tent", 120d, net.minecraft.world.level.block.Blocks.RED_WOOL, "textures/block/red_wool.png"));
     public static final BarbarianOutbuilding BARBARIAN_TOWER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_tower"),
         new BarbarianOutbuilding("Barbarian Tower", "barbarian_tower", 180d, net.minecraft.world.level.block.Blocks.SPRUCE_LOG, "textures/block/spruce_log.png"));
+    public static final BarbarianOutbuilding BARBARIAN_CAMPFIRE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_campfire"),
+        new BarbarianOutbuilding("Barbarian Campfire", "barbarian_campfire", 80d, net.minecraft.world.level.block.Blocks.CAMPFIRE, "textures/block/campfire_log_lit.png"));
+    public static final BarbarianOutbuilding BARBARIAN_LOOT = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_loot"),
+        new BarbarianOutbuilding("Barbarian Loot Store", "barbarian_loot", 150d, net.minecraft.world.level.block.Blocks.BARREL, "textures/block/barrel_side.png"));
+    public static final BarbarianOutbuilding BARBARIAN_FORGE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_forge"),
+        new BarbarianOutbuilding("Barbarian Forge", "barbarian_forge", 200d, net.minecraft.world.level.block.Blocks.ANVIL, "textures/block/anvil.png"));
+    public static final BarbarianOutbuilding BARBARIAN_ALARM = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_alarm"),
+        new BarbarianOutbuilding("Barbarian Alarm Horn", "barbarian_alarm", 120d, net.minecraft.world.level.block.Blocks.BELL, "textures/item/goat_horn.png"));
+    public static final BarbarianOutbuilding BARBARIAN_CAGES = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_cages"),
+        new BarbarianOutbuilding("Barbarian Cages", "barbarian_cages", 150d, net.minecraft.world.level.block.Blocks.IRON_BARS, "textures/block/iron_bars.png"));
+    public static final BarbarianOutbuilding BARBARIAN_STABLE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_stable"),
+        new BarbarianOutbuilding("Barbarian Stable", "barbarian_stable", 200d, net.minecraft.world.level.block.Blocks.HAY_BLOCK, "textures/block/hay_block_side.png"));
+    public static final BarbarianOutbuilding BARBARIAN_RAVAGER_PEN = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_ravager_pen"),
+        new BarbarianOutbuilding("Barbarian Ravager Pen", "barbarian_ravager_pen", 200d, net.minecraft.world.level.block.Blocks.COBBLESTONE_WALL, "textures/block/cobblestone.png"));
+    public static final BarbarianOutbuilding BARBARIAN_CHIEF_TENT = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_chief_tent"),
+        new BarbarianOutbuilding("Barbarian Chief Tent", "barbarian_chief_tent", 250d, net.minecraft.world.level.block.Blocks.BLACK_WOOL, "textures/block/black_wool.png"));
 
     // ramparts: segments of wall and gates, shaped by rampart/RampartShapes
     public static final com.solegendary.reignofnether.rampart.RampartBuilding PALISADE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "palisade"),

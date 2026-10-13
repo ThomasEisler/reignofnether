@@ -11,8 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 
 // A barbarian camp, owned by the barbarians AI (see barbarian/BarbarianServerEvents). It can't be built by players.
-// It grows through 3 levels over time; each level has its own structure.
-// PLACEHOLDER structures: barbarian_camp(_lvl2/_lvl3).nbt are copies of other buildings until real ones are made
+// It grows through 5 levels over time; each level has its own structure.
+// PLACEHOLDER structures: barbarian_camp(_lvl2.._lvl5).nbt are copies of other buildings until real ones are made
 public class BarbarianCamp extends Building {
 
     public final static String buildingName = "Barbarian Camp";
@@ -29,9 +29,11 @@ public class BarbarianCamp extends Building {
         this.explodeChance = 0.2f;
 
         setLevels(
-            BuildingLevel.of(structureName).maxHealth(200d).build(),
-            BuildingLevel.of("barbarian_camp_lvl2").maxHealth(350d).build(),
-            BuildingLevel.of("barbarian_camp_lvl3").maxHealth(500d).build()
+            BuildingLevel.of(structureName).maxHealth(200d).build(),       // Campement
+            BuildingLevel.of("barbarian_camp_lvl2").maxHealth(300d).build(), // Repaire
+            BuildingLevel.of("barbarian_camp_lvl3").maxHealth(400d).build(), // Fort
+            BuildingLevel.of("barbarian_camp_lvl4").maxHealth(500d).build(), // Forteresse
+            BuildingLevel.of("barbarian_camp_lvl5").maxHealth(650d).build()  // Citadelle
         );
     }
 
