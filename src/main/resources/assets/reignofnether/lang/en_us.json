@@ -2392,5 +2392,14 @@
     "hud.reignofnether.barbarian_camp_destroyed": "Barbarian camp destroyed! You loot its supplies.",
     "buildings.reignofnether.barbarian_camp": "Barbarian Camp",
     "building.reignofnether.too_far_from_base": "Too far from your buildings",
-    "building.reignofnether.needs_tech": "Requires a technology you haven't discovered yet"
+    "building.reignofnether.needs_tech": "Requires a technology you haven't discovered yet",
+    "buildings.reignofnether.palisade": "Palisade",
+    "buildings.reignofnether.stone_rampart": "Stone Rampart",
+    "buildings.reignofnether.wooden_gate": "Wooden Gate",
+    "buildings.reignofnether.iron_gate": "Portcullis",
+    "block.reignofnether.palisade": "Palisade",
+    "block.reignofnether.palisade_top": "Palisade Tip",
+    "block.reignofnether.stone_rampart": "Stone Rampart",
+    "block.reignofnether.wooden_gate": "Rampart Wooden Gate",
+    "block.reignofnether.iron_gate": "Portcullis"
 }

@@ -41,6 +41,19 @@ Limite : on construit à **24 blocs maximum** de ses bâtiments, sauf entrepôt 
 | **Tente** | `reignofnether:barbarian_tent` | — | Bâtiment annexe (1 à 3 selon le niveau) |
 | **Tour barbare** | `reignofnether:barbarian_tower` | — | Bâtiment annexe dès le niveau 2 |
 
+## Remparts
+
+Faits de segments (5 colonnes de mur) qui sont chacun un bâtiment : ils ont de la vie et s'effondrent quand ils sont trop abîmés. Leur forme suit le tracé et le terrain (pas de fichier de structure).
+
+| Bâtiment | Nom dans le code | PV par segment | Blocs | Rôle |
+|---|---|---|---|---|
+| **Palissade** | `palisade` | 150 | palissade + pointe de palissade (3-4 de haut) | Mur en bois |
+| **Rempart de pierre** | `stone_rampart` | 300 | rempart de pierre, créneaux (5 de haut) | Mur en pierre |
+| **Porte en bois** | `wooden_gate` | 220 | porte en bois de rempart (4 de haut) | Coulisse pour laisser passer ses unités |
+| **Herse** | `iron_gate` | 450 | herse (5 de haut) | Coulisse pour laisser passer ses unités |
+
+Pour l'instant, seuls les camps barbares en construisent.
+
 ## Bâtiments neutres (cartes spéciales, modes de jeu)
 
 | Bâtiment | Nom dans le bloc de structure | Rôle |

@@ -302,6 +302,18 @@ public class BlockRegistrar {
                     .sound(SoundType.GLASS)
             ), CreativeModeTabs.BUILDING_BLOCKS);
 
+    // ramparts (see rampart/): walls and gates that units can attack
+    public static final RegistryObject<Block> PALISADE = registerBlock("palisade", () ->
+            new Block(BlockBehaviour.Properties.copy(Blocks.SPRUCE_LOG).mapColor(MapColor.PODZOL)), CreativeModeTabs.BUILDING_BLOCKS);
+    public static final RegistryObject<Block> PALISADE_TOP = registerBlock("palisade_top", () ->
+            new Block(BlockBehaviour.Properties.copy(Blocks.SPRUCE_LOG).mapColor(MapColor.PODZOL).noOcclusion()), CreativeModeTabs.BUILDING_BLOCKS);
+    public static final RegistryObject<Block> STONE_RAMPART = registerBlock("stone_rampart", () ->
+            new Block(BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), CreativeModeTabs.BUILDING_BLOCKS);
+    public static final RegistryObject<Block> WOODEN_GATE = registerBlock("wooden_gate", () ->
+            new com.solegendary.reignofnether.rampart.RampartGateBlock(BlockBehaviour.Properties.copy(Blocks.SPRUCE_PLANKS).noOcclusion()), CreativeModeTabs.BUILDING_BLOCKS);
+    public static final RegistryObject<Block> IRON_GATE = registerBlock("iron_gate", () ->
+            new com.solegendary.reignofnether.rampart.RampartGateBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BARS).noOcclusion()), CreativeModeTabs.BUILDING_BLOCKS);
+
     private static boolean always(BlockState p_50775_, BlockGetter p_50776_, BlockPos p_50777_) {
         return true;
     }

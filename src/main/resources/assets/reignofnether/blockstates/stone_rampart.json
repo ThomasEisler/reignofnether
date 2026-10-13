@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "reignofnether:block/stone_rampart",
+        "weight": 5
+      },
+      {
+        "model": "reignofnether:block/stone_rampart_mossy",
+        "weight": 2
+      },
+      {
+        "model": "reignofnether:block/stone_rampart_cracked",
+        "weight": 2
+      },
+      {
+        "model": "reignofnether:block/stone_rampart_cobble",
+        "weight": 1
+      }
+    ]
+  }
+}

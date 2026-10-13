@@ -2359,5 +2359,14 @@
     "matchstart.reignofnether.hint.close": "Retour pour quitter · F12 off + on pour rouvrir.",
     "matchstart.reignofnether.settings.title": "PARAMÈTRES DE PARTIE",
     "matchstart.reignofnether.settings.mode": "Mode",
-    "matchstart.reignofnether.settings.op_only": "Les règles de jeu nécessitent les droits op."
+    "matchstart.reignofnether.settings.op_only": "Les règles de jeu nécessitent les droits op.",
+    "buildings.reignofnether.palisade": "Palissade",
+    "buildings.reignofnether.stone_rampart": "Rempart de pierre",
+    "buildings.reignofnether.wooden_gate": "Porte en bois",
+    "buildings.reignofnether.iron_gate": "Herse",
+    "block.reignofnether.palisade": "Palissade",
+    "block.reignofnether.palisade_top": "Pointe de palissade",
+    "block.reignofnether.stone_rampart": "Rempart de pierre",
+    "block.reignofnether.wooden_gate": "Porte en bois de rempart",
+    "block.reignofnether.iron_gate": "Herse"
 }

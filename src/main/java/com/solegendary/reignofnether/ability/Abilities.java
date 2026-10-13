@@ -20,6 +20,10 @@ public class Abilities {
 
     public Abilities(List<Pair<Ability, Keybinding>> abilities) {this.abilities = abilities;}
 
+    public void clear() {
+        abilities.clear();
+    }
+
     public void add(Ability ability) {
         abilities.add(new Pair<>(ability, null));
     }

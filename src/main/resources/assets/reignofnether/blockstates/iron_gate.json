@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "axis=x,open=false": {
+      "model": "reignofnether:block/iron_gate_closed"
+    },
+    "axis=z,open=false": {
+      "model": "reignofnether:block/iron_gate_closed",
+      "y": 90
+    },
+    "axis=x,open=true": {
+      "model": "reignofnether:block/iron_gate_open"
+    },
+    "axis=z,open=true": {
+      "model": "reignofnether:block/iron_gate_open"
+    }
+  }
+}

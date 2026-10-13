@@ -77,5 +77,6 @@ public class ServerEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.barbarian.BarbarianServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.nation.NationServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.tech.TechServerEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.rampart.RampartServerEvents.class);
     }
 }

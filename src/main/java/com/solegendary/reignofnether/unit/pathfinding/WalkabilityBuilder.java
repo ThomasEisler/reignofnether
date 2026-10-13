@@ -41,8 +41,11 @@ public final class WalkabilityBuilder {
         BlockState headBs = level.getBlockState(head);
         // feet/head can't sit inside a body-blocking block. leaves report non-solid but block the body, and
         // fence-likes are impassable barriers (see isFenceLike), so reject both explicitly.
-        if (MiscUtil.isSolidBlocking(level, feet) || BlockUtils.isLeafBlock(feetBs) || isFenceLike(feetBs)) return KIND_BLOCKED;
-        if (MiscUtil.isSolidBlocking(level, head) || BlockUtils.isLeafBlock(headBs) || isFenceLike(headBs)) return KIND_BLOCKED;
+        // rampart gates count as passable: they open for their owner's units, and the others bump into them and break them
+        boolean feetGate = feetBs.getBlock() instanceof com.solegendary.reignofnether.rampart.RampartGateBlock;
+        boolean headGate = headBs.getBlock() instanceof com.solegendary.reignofnether.rampart.RampartGateBlock;
+        if (!feetGate && (MiscUtil.isSolidBlocking(level, feet) || BlockUtils.isLeafBlock(feetBs) || isFenceLike(feetBs))) return KIND_BLOCKED;
+        if (!headGate && (MiscUtil.isSolidBlocking(level, head) || BlockUtils.isLeafBlock(headBs) || isFenceLike(headBs))) return KIND_BLOCKED;
 
         BlockState floorBs = level.getBlockState(floor);
         if (floorBs.getBlock() == Blocks.WATER && feetBs.getBlock() == Blocks.LILY_PAD)
@@ -73,6 +76,7 @@ public final class WalkabilityBuilder {
     // fences, walls and closed fence gates are 1.5-block barriers units can't pass or stand on (open gates are
     // walkable, so excluded). mirrors vanilla WalkNodeEvaluator's BlockPathTypes.FENCE handling.
     public static boolean isFenceLike(BlockState bs) {
+        if (bs.getBlock() instanceof com.solegendary.reignofnether.rampart.RampartGateBlock) return true; // can't stand on a gate
         if (bs.is(BlockTags.FENCES) || bs.is(BlockTags.WALLS) || bs.getBlock() instanceof SculkCatalystBlock || bs.getBlock() instanceof SculkShriekerBlock) return true;
         return bs.getBlock() instanceof FenceGateBlock && !bs.getValue(FenceGateBlock.OPEN);
     }

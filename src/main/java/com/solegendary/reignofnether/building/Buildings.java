@@ -67,6 +67,16 @@ public class Buildings {
     public static final BarbarianOutbuilding BARBARIAN_TOWER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "barbarian_tower"),
         new BarbarianOutbuilding("Barbarian Tower", "barbarian_tower", 180d, net.minecraft.world.level.block.Blocks.SPRUCE_LOG, "textures/block/spruce_log.png"));
 
+    // ramparts: segments of wall and gates, shaped by rampart/RampartShapes
+    public static final com.solegendary.reignofnether.rampart.RampartBuilding PALISADE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "palisade"),
+        new com.solegendary.reignofnether.rampart.RampartBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.PALISADE, "Palisade", 150d, net.minecraft.world.level.block.Blocks.SPRUCE_LOG, "textures/block/spruce_log.png"));
+    public static final com.solegendary.reignofnether.rampart.RampartBuilding STONE_RAMPART = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "stone_rampart"),
+        new com.solegendary.reignofnether.rampart.RampartBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.STONE, "Stone Rampart", 300d, net.minecraft.world.level.block.Blocks.STONE_BRICKS, "textures/block/stone_bricks.png"));
+    public static final com.solegendary.reignofnether.rampart.RampartBuilding WOODEN_GATE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "wooden_gate"),
+        new com.solegendary.reignofnether.rampart.RampartBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.WOODEN_GATE, "Wooden Gate", 220d, net.minecraft.world.level.block.Blocks.SPRUCE_TRAPDOOR, "textures/block/spruce_trapdoor.png"));
+    public static final com.solegendary.reignofnether.rampart.RampartBuilding IRON_GATE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "iron_gate"),
+        new com.solegendary.reignofnether.rampart.RampartBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.IRON_GATE, "Portcullis", 450d, net.minecraft.world.level.block.Blocks.IRON_BARS, "textures/block/iron_bars.png"));
+
     private static <T extends Building> T register(ResourceLocation id, T building) {
         return Registry.register(ReignOfNetherRegistries.BUILDING, id, building);
     }

@@ -723,6 +723,7 @@ public class BuildingServerEvents {
     }
 
     private static void placeBuildingsClientside() {
+        com.solegendary.reignofnether.rampart.RampartServerEvents.syncShapes(null); // segments need their shape first
         for (BuildingPlacement building : buildings) {
             BuildingClientboundPacket.placeBuilding(building.originPos,
                     building.getBuilding(),

@@ -97,6 +97,9 @@ public class BuildingBlock {
 
         if (RoadType.isRoadFloorMarker(this.blockState) && RoadType.isRoadBlock(bs))
             return true;
+        if (block1 instanceof com.solegendary.reignofnether.rampart.RampartGateBlock && block1 == block2)
+            return true; // open or closed
+
 
         return !this.blockState.isAir() && (bs == this.blockState || isMatchingWallBlock);
     }

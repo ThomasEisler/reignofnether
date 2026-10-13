@@ -75,11 +75,14 @@ public class BarbarianServerEvents {
     public static final int SLOT_DISTANCE = 13; // from the camp's centre to a secondary building's centre
     public static final int OUTBUILDING_RANGE = 24; // secondary buildings this close belong to the camp (after a restart)
 
-    // ramparts from level 2: a rough circle of walls around the camp with 4 gates
+    // ramparts from level 2: a closed rough circle of wall segments (buildings units can attack) around the camp, with
+    // 2 gates that slide open for the barbarians
     public static final int WALL_RADIUS = 23; // average radius
     public static final double WALL_RADIUS_VARIATION = 3; // how far the wall wanders in and out
     public static final int GATE_HALF_WIDTH = 2; // gates are 5 blocks wide
-    public static final int WALL_COLUMNS_PER_TICK = 6; // walls go up progressively
+    public static final int GATES = 2;
+    public static final int SEGMENT_LENGTH = 5; // columns per wall segment
+    public static final int SEGMENTS_PER_TICK = 2; // walls go up progressively
 
     private static class Camp {
         final BlockPos origin;
@@ -90,7 +93,8 @@ public class BarbarianServerEvents {
         final boolean[] slotTried = new boolean[SLOT_BUILDINGS.length];
         final List<BlockPos> outbuildings = new ArrayList<>();
         int wallTier = 0; // 0 = none, 1 = wooden palisade, 2 = stone wall
-        final Deque<BlockPos> wallQueue = new ArrayDeque<>(); // ground positions of wall columns still to build
+        boolean wallTierChecked = false; // after a restart, the tier is read from the walls standing
+        final Deque<List<int[]>> wallQueue = new ArrayDeque<>(); // segments still to place: x, z of their columns, last one is {isGate}
         Camp(BlockPos origin, int level) {
             this.origin = origin;
             this.level = level;
@@ -244,7 +248,11 @@ public class BarbarianServerEvents {
 
     private static boolean isWallBlock(BlockState bs) {
         return bs.is(Blocks.SPRUCE_LOG) || bs.is(Blocks.STONE_BRICKS) || bs.is(Blocks.COBBLESTONE) ||
-            bs.is(Blocks.MOSSY_STONE_BRICKS) || bs.is(Blocks.COBBLESTONE_WALL);
+            bs.is(Blocks.MOSSY_STONE_BRICKS) || bs.is(Blocks.COBBLESTONE_WALL) ||
+            bs.is(com.solegendary.reignofnether.registrars.BlockRegistrar.PALISADE.get()) ||
+            bs.is(com.solegendary.reignofnether.registrars.BlockRegistrar.PALISADE_TOP.get()) ||
+            bs.is(com.solegendary.reignofnether.registrars.BlockRegistrar.STONE_RAMPART.get()) ||
+            bs.getBlock() instanceof com.solegendary.reignofnether.rampart.RampartGateBlock;
     }
 
     // the wall's radius in each direction: a few slow waves with phases from the camp's position, so the circle looks
@@ -254,79 +262,108 @@ public class BarbarianServerEvents {
             0.3 * Math.sin(3 * angle + phases[1]) + 0.15 * Math.sin(5 * angle + phases[2]));
     }
 
-    private static void planWalls(BuildingPlacement main, Camp camp, int tier) {
+    private static void planWalls(ServerLevel level, BuildingPlacement main, Camp camp, int tier) {
+        // a stone wall replaces the palisade: the old segments go first
+        if (camp.wallTier > 0)
+            for (BuildingPlacement b : getCampWalls(camp))
+                com.solegendary.reignofnether.rampart.RampartServerEvents.removeSegment(level, b);
         camp.wallTier = tier;
         camp.wallQueue.clear();
         int x0 = main.centrePos.getX(), z0 = main.centrePos.getZ();
         Random rand = new Random(Mth.getSeed(x0, 7, z0));
         double[] phases = { rand.nextDouble() * Math.PI * 2, rand.nextDouble() * Math.PI * 2, rand.nextDouble() * Math.PI * 2 };
-        // 4 gates roughly a quarter turn apart
-        double gateStart = rand.nextDouble() * Math.PI / 2;
-        double[] gates = new double[4];
-        for (int g = 0; g < 4; g++)
-            gates[g] = gateStart + g * Math.PI / 2 + (rand.nextDouble() - 0.5) * 0.5;
+        // 2 gates roughly opposite each other
+        double gateStart = rand.nextDouble() * Math.PI * 2;
+        double[] gates = new double[GATES];
+        for (int g = 0; g < GATES; g++)
+            gates[g] = gateStart + g * Math.PI * 2 / GATES + (rand.nextDouble() - 0.5) * 0.6;
 
+        // the closed ring of columns, in order, with no diagonal-only joins (units could squeeze through)
+        List<int[]> ring = new ArrayList<>(); // x, z, gate index or -1
         Set<Long> seen = new HashSet<>();
         int prevX = Integer.MIN_VALUE, prevZ = 0;
         int steps = (int) (Math.PI * 2 * (WALL_RADIUS + WALL_RADIUS_VARIATION) * 3);
         for (int i = 0; i <= steps; i++) {
             double angle = i * Math.PI * 2 / steps;
             double r = wallRadius(angle, phases);
-            boolean inGate = false;
-            for (double gate : gates) {
-                double diff = Math.abs(Math.atan2(Math.sin(angle - gate), Math.cos(angle - gate)));
+            int gate = -1;
+            for (int g = 0; g < GATES; g++) {
+                double diff = Math.abs(Math.atan2(Math.sin(angle - gates[g]), Math.cos(angle - gates[g])));
                 if (diff * r <= GATE_HALF_WIDTH + 0.5)
-                    inGate = true;
+                    gate = g;
             }
             int x = x0 + (int) Math.round(Math.cos(angle) * r), z = z0 + (int) Math.round(Math.sin(angle) * r);
-            if (inGate) {
-                prevX = Integer.MIN_VALUE;
-                continue;
-            }
-            // no diagonal-only joins, units could squeeze through
             if (prevX != Integer.MIN_VALUE && x != prevX && z != prevZ && seen.add(BlockPos.asLong(x, 0, prevZ)))
-                camp.wallQueue.add(new BlockPos(x, 0, prevZ));
+                ring.add(new int[] { x, prevZ, gate });
             if (seen.add(BlockPos.asLong(x, 0, z)))
-                camp.wallQueue.add(new BlockPos(x, 0, z));
+                ring.add(new int[] { x, z, gate });
             prevX = x;
             prevZ = z;
         }
+        // start right after a gate so no segment wraps around
+        int startIdx = 0;
+        for (int i = 0; i < ring.size(); i++)
+            if (ring.get(i)[2] == 0 && ring.get((i + 1) % ring.size())[2] != 0) {
+                startIdx = (i + 1) % ring.size();
+                break;
+            }
+        // cut into segments: each gate is one segment, walls are cut every SEGMENT_LENGTH columns
+        List<int[]> current = new ArrayList<>();
+        int currentGate = -2;
+        for (int k = 0; k < ring.size(); k++) {
+            int[] col = ring.get((startIdx + k) % ring.size());
+            boolean isGate = col[2] >= 0;
+            boolean newSegment = current.isEmpty() || (isGate ? col[2] != currentGate : currentGate >= 0 || current.size() >= SEGMENT_LENGTH);
+            if (newSegment && !current.isEmpty()) {
+                current.add(new int[] { currentGate >= 0 ? 1 : 0 });
+                camp.wallQueue.add(current);
+                current = new ArrayList<>();
+            }
+            current.add(new int[] { col[0], col[1] });
+            currentGate = isGate ? col[2] : -1;
+        }
+        if (!current.isEmpty()) {
+            current.add(new int[] { currentGate >= 0 ? 1 : 0 });
+            camp.wallQueue.add(current);
+        }
     }
 
-    // builds the next few wall columns: a jagged wooden palisade (tier 1) or a stone wall with crenels (tier 2),
-    // replacing a lower tier wall where it stands
+    // the wall segments and gates standing around a camp
+    private static List<BuildingPlacement> getCampWalls(Camp camp) {
+        List<BuildingPlacement> walls = new ArrayList<>();
+        int range = WALL_RADIUS + (int) WALL_RADIUS_VARIATION + 4;
+        for (BuildingPlacement b : BuildingServerEvents.getBuildings())
+            if (b.getBuilding() instanceof com.solegendary.reignofnether.rampart.RampartBuilding && isBarbarian(b.ownerName) &&
+                b.centrePos.distSqr(camp.origin) <= range * range)
+                walls.add(b);
+        return walls;
+    }
+
+    // places the next few planned segments, building themselves; a segment waits while an old one still stands there
     private static void buildWalls(ServerLevel level, Camp camp) {
-        for (int i = 0; i < WALL_COLUMNS_PER_TICK && !camp.wallQueue.isEmpty(); i++) {
-            BlockPos column = camp.wallQueue.poll();
-            BlockPos ground = getGround(level, column.getX(), column.getZ());
-            if (ground == null)
-                continue;
-            long hash = Mth.getSeed(column.getX(), 21, column.getZ());
-            int height = camp.wallTier == 1 ? 3 + (int) Math.floorMod(hash >> 16, 2L) : 4;
-            for (int h = 1; h <= height + 1; h++) {
-                BlockPos bp = ground.above(h);
-                BlockState current = level.getBlockState(bp);
-                boolean free = (current.canBeReplaced() || current.is(BlockTags.LEAVES) || isWallBlock(current)) &&
-                    current.getFluidState().isEmpty();
-                if (!free || BuildingUtils.isPosInsideAnyBuilding(false, bp))
-                    break;
-                BlockState state;
-                if (h > height)
-                    state = Blocks.AIR.defaultBlockState(); // clears the old, taller palisade top if any
-                else if (camp.wallTier == 1)
-                    state = Blocks.SPRUCE_LOG.defaultBlockState();
-                else if (h == height)
-                    state = (column.getX() + column.getZ()) % 2 == 0 ? Blocks.COBBLESTONE_WALL.defaultBlockState() : Blocks.AIR.defaultBlockState();
-                else
-                    state = switch ((int) Math.floorMod(hash >> 20, 4L)) {
-                        case 0 -> Blocks.COBBLESTONE.defaultBlockState();
-                        case 1 -> Blocks.MOSSY_STONE_BRICKS.defaultBlockState();
-                        default -> Blocks.STONE_BRICKS.defaultBlockState();
-                    };
-                if (h > height && !isWallBlock(current))
-                    break;
-                level.setBlockAndUpdate(bp, state);
+        for (int i = 0; i < SEGMENTS_PER_TICK && !camp.wallQueue.isEmpty(); i++) {
+            List<int[]> segment = camp.wallQueue.poll();
+            boolean isGate = segment.get(segment.size() - 1)[0] == 1;
+            com.solegendary.reignofnether.rampart.RampartBuilding building = camp.wallTier == 1
+                ? (isGate ? Buildings.WOODEN_GATE : Buildings.PALISADE)
+                : (isGate ? Buildings.IRON_GATE : Buildings.STONE_RAMPART);
+            List<com.solegendary.reignofnether.rampart.RampartShapes.Column> columns = new ArrayList<>();
+            for (int c = 0; c < segment.size() - 1; c++) {
+                int x = segment.get(c)[0], z = segment.get(c)[1];
+                BlockPos ground = getGround(level, x, z);
+                if (ground == null || BuildingUtils.isPosInsideAnyBuilding(false, ground.above()))
+                    continue; // water or another building: a gap
+                columns.add(new com.solegendary.reignofnether.rampart.RampartShapes.Column(x, ground.getY(), z, building.columnHeight(x, z)));
             }
+            if (columns.isEmpty())
+                continue;
+            com.solegendary.reignofnether.rampart.RampartShapes.Column first = columns.get(0);
+            BlockPos origin = new BlockPos(first.x(), first.y(), first.z());
+            if (BuildingServerEvents.getBuildings().stream().anyMatch(b -> b.originPos.equals(origin))) {
+                camp.wallQueue.add(segment); // the old segment is being removed, try again later
+                continue;
+            }
+            com.solegendary.reignofnether.rampart.RampartServerEvents.placeSegment(level, building, OWNER_NAME, columns, new int[] {}, true);
         }
     }
 
@@ -404,11 +441,14 @@ public class BarbarianServerEvents {
             ResourcesServerEvents.addSubtractResources(new Resources(owner, loot, loot, loot));
             HudClientboundPacket.showTempMessageI18n(owner, "hud.reignofnether.barbarian_camp_destroyed");
         }
-        // its secondary buildings collapse with it (the walls stay as ruins)
+        // its secondary buildings and walls collapse with it
         for (BlockPos origin : camp.outbuildings)
             for (BuildingPlacement b : BuildingServerEvents.getBuildings())
                 if (b.originPos.equals(origin))
                     b.destroyRandomBlocks(b.getMaxHealth() * 10);
+        for (BuildingPlacement wall : getCampWalls(camp))
+            wall.destroyRandomBlocks(wall.getMaxHealth() * 10);
+        camp.wallQueue.clear();
         // the survivors of the camp go on a rampage
         for (Map.Entry<Integer, BlockPos> entry : homes.entrySet())
             if (entry.getValue().equals(camp.origin))
@@ -485,9 +525,18 @@ public class BarbarianServerEvents {
         if (placement.isBuilt) {
             camp.outbuildings.removeIf(origin -> BuildingServerEvents.getBuildings().stream().noneMatch(b -> b.originPos.equals(origin)));
             ensureOutbuildings(level, placement, camp);
+            if (!camp.wallTierChecked) { // walls standing from before a restart
+                camp.wallTierChecked = true;
+                for (BuildingPlacement wall : getCampWalls(camp)) {
+                    var kind = ((com.solegendary.reignofnether.rampart.RampartBuilding) wall.getBuilding()).kind;
+                    int tier = kind == com.solegendary.reignofnether.rampart.RampartBuilding.Kind.STONE ||
+                        kind == com.solegendary.reignofnether.rampart.RampartBuilding.Kind.IRON_GATE ? 2 : 1;
+                    camp.wallTier = Math.max(camp.wallTier, tier);
+                }
+            }
             int wallTier = camp.level >= 2 ? 2 : camp.level >= 1 ? 1 : 0;
             if (wallTier > camp.wallTier)
-                planWalls(placement, camp, wallTier);
+                planWalls(level, placement, camp, wallTier);
             buildWalls(level, camp);
         }
         if (enabled && placement.isBuilt) {

@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "reignofnether:block/palisade_top",
+        "y": 0
+      },
+      {
+        "model": "reignofnether:block/palisade_top",
+        "y": 90
+      },
+      {
+        "model": "reignofnether:block/palisade_top",
+        "y": 180
+      },
+      {
+        "model": "reignofnether:block/palisade_top",
+        "y": 270
+      }
+    ]
+  }
+}

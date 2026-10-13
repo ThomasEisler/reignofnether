@@ -609,7 +609,8 @@ public class BuildingPlacement {
     // blocks of a structure's ground row (see BuildingBlockData.GROUND_ROW_STRUCTURES) sit in the terrain's top layer:
     // when destroyed they turn back into dirt instead of leaving a hole
     public boolean isGroundRowBlock(BlockPos bp) {
-        return bp.getY() == this.originPos.getY() && !BuildingUtils.isBridge(getBuilding());
+        return bp.getY() == this.originPos.getY() && !BuildingUtils.isBridge(getBuilding()) &&
+            !(getBuilding() instanceof com.solegendary.reignofnether.rampart.RampartBuilding);
     }
 
     // are we allowed to destroy this blockPos using destroyRandomBlocks
