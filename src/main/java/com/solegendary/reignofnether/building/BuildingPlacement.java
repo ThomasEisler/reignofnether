@@ -1347,11 +1347,37 @@ public class BuildingPlacement {
             return;
         this.levelIndex = newLevelIndex;
         String structure = getBuilding().getLevels().get(newLevelIndex).structureName;
-        ArrayList<BuildingBlock> newBlocks = BuildingBlockData.getBuildingBlocksFromNbt(structure, this.getLevel());
+        ArrayList<BuildingBlock> newBlocks = centreOnFirstLevel(BuildingBlockData.getBuildingBlocksFromNbt(structure, this.getLevel()));
         setBlocks(getAbsoluteBlockData(newBlocks, this.getLevel(), originPos, rotation));
         refreshBlocks();
         if (!level.isClientSide())
             BuildingClientboundPacket.changeLevel(originPos, newLevelIndex);
+    }
+
+    // a level bigger (or smaller) than level 1 grows around the building's centre, not from one corner
+    private ArrayList<BuildingBlock> centreOnFirstLevel(ArrayList<BuildingBlock> blocks) {
+        if (blocks == null || blocks.isEmpty() || !getBuilding().hasLevels())
+            return blocks;
+        ArrayList<BuildingBlock> first = BuildingBlockData.getBuildingBlocksFromNbt(getBuilding().getLevels().get(0).structureName, this.getLevel());
+        if (first == null || first.isEmpty())
+            return blocks;
+        int dx = Math.floorDiv(width(first, true) - width(blocks, true), 2);
+        int dz = Math.floorDiv(width(first, false) - width(blocks, false), 2);
+        if (dx == 0 && dz == 0)
+            return blocks;
+        for (BuildingBlock b : blocks)
+            b.setBlockPos(b.getBlockPos().offset(dx, 0, dz));
+        return blocks;
+    }
+
+    private static int width(List<BuildingBlock> blocks, boolean alongX) {
+        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        for (BuildingBlock b : blocks) {
+            int v = alongX ? b.getBlockPos().getX() : b.getBlockPos().getZ();
+            min = Math.min(min, v);
+            max = Math.max(max, v);
+        }
+        return max - min + 1;
     }
 
     public void changeStructure(String newStructureName) {

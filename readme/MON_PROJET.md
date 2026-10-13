@@ -42,6 +42,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | **Hôtel de ville** | 380 PV | 500 PV, production +25 % (300 bois, 200 minerai, 90 s) | 650 PV, production +50 % (500 bois, 400 minerai, 120 s) |
 
 - **Tour de guet** (amélioration touche **E** quand elle est sélectionnée) : niveau 1 = 240 PV, portée 24 ; niveau 2 = 340 PV, portée 28, **dégâts de la garnison +25 %** (100 bois, 150 minerai, 45 s) ; niveau 3 = 450 PV, portée 32, dégâts +50 % (150 bois, 250 minerai, 60 s, il faut la recherche **Fortifications**). Formes `watchtower_lvl2` / `watchtower_lvl3` provisoires (copies de la tour).
+- Un niveau **plus grand** (ou plus petit) que le niveau 1 se pose **centré** sur le bâtiment : on peut agrandir les formes des niveaux 2 et 3 librement.
 - Mes nouvelles formes de **niveau 1** sont en place (caserne en bois, Hôtel de ville en campement).
 - ⚠️ Les formes des **niveaux 2 et 3 sont provisoires** (copies des anciens bâtiments de pierre) : à construire.
 
@@ -330,3 +331,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Tours de guet à 3 niveaux (PV, portée et dégâts de la garnison) |
 | 13/10/2026 | Routes : remboursement de la partie non construite si un bâtiment relié est détruit |
 | 13/10/2026 | Tour de rempart (3 × 3, garnison de 2), posable sur un mur |
+| 13/10/2026 | Niveaux de bâtiments plus grands centrés sur le bâtiment (décision : agrandir tous les bâtiments) |
