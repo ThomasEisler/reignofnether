@@ -90,6 +90,60 @@ public class RampartBuilding extends Building {
         return button;
     }
 
+    // ---- little details at the foot of the wall once a segment is finished: now and then a bush (leaves) or a
+    // stone (cobblestone) on the ground against it. Spots are picked from the position, so they don't form a pattern.
+
+    private static final int DECORATION_RARITY = 7; // one spot in N along the foot of the wall
+
+    // walls only take their own blocks (their box can be much bigger when they run diagonally); other buildings their box
+    private static boolean isTakenByBuilding(BlockPos bp) {
+        for (BuildingPlacement b : com.solegendary.reignofnether.building.BuildingServerEvents.getBuildings())
+            if (b.getBuilding() instanceof RampartBuilding ? b.isPosPartOfBuilding(bp, false) : b.isPosInsideBuilding(bp, 1))
+                return true;
+        return false;
+    }
+
+    @Override
+    public void onBuilt(BuildingPlacement placement) {
+        if (isGate() || !(placement.getLevel() instanceof net.minecraft.server.level.ServerLevel level))
+            return;
+        List<RampartShapes.Column> columns = RampartShapes.get(level, placement.originPos);
+        if (columns == null)
+            return;
+        java.util.Set<Long> wall = new java.util.HashSet<>();
+        for (RampartShapes.Column c : columns)
+            wall.add(BlockPos.asLong(c.x(), 0, c.z()));
+        int[][] sides = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+        for (RampartShapes.Column c : columns) {
+            for (int[] side : sides) {
+                int x = c.x() + side[0], z = c.z() + side[1];
+                if (wall.contains(BlockPos.asLong(x, 0, z)))
+                    continue;
+                long hash = Mth.getSeed(x, 53, z);
+                if (Math.floorMod(hash >> 8, (long) DECORATION_RARITY) != 0)
+                    continue;
+                for (int dy = 1; dy >= -1; dy--) {
+                    BlockPos ground = new BlockPos(x, c.y() + dy, z);
+                    if (!com.solegendary.reignofnether.road.RoadPathTracer.isGround(level.getBlockState(ground)))
+                        continue;
+                    BlockPos above = ground.above();
+                    BlockState here = level.getBlockState(above);
+                    if (!here.canBeReplaced() || !here.getFluidState().isEmpty() ||
+                        isTakenByBuilding(above))
+                        break;
+                    BlockState deco = switch ((int) Math.floorMod(hash >> 16, 5L)) {
+                        case 0, 1 -> Blocks.OAK_LEAVES.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true);
+                        case 2 -> Blocks.AZALEA_LEAVES.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true);
+                        case 3 -> Blocks.COBBLESTONE.defaultBlockState();
+                        default -> Blocks.MOSSY_COBBLESTONE.defaultBlockState();
+                    };
+                    level.setBlockAndUpdate(above, deco);
+                    break;
+                }
+            }
+        }
+    }
+
     @Override
     public ArrayList<BuildingBlock> getRelativeBlockData(LevelAccessor level) {
         return new ArrayList<>();
