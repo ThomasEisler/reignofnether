@@ -12,6 +12,7 @@ import java.util.Map;
 public class BarbarianSaveData extends SavedData {
 
     public boolean enabled = true; // on by default, /rts-barbarians off to disable
+    public BarbarianDifficulty difficulty = BarbarianDifficulty.NORMAL;
     public long ticksEnabled = 0; // game time the barbarians have been active, makes new camps stronger
     // player -> ticksEnabled value when their first barracks was seen finished (removed if they lose all of them)
     public final Map<String, Long> barracksSince = new HashMap<>();
@@ -33,6 +34,8 @@ public class BarbarianSaveData extends SavedData {
         BarbarianSaveData data = create();
         data.enabled = !tag.contains("enabled") || tag.getBoolean("enabled");
         data.ticksEnabled = tag.getLong("ticksEnabled");
+        if (tag.contains("difficulty"))
+            try { data.difficulty = BarbarianDifficulty.valueOf(tag.getString("difficulty")); } catch (IllegalArgumentException ignored) { }
         CompoundTag barracks = tag.getCompound("barracksSince");
         for (String player : barracks.getAllKeys())
             data.barracksSince.put(player, barracks.getLong(player));
@@ -43,6 +46,7 @@ public class BarbarianSaveData extends SavedData {
     public CompoundTag save(CompoundTag tag) {
         tag.putBoolean("enabled", enabled);
         tag.putLong("ticksEnabled", ticksEnabled);
+        tag.putString("difficulty", difficulty.name());
         CompoundTag barracks = new CompoundTag();
         barracksSince.forEach(barracks::putLong);
         tag.put("barracksSince", barracks);

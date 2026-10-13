@@ -189,6 +189,16 @@ public class HorseUnit extends Horse implements Unit, AttackerUnit {
         this.updateContainerEquipment();
     }
 
+    // a barbarian war horse: black, saddled, in blood-red leather armour
+    public void equipBarbarianHorse() {
+        this.setVariant(Variant.BLACK);
+        ItemStack armour = new ItemStack(Items.LEATHER_HORSE_ARMOR);
+        ((net.minecraft.world.item.DyeableLeatherItem) Items.LEATHER_HORSE_ARMOR).setColor(armour, 0x7A1C14);
+        this.inventory.setItem(0, new ItemStack(Items.SADDLE));
+        this.inventory.setItem(1, armour);
+        this.updateContainerEquipment();
+    }
+
     // no rearing, eating grass or bucking off its rider
     @Override
     public void makeMad() { }

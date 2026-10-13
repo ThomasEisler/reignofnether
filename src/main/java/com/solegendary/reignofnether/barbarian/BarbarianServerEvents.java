@@ -54,13 +54,7 @@ public class BarbarianServerEvents {
     private static final int TICK_INTERVAL = 20;
     // camps only come once a player has had a finished barracks for this long, then one more each time this passes,
     // up to one camp per such player plus one
-    public static final int CAMP_SPAWN_INTERVAL = 20 * 60 * 5;
-    public static final int EXTRA_CAMPS = 1;
-    public static final int CAMP_UPGRADE_INTERVAL = 20 * 60 * 20; // a camp gains a level every 20 minutes
-    public static final int NEW_CAMP_LEVEL_INTERVAL = 20 * 60 * 15; // new camps start one level higher every 15 minutes
-    public static final int RAID_INTERVAL = 20 * 60 * 6; // from level 2, a raid every 6 minutes
-    public static final int UNIT_SPAWN_INTERVAL = 20 * 30; // a camp replaces one missing defender every 30 seconds
-    public static final int[] GARRISON_SIZE = { 3, 5, 8 }; // per camp level
+    // camp timings and garrison sizes depend on the difficulty: see BarbarianDifficulty
     public static final int[] LOOT_PER_RESOURCE = { 100, 200, 350 }; // food, wood and ore given for destroying a camp
     public static final int PATROL_RADIUS = 10;
     public static final int AGGRO_RANGE = 18; // enemies this close to a camp are attacked by its garrison
@@ -88,7 +82,7 @@ public class BarbarianServerEvents {
         final BlockPos origin;
         int level;
         long ticksAtLevel = 0;
-        long ticksToRaid = RAID_INTERVAL;
+        long ticksToRaid = diff().raidInterval;
         long ticksToSpawn = 0;
         final boolean[] slotTried = new boolean[SLOT_BUILDINGS.length];
         final List<BlockPos> outbuildings = new ArrayList<>();
@@ -106,7 +100,7 @@ public class BarbarianServerEvents {
     private static final Map<Integer, BlockPos> homes = new HashMap<>(); // defender entity id -> its camp
     private static final Set<Integer> raiders = new HashSet<>();
     private static ServerLevel serverLevel = null;
-    private static long ticksToNextCamp = CAMP_SPAWN_INTERVAL;
+    private static long ticksToNextCamp = BarbarianDifficulty.NORMAL.campSpawnInterval;
     private static int ticks = 0;
 
     public static boolean isEnabled() {
@@ -119,11 +113,39 @@ public class BarbarianServerEvents {
         BarbarianSaveData data = BarbarianSaveData.getInstance(serverLevel);
         data.enabled = enabled;
         data.save();
-        ticksToNextCamp = CAMP_SPAWN_INTERVAL;
+        ticksToNextCamp = diff().campSpawnInterval;
+        BarbarianClientboundPacket.sync(data.enabled, data.difficulty);
+    }
+
+    public static void setDifficulty(BarbarianDifficulty difficulty) {
+        if (serverLevel == null)
+            return;
+        BarbarianSaveData data = BarbarianSaveData.getInstance(serverLevel);
+        data.difficulty = difficulty;
+        data.save();
+        ticksToNextCamp = Math.min(ticksToNextCamp, difficulty.campSpawnInterval);
+        BarbarianClientboundPacket.sync(data.enabled, data.difficulty);
+    }
+
+    public static BarbarianDifficulty diff() {
+        return serverLevel == null ? BarbarianDifficulty.NORMAL : BarbarianSaveData.getInstance(serverLevel).difficulty;
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent evt) {
+        if (evt.getEntity() instanceof net.minecraft.server.level.ServerPlayer player) {
+            BarbarianSaveData data = BarbarianSaveData.getInstance(player.level());
+            BarbarianClientboundPacket.sync(player, data.enabled, data.difficulty);
+        }
     }
 
     private static boolean isBarbarian(String ownerName) {
         return OWNER_NAME.equals(ownerName);
+    }
+
+    // also used client side, to draw barbarians with their own look
+    public static boolean isBarbarian(Entity entity) {
+        return entity instanceof Unit unit && OWNER_NAME.equals(unit.getOwnerName());
     }
 
     // a player (not barbarians, survival enemies or neutral)
@@ -166,13 +188,13 @@ public class BarbarianServerEvents {
             data.barracksSince.putIfAbsent(owner, data.ticksEnabled);
         int ready = 0;
         for (long since : data.barracksSince.values())
-            if (data.ticksEnabled - since >= CAMP_SPAWN_INTERVAL)
+            if (data.ticksEnabled - since >= diff().campSpawnInterval)
                 ready++;
         return ready;
     }
 
     private static void trySpawnNewCamp(ServerLevel level, int playersReady) {
-        if (playersReady == 0 || camps.size() >= playersReady + EXTRA_CAMPS)
+        if (playersReady == 0 || camps.size() >= playersReady + diff().extraCamps)
             return;
         // 70-100 blocks away from players' buildings (and other camps, which count as buildings there)
         List<BlockPos> spawns = WaveSpawner.getValidSpawnPoints(1, level, false, 8);
@@ -182,9 +204,9 @@ public class BarbarianServerEvents {
         // not when the world was made: the first camp is always level 1, then they grow from there
         BarbarianSaveData data = BarbarianSaveData.getInstance(level);
         long firstBarracks = data.barracksSince.values().stream().mapToLong(Long::longValue).min().orElse(data.ticksEnabled);
-        long sinceCampsBegan = Math.max(0, data.ticksEnabled - firstBarracks - CAMP_SPAWN_INTERVAL);
-        placeCamp(spawns.get(0), (int) Math.min(2, sinceCampsBegan / NEW_CAMP_LEVEL_INTERVAL));
-        ticksToNextCamp = CAMP_SPAWN_INTERVAL;
+        long sinceCampsBegan = Math.max(0, data.ticksEnabled - firstBarracks - diff().campSpawnInterval);
+        placeCamp(spawns.get(0), (int) Math.min(2, sinceCampsBegan / diff().newCampLevelInterval));
+        ticksToNextCamp = diff().campSpawnInterval;
     }
 
     private static boolean isOutbuilding(Building building) {
@@ -378,6 +400,7 @@ public class BarbarianServerEvents {
             types.add(EntityRegistrar.PILLAGER_UNIT.get());
         if (level >= 2) {
             types.add(EntityRegistrar.VINDICATOR_UNIT.get());
+            types.add(EntityRegistrar.HORSE_UNIT.get()); // cavaliers
             if (random.nextInt(4) == 0)
                 types.add(EntityRegistrar.RAVAGER_UNIT.get());
         }
@@ -390,9 +413,18 @@ public class BarbarianServerEvents {
         BlockPos ground = placement.getClosestGroundPos(near, 2);
         if (ground == null)
             return;
-        Entity entity = UnitServerEvents.spawnMob(types.get(random.nextInt(types.size())), level, ground, OWNER_NAME);
-        if (entity != null)
-            homes.put(entity.getId(), camp.origin);
+        EntityType<? extends Mob> type = types.get(random.nextInt(types.size()));
+        Entity entity = UnitServerEvents.spawnMob(type, level, ground, OWNER_NAME);
+        if (entity == null)
+            return;
+        homes.put(entity.getId(), camp.origin);
+        // cavaliers: a barbarian on a war horse (the horse is the one given orders)
+        if (entity instanceof com.solegendary.reignofnether.unit.units.villagers.HorseUnit horse) {
+            horse.equipBarbarianHorse();
+            Entity rider = UnitServerEvents.spawnMob(EntityRegistrar.VINDICATOR_UNIT.get(), level, ground, OWNER_NAME);
+            if (rider != null)
+                rider.startRiding(horse, true);
+        }
     }
 
     private static void order(LivingEntity entity, UnitAction action, BlockPos target) {
@@ -437,7 +469,7 @@ public class BarbarianServerEvents {
     }
 
     private static void onCampDestroyed(Camp camp) {
-        ticksToNextCamp = Math.max(ticksToNextCamp, CAMP_SPAWN_INTERVAL); // a respite before a new camp replaces it
+        ticksToNextCamp = Math.max(ticksToNextCamp, diff().campSpawnInterval); // a respite before a new camp replaces it
         LivingEntity looter = getNearestPlayerUnit(camp.origin, LOOT_RANGE);
         if (looter != null) {
             String owner = ((Unit) looter).getOwnerName();
@@ -464,7 +496,8 @@ public class BarbarianServerEvents {
     private static void adoptStrayUnits() {
         for (LivingEntity entity : UnitServerEvents.getAllUnits()) {
             int id = entity.getId();
-            if (!entity.isAlive() || !isBarbarian(((Unit) entity).getOwnerName()) || homes.containsKey(id) || raiders.contains(id))
+            if (!entity.isAlive() || !isBarbarian(((Unit) entity).getOwnerName()) || homes.containsKey(id) || raiders.contains(id) ||
+                entity.isPassenger())
                 continue;
             Camp nearest = null;
             double nearestDist = (double) HOME_RANGE * HOME_RANGE;
@@ -546,22 +579,22 @@ public class BarbarianServerEvents {
         if (enabled && placement.isBuilt) {
             // grow
             camp.ticksAtLevel += TICK_INTERVAL;
-            if (camp.level < 2 && camp.ticksAtLevel >= CAMP_UPGRADE_INTERVAL) {
+            if (camp.level < 2 && camp.ticksAtLevel >= diff().campUpgradeInterval) {
                 camp.ticksAtLevel = 0;
                 placement.applyLevel(camp.level + 1);
                 camp.level = placement.getLevelIndex();
             }
             // replace fallen defenders
             camp.ticksToSpawn -= TICK_INTERVAL;
-            if (garrison.size() < GARRISON_SIZE[camp.level] && camp.ticksToSpawn <= 0) {
-                camp.ticksToSpawn = UNIT_SPAWN_INTERVAL;
+            if (garrison.size() < diff().garrisonSize[camp.level] && camp.ticksToSpawn <= 0) {
+                camp.ticksToSpawn = diff().unitSpawnInterval;
                 spawnDefender(level, placement, camp);
             }
             // raids
             if (camp.level >= 1) {
                 camp.ticksToRaid -= TICK_INTERVAL;
                 if (camp.ticksToRaid <= 0 && garrison.size() >= 2) {
-                    camp.ticksToRaid = RAID_INTERVAL;
+                    camp.ticksToRaid = diff().raidInterval;
                     for (int i = 0; i < garrison.size() / 2; i++) {
                         LivingEntity raider = garrison.get(i);
                         homes.remove(raider.getId());
@@ -608,7 +641,7 @@ public class BarbarianServerEvents {
         camps.clear();
         homes.clear();
         raiders.clear();
-        ticksToNextCamp = CAMP_SPAWN_INTERVAL;
+        ticksToNextCamp = diff().campSpawnInterval;
     }
 
     @SubscribeEvent

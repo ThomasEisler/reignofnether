@@ -56,7 +56,8 @@ public class VillagerUnitProfessionLayer<T extends LivingEntity & VillagerDataHo
     }
 
     public void render(@NotNull PoseStack pMatrixStack, @NotNull MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if (!pLivingEntity.isInvisible()) {
+        // barbarians wear their own furs, not villager clothes
+        if (!pLivingEntity.isInvisible() && !com.solegendary.reignofnether.barbarian.BarbarianServerEvents.isBarbarian(pLivingEntity)) {
             VillagerData vData = pLivingEntity.getVillagerData();
             VillagerType biomeType = vData.getType();
             VillagerProfession profession = vData.getProfession();

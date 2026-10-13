@@ -409,6 +409,9 @@ public class CommandsServerEvents {
 				.requires(source -> source.hasPermission(2))
 				.then(Commands.literal("on").executes(ctx -> setBarbarians(ctx, true)))
 				.then(Commands.literal("off").executes(ctx -> setBarbarians(ctx, false)))
+				.then(Commands.literal("facile").executes(ctx -> setBarbarianDifficulty(ctx, com.solegendary.reignofnether.barbarian.BarbarianDifficulty.EASY)))
+				.then(Commands.literal("normal").executes(ctx -> setBarbarianDifficulty(ctx, com.solegendary.reignofnether.barbarian.BarbarianDifficulty.NORMAL)))
+				.then(Commands.literal("difficile").executes(ctx -> setBarbarianDifficulty(ctx, com.solegendary.reignofnether.barbarian.BarbarianDifficulty.HARD)))
 		);
 		dispatcher.register(Commands.literal("rts-barbarian-camp")
 				.requires(source -> source.hasPermission(2))
@@ -795,6 +798,14 @@ public class CommandsServerEvents {
 		com.solegendary.reignofnether.barbarian.BarbarianServerEvents.setEnabled(enabled);
 		ctx.getSource().sendSuccess(() -> Component.literal(enabled ?
 			"Barbarians enabled: camps will appear away from your bases" : "Barbarians disabled"), true);
+		return 1;
+	}
+
+	private static int setBarbarianDifficulty(CommandContext<CommandSourceStack> ctx, com.solegendary.reignofnether.barbarian.BarbarianDifficulty difficulty) {
+		com.solegendary.reignofnether.barbarian.BarbarianServerEvents.setDifficulty(difficulty);
+		com.solegendary.reignofnether.barbarian.BarbarianServerEvents.setEnabled(true);
+		ctx.getSource().sendSuccess(() -> Component.translatable("hud.reignofnether.barbarians.title",
+			Component.translatable(difficulty.langKey())), true);
 		return 1;
 	}
 

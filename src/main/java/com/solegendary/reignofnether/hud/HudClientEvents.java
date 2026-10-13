@@ -1693,6 +1693,16 @@ public class HudClientEvents {
 
                 if (ClientGameModeHelper.gameMode != GameMode.SANDBOX) {
 
+                    // barbarians setting (in the empty slot of the hidden monster faction)
+                    Button barbariansButton = com.solegendary.reignofnether.barbarian.BarbarianClientEvents.getButton();
+                    barbariansButton.render(evt.getGuiGraphics(),
+                            screenWidth - (StartButtons.ICON_SIZE * 6),
+                            StartButtons.ICON_SIZE / 2,
+                            mouseX,
+                            mouseY
+                    );
+                    renderedButtons.add(barbariansButton);
+
                     if (!StartPosClientEvents.isEnabled()) {
                         if (!StartButtons.villagerStartButton.isHidden.get()) {
                             StartButtons.villagerStartButton.render(evt.getGuiGraphics(),

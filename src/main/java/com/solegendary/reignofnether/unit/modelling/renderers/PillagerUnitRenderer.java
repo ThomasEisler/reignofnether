@@ -12,6 +12,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class PillagerUnitRenderer extends AbstractVillagerUnitRenderer<PillagerUnit> {
     private static final ResourceLocation PILLAGER_UNIT = ResourceLocation.fromNamespaceAndPath("reignofnether", "textures/entities/pillager_unit.png");
+    private static final ResourceLocation BARBARIAN = ResourceLocation.fromNamespaceAndPath("reignofnether", "textures/entities/barbarian_pillager.png");
 
     public PillagerUnitRenderer(EntityRendererProvider.Context p_174354_) {
         super(p_174354_, new VillagerUnitModel<>(p_174354_.bakeLayer(VillagerUnitModel.LAYER_LOCATION)), 0.5F);
@@ -19,6 +20,6 @@ public class PillagerUnitRenderer extends AbstractVillagerUnitRenderer<PillagerU
     }
 
     public ResourceLocation getTextureLocation(PillagerUnit pEntity) {
-        return PILLAGER_UNIT;
+        return com.solegendary.reignofnether.barbarian.BarbarianServerEvents.isBarbarian(pEntity) ? BARBARIAN : PILLAGER_UNIT;
     }
 }

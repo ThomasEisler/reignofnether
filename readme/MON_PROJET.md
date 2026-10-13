@@ -6,7 +6,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Ma copie : https://github.com/ThomasEisler/reignofnether
 - Ma branche de travail : **`ma-version`** (ne jamais travailler directement sur `1.20.1-dev`)
 
-> Ce fichier est tenu à jour à chaque étape. Dernière mise à jour : 13 octobre 2026.
+> Ce fichier est tenu à jour à chaque étape. Dernière mise à jour : 14 octobre 2026.
 
 ---
 
@@ -109,6 +109,16 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
   Ils se construisent tout seuls. Si le bâtiment principal est détruit, les annexes s'effondrent avec lui.
 - **Remparts** dès le niveau 2 : un **cercle irrégulier fermé** (rayon 20 à 26 blocs, forme propre à chaque camp), fait de **segments de 5 colonnes qui sont des bâtiments** : ils ont de la vie, les unités les attaquent et ils s'effondrent quand ils sont trop abîmés (brèche). **2 portes** (5 blocs de large, à peu près opposées) qui **coulissent sur le côté** pour laisser passer les barbares et se referment derrière eux ; les autres doivent les casser. Niveau 2 : palissade en rondins pointus (150 PV par segment) et porte en bois (220 PV). Niveau 3 : remplacés au même endroit par un rempart de pierre crénelé (300 PV) et une herse en fer (450 PV). Quand le camp est détruit, ses remparts s'effondrent avec lui. Les remparts se posent sur le terrain tel qu'il est, sans le creuser.
+- **Apparence propre** : les barbares ont leur propre peau (fourrures, cheveux et barbe, peinture de guerre bleue, yeux rouges) : milice rousse, vindicateurs bruns, pillards blonds ; ravageurs à harnais rouge. Textures `textures/entities/barbarian_*.png`, choisies dans les renderers quand le propriétaire est « Barbarians ».
+- **Cavaliers barbares** dans les camps niveau 3 : barbare sur un cheval noir en armure de cuir rouge (c'est le cheval qui reçoit les ordres, le cavalier ne compte pas dans la garnison).
+- **Difficulté** : bouton « Barbares » (hache) dans le menu de départ, clic gauche : facile → normal → difficile → désactivés. Aussi `/rts-barbarians facile|normal|difficile`. Sauvegardé avec le monde.
+
+| Difficulté | Camps (et 1er camp) | Montée de niveau | Raids | Garnison niv. 1/2/3 | Remplacement | Camps en plus |
+|---|---|---|---|---|---|---|
+| Facile | 8 min | 30 min | 10 min | 2 / 3 / 5 | 45 s | 0 |
+| Normal | 5 min | 20 min | 6 min | 3 / 5 / 8 | 30 s | 1 |
+| Difficile | 3 min 30 | 14 min | 4 min | 4 / 7 / 11 | 18 s | 2 |
+
 - ⚠️ Les **formes des camps sont provisoires** (copies de la caserne, du Hôtel de ville, de la maison et de la tour de guet) : à construire par moi.
 
 ### Limite de distance pour construire
@@ -210,6 +220,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | `/rts-rebuild-buildings reignofnether:barracks` | reconstruit tous les bâtiments d'un type avec leur forme actuelle |
 | `/rts-road <pos A> <pos B> [path\|paved\|advanced]` | construit une route entre deux bâtiments (test) |
 | `/rts-barbarians on` / `off` | active / désactive les barbares |
+| `/rts-barbarians facile` / `normal` / `difficile` | choisit la difficulté des barbares |
 | `/rts-barbarian-camp <pos> [1\|2\|3]` | pose un camp barbare du niveau choisi (test) |
 
 ---
@@ -238,7 +249,8 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 ### Barbares
 - [ ] Construire mes propres formes de camps (niveaux 1, 2, 3), de la tente et de la tour.
-- [ ] Plus tard : d'autres bâtiments dans les camps, unités barbares à eux (apparence propre), réglages de difficulté.
+- [x] Apparence propre, cavaliers au niveau 3, réglages de difficulté.
+- [ ] Plus tard : d'autres bâtiments dans les camps.
 
 ### Terrain
 - [ ] Vérifier en jeu (nouveau monde) si le relief est assez plat ; sinon baisser encore `vertical_scale`.
@@ -252,6 +264,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Mes remparts : boutons du menu des ouvriers, tracé et aperçu, Maj pour continuer, construction par les ouvriers, portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
+- [ ] Barbares : nouvelle apparence (milice, vindicateur, pillard, ravageur), cavaliers au niveau 3, bouton de difficulté et ses effets.
 - [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin, bâtiments annexes, remparts (actifs par défaut, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
 - [ ] Limite de distance (24 blocs) et zone rouge pendant le placement ; plus de villages.
 - [ ] Nations : fenêtre de choix qui s'ouvre toute seule, bannières Minecraft, une nation par joueur, nom en haut de l'écran, bonus de chaque nation.
@@ -278,7 +291,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - Routes : dossier `road/` — `RoadType` (niveaux, mélanges, prix, vitesse), `RoadConnection`, `RoadPathTracer` (tracé A* qui contourne les obstacles + place autour des bâtiments), `RoadServerEvents` (réseau, paiement, sauvegarde, sol adaptable), `RoadSaveData`, `RoadServerboundPacket`. Chantier par les ouvriers : `RoadServerEvents.tickRoadWorkers` (toutes les 10 ticks ; `RoadConnection.built` = avancement, `upgradeTo` = amélioration en cours ; seuls les blocs posés comptent pour la vitesse et l'itinéraire). Aperçu : `RoadClientEvents` (tracé calculé côté joueur, réseau reçu par `RoadClientboundPacket`). Bouton : `ability/abilities/BuildRoad.java` (ajouté à tous les bâtiments dans le constructeur de `Building`, touche `hotkey10` = H). Vitesse : effet `ROAD_MOVEMENT_SPEED` dans `MobEffectRegistrar`, appliqué dans `Unit.tick`. Itinéraire : `KIND_ROAD` dans `unit/pathfinding/WalkabilityBuilder.java`, coût `PathfinderConfig.ROAD_COST`.
 - Chantiers : `building/BuildTimes.java` (tableau des durées), `building/ConstructionSiteServerEvents.java` (tours d'échafaudage), `BuildingPlacement.CONSTRUCTION_TIME_MULTIPLIER` (bâtiments hors tableau), `HealthBarClientEvents.renderConstructionBars` (barre).
 - Remparts : dossier `rampart/` — `RampartBuilding` (un segment = un bâtiment ; 4 sortes, blocs générés depuis les colonnes), `RampartShapes` (colonnes de chaque segment, sauvegardées dans `RampartSaveData` et envoyées aux joueurs avant les segments par `RampartShapeClientboundPacket`), `RampartServerEvents` (`placeSegment`, `removeSegment`, portes qui coulissent), `RampartGateBlock` (bloc de porte, propriété `OPEN`), `RampartTowerBuilding` (tour 3 × 3 avec garnison ; le mur est coupé par `RampartServerEvents.cutWallsUnder`). Remparts des joueurs : `RampartLine` (tracé, prix, découpe en morceaux ; commun au joueur et au serveur), `RampartClientEvents` (mode de tracé, aperçu), `RampartServerboundPacket` → `RampartServerEvents.buildPlayerRampart` ; boutons dans `RampartBuilding.getBuildButton`, touches dans `Factions`. Blocs dans `BlockRegistrar` (`PALISADE`, `PALISADE_TOP`, `STONE_RAMPART`, `WOODEN_GATE`, `IRON_GATE`), bâtiments dans `Buildings`. Les portes comptent comme passables pour le calcul des chemins (`WalkabilityBuilder`).
-- Barbares : dossier `barbarian/` (`BarbarianServerEvents` : camps, garnisons, raids, butin ; `BarbarianSaveData`), bâtiments `building/buildings/neutral/BarbarianCamp.java` et `BarbarianOutbuilding.java` (tente, tour ; propriétaire « Barbarians »). Point rouge : `HealthBarClientEvents.renderBarbarianMarkers`. Annexes : `ensureOutbuildings` (emplacements `SLOT_*`) ; remparts : `planWalls` / `buildWalls` (`WALL_RADIUS`, `WALL_RADIUS_VARIATION`, forme dans `wallRadius`).
+- Barbares : dossier `barbarian/` (`BarbarianServerEvents` : camps, garnisons, raids, butin ; `BarbarianSaveData` ; `BarbarianDifficulty` = réglages par difficulté ; `BarbarianClientEvents` = bouton ; paquets `Barbarian*boundPacket`), bâtiments `building/buildings/neutral/BarbarianCamp.java` et `BarbarianOutbuilding.java` (tente, tour ; propriétaire « Barbarians »). Point rouge : `HealthBarClientEvents.renderBarbarianMarkers`. Annexes : `ensureOutbuildings` (emplacements `SLOT_*`) ; remparts : `planWalls` / `buildWalls` (`WALL_RADIUS`, `WALL_RADIUS_VARIATION`, forme dans `wallRadius`).
 - Limite de distance : `building/BuildRange.java` (rayon `RANGE`, exceptions), vérifiée dans `BuildingValidators.getPlacementValidityError`, zone rouge dans `BuildingClientEvents.drawBuildRangeZone`. Villages : tags vides `data/minecraft/tags/worldgen/biome/has_structure/village_*.json`.
 - Nations : dossier `nation/` (`Nation` = liste, dirigeants, couleurs, bonus ; `NationServerEvents` = qui joue quoi, sauvegarde ; `NationClientEvents` = fenêtre de choix et nom en haut de l'écran). Bonus branchés dans `BuildingPlacement` (construction), `RoadServerEvents`/`RoadClientEvents` (routes), `BarbarianServerEvents` (butin), `ProductionItem` (production), `GatherResourcesGoal` (récolte), `ResourcesServerEvents.resetResources` (départ), `Unit.tick` (vitesse). Factions cachées dans `hud/buttons/StartButtons.java`, Survie retirée dans `ClientGameModeHelper.cycleGameMode`.
 - Technologies : dossier `tech/` (`Tech` = liste, prix, durées, déblocages, position dans l'écran ; `TechServerEvents` = recherches des joueurs, sauvegarde `TechSaveData` ; `TechClientEvents` = écran et bouton à gauche). Bâtiments cachés dans `BuildingPlaceButton`, vérifié dans `BuildingValidators` ; niveaux dans `BuildingLevelUpgrade`. Bouton Bibliothèque : `OpenTechTree`.
@@ -310,6 +323,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Barbares : apparence propre, cavaliers au niveau 3, difficulté (facile / normal / difficile) |
 | 13/10/2026 | Barbares : camps à 3 niveaux, garnisons, raids, butin |
 | 13/10/2026 | Camps barbares : bâtiments annexes et remparts (palissade puis pierre) |
 | 13/10/2026 | Point rouge au-dessus des barbares ; une seule faction (villageois), Survie retirée, nations façon Civilization avec bonus |

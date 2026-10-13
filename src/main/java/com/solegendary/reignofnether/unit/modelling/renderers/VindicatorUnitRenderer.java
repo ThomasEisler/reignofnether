@@ -15,6 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class VindicatorUnitRenderer extends AbstractVillagerUnitRenderer<VindicatorUnit> {
     private static final ResourceLocation VINDICATOR_UNIT = ResourceLocation.fromNamespaceAndPath("reignofnether", "textures/entities/vindicator_unit.png");
+    private static final ResourceLocation BARBARIAN = ResourceLocation.fromNamespaceAndPath("reignofnether", "textures/entities/barbarian_vindicator.png");
 
     public VindicatorUnitRenderer(EntityRendererProvider.Context p_174439_) {
         super(p_174439_, new VillagerUnitModel<>(p_174439_.bakeLayer(VillagerUnitModel.LAYER_LOCATION)), 0.5F);
@@ -28,6 +29,6 @@ public class VindicatorUnitRenderer extends AbstractVillagerUnitRenderer<Vindica
     }
 
     public ResourceLocation getTextureLocation(VindicatorUnit p_116324_) {
-        return VINDICATOR_UNIT;
+        return com.solegendary.reignofnether.barbarian.BarbarianServerEvents.isBarbarian(p_116324_) ? BARBARIAN : VINDICATOR_UNIT;
     }
 }
