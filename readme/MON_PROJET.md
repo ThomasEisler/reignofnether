@@ -120,6 +120,20 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - **Un peu plus d'arbres dans les plaines** (et les prairies) : environ un arbre isolé tous les deux chunks en plus, pour avoir assez de bois (`data/reignofnether/forge/biome_modifier/extra_plains_trees.json` ; densité réglée par `chance` dans `worldgen/placed_feature/extra_plains_trees.json`). Seulement dans les nouvelles zones.
 - **Plus de villages Minecraft** générés (seulement dans les nouvelles zones / nouveaux mondes).
 
+### Mes remparts
+- Dans le **menu de construction des ouvriers** : **Palissade** (touche **D**), **Rempart de pierre** (**J**, après la recherche Maçonnerie), **Porte en bois** (**K**), **Herse** (**Z**, après Métallurgie).
+- **Mur** : cliquer où il commence, puis où il finit ; le mur (jusqu'à 48 blocs de long) et son prix suivent le curseur, en vert si c'est possible, en rouge sinon (avec la raison). **Maj + clic** : continuer le mur depuis ce point. Clic droit ou Échap : arrêter.
+- **Porte** : 5 blocs de large, cliquer où elle commence puis dans sa direction. Elle **coulisse pour mes unités** (et mes alliés) et reste fermée pour les autres, qui doivent la casser.
+- Construits par les **ouvriers sélectionnés**, morceau par morceau (5 blocs). Chaque morceau a de la vie : les barbares (et les ennemis) peuvent les attaquer et faire une brèche.
+- Le mur suit le terrain sans le creuser, s'arrête à l'eau, et s'accroche aux murs et bâtiments existants. Il faut rester à portée de ses bâtiments (24 blocs).
+
+| Sorte | Prix | PV par morceau |
+|---|---|---|
+| Palissade | 4 bois par bloc de long | 150 |
+| Rempart de pierre | 3 bois + 4 minerai par bloc | 300 |
+| Porte en bois | 80 bois | 220 |
+| Herse | 60 bois + 100 minerai | 450 |
+
 ### Cavalier (nouvelle unité)
 - Produit dans la **caserne** (touche **R**) : un **vindicateur sur un cheval de guerre** (brun, sellé, armure de fer). Plus fort que le vindicateur et le pillard : 250 nourriture, 100 bois, 75 minerai, 50 s, 5 de population.
 - Le **cheval est l'unité** qu'on sélectionne : il se déplace vite (0,34 contre 0,28 pour le vindicateur), a 120 PV + armure, et frappe fort au corps à corps (10 dégâts). Le vindicateur est assis dessus ; si le cheval meurt, il descend et continue à pied.
@@ -208,7 +222,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 ### Remparts
 - [x] Blocs et bâtiments de rempart (palissade, rempart de pierre, porte en bois, herse) avec de la vie, portes qui s'ouvrent pour leurs unités ; utilisés par les camps barbares.
-- [ ] Construire des **remparts de joueurs** comme les routes : choisir deux points, **aperçu** du tracé et du prix, construits par les ouvriers.
+- [x] Remparts de joueurs : tracé en deux clics, aperçu et prix, construits par les ouvriers, portes qui s'ouvrent pour ses unités.
 - [ ] Pouvoir **intégrer une tour de garde** dans les remparts.
 
 ### Arbre des technologies
@@ -225,6 +239,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Hôtel de ville).
 - [ ] Routes : tracé, prix, place autour des bâtiments, passage aux niveaux pavée / avancée, sol des bâtiments qui change de matériau.
 - [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
+- [ ] Mes remparts : boutons du menu des ouvriers, tracé et aperçu, Maj pour continuer, construction par les ouvriers, portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
 - [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin, bâtiments annexes, remparts (actifs par défaut, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
@@ -252,7 +267,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - Fondations de secours : `BuildingServerEvents` (placement d'un bâtiment, après la boucle sur `startingBlockTypes`).
 - Routes : dossier `road/` — `RoadType` (niveaux, mélanges, prix, vitesse), `RoadConnection`, `RoadPathTracer` (tracé A* qui contourne les obstacles + place autour des bâtiments), `RoadServerEvents` (réseau, paiement, sauvegarde, sol adaptable), `RoadSaveData`, `RoadServerboundPacket`. Chantier par les ouvriers : `RoadServerEvents.tickRoadWorkers` (toutes les 10 ticks ; `RoadConnection.built` = avancement, `upgradeTo` = amélioration en cours ; seuls les blocs posés comptent pour la vitesse et l'itinéraire). Aperçu : `RoadClientEvents` (tracé calculé côté joueur, réseau reçu par `RoadClientboundPacket`). Bouton : `ability/abilities/BuildRoad.java` (ajouté à tous les bâtiments dans le constructeur de `Building`, touche `hotkey10` = H). Vitesse : effet `ROAD_MOVEMENT_SPEED` dans `MobEffectRegistrar`, appliqué dans `Unit.tick`. Itinéraire : `KIND_ROAD` dans `unit/pathfinding/WalkabilityBuilder.java`, coût `PathfinderConfig.ROAD_COST`.
 - Chantiers : `building/BuildTimes.java` (tableau des durées), `building/ConstructionSiteServerEvents.java` (tours d'échafaudage), `BuildingPlacement.CONSTRUCTION_TIME_MULTIPLIER` (bâtiments hors tableau), `HealthBarClientEvents.renderConstructionBars` (barre).
-- Remparts : dossier `rampart/` — `RampartBuilding` (un segment = un bâtiment ; 4 sortes, blocs générés depuis les colonnes), `RampartShapes` (colonnes de chaque segment, sauvegardées dans `RampartSaveData` et envoyées aux joueurs avant les segments par `RampartShapeClientboundPacket`), `RampartServerEvents` (`placeSegment`, `removeSegment`, portes qui coulissent), `RampartGateBlock` (bloc de porte, propriété `OPEN`). Blocs dans `BlockRegistrar` (`PALISADE`, `PALISADE_TOP`, `STONE_RAMPART`, `WOODEN_GATE`, `IRON_GATE`), bâtiments dans `Buildings`. Les portes comptent comme passables pour le calcul des chemins (`WalkabilityBuilder`).
+- Remparts : dossier `rampart/` — `RampartBuilding` (un segment = un bâtiment ; 4 sortes, blocs générés depuis les colonnes), `RampartShapes` (colonnes de chaque segment, sauvegardées dans `RampartSaveData` et envoyées aux joueurs avant les segments par `RampartShapeClientboundPacket`), `RampartServerEvents` (`placeSegment`, `removeSegment`, portes qui coulissent), `RampartGateBlock` (bloc de porte, propriété `OPEN`). Remparts des joueurs : `RampartLine` (tracé, prix, découpe en morceaux ; commun au joueur et au serveur), `RampartClientEvents` (mode de tracé, aperçu), `RampartServerboundPacket` → `RampartServerEvents.buildPlayerRampart` ; boutons dans `RampartBuilding.getBuildButton`, touches dans `Factions`. Blocs dans `BlockRegistrar` (`PALISADE`, `PALISADE_TOP`, `STONE_RAMPART`, `WOODEN_GATE`, `IRON_GATE`), bâtiments dans `Buildings`. Les portes comptent comme passables pour le calcul des chemins (`WalkabilityBuilder`).
 - Barbares : dossier `barbarian/` (`BarbarianServerEvents` : camps, garnisons, raids, butin ; `BarbarianSaveData`), bâtiments `building/buildings/neutral/BarbarianCamp.java` et `BarbarianOutbuilding.java` (tente, tour ; propriétaire « Barbarians »). Point rouge : `HealthBarClientEvents.renderBarbarianMarkers`. Annexes : `ensureOutbuildings` (emplacements `SLOT_*`) ; remparts : `planWalls` / `buildWalls` (`WALL_RADIUS`, `WALL_RADIUS_VARIATION`, forme dans `wallRadius`).
 - Limite de distance : `building/BuildRange.java` (rayon `RANGE`, exceptions), vérifiée dans `BuildingValidators.getPlacementValidityError`, zone rouge dans `BuildingClientEvents.drawBuildRangeZone`. Villages : tags vides `data/minecraft/tags/worldgen/biome/has_structure/village_*.json`.
 - Nations : dossier `nation/` (`Nation` = liste, dirigeants, couleurs, bonus ; `NationServerEvents` = qui joue quoi, sauvegarde ; `NationClientEvents` = fenêtre de choix et nom en haut de l'écran). Bonus branchés dans `BuildingPlacement` (construction), `RoadServerEvents`/`RoadClientEvents` (routes), `BarbarianServerEvents` (butin), `ProductionItem` (production), `GatherResourcesGoal` (récolte), `ResourcesServerEvents.resetResources` (départ), `Unit.tick` (vitesse). Factions cachées dans `hud/buttons/StartButtons.java`, Survie retirée dans `ClientGameModeHelper.cycleGameMode`.
@@ -305,3 +320,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Correction : les camps barbares commençaient trop haut (temps compté depuis la création du monde) |
 | 13/10/2026 | Nouvelle unité : le Cavalier (vindicateur sur un cheval de guerre), produit à la caserne |
 | 13/10/2026 | Nouvelle maison de villageois avec son sol |
+| 13/10/2026 | Mes remparts : palissade, rempart de pierre, porte en bois et herse, tracés en deux clics et construits par les ouvriers |

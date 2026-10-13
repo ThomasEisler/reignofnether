@@ -91,6 +91,7 @@ public class ClientEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.road.RoadClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.nation.NationClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.tech.TechClientEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.rampart.RampartClientEvents.class);
         vanillaEventBus.register(MinimapClientEvents.class);
         vanillaEventBus.register(TimeClientEvents.class);
         vanillaEventBus.register(BlockClientEvents.class);

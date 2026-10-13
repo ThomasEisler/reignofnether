@@ -42,6 +42,13 @@ public class RampartServerEvents {
     @Nullable
     public static BuildingPlacement placeSegment(ServerLevel level, RampartBuilding building, String ownerName,
                                                  List<RampartShapes.Column> columns, int[] builderIds, boolean selfBuilding) {
+        return placeSegment(level, building, ownerName, columns, builderIds, selfBuilding, false);
+    }
+
+    // queue: the builders build it after what they're already doing (shift-queue)
+    @Nullable
+    public static BuildingPlacement placeSegment(ServerLevel level, RampartBuilding building, String ownerName,
+                                                 List<RampartShapes.Column> columns, int[] builderIds, boolean selfBuilding, boolean queue) {
         if (columns.isEmpty())
             return null;
         RampartShapes.Column first = columns.get(0);
@@ -51,10 +58,45 @@ public class RampartServerEvents {
                 return null;
         RampartShapes.put(level, origin, columns);
         BuildingPlacement placement = BuildingServerEvents.placeBuilding(building, origin, Rotation.NONE, ownerName,
-            builderIds, false, false, true, true);
+            builderIds, queue, false, true, true);
         if (placement != null && selfBuilding)
             placement.selfBuilding = true;
         return placement;
+    }
+
+    // a player's rampart: checked again here, paid for, then cut into segments the workers build one after another
+    public static void buildPlayerRampart(ServerLevel level, String ownerName, RampartBuilding building,
+                                          BlockPos start, BlockPos end, int[] builderIds) {
+        if (start.distSqr(end) > (RampartLine.MAX_COLUMNS + 4) * (RampartLine.MAX_COLUMNS + 4))
+            return;
+        List<Integer> builders = new ArrayList<>();
+        for (int id : builderIds)
+            if (level.getEntity(id) instanceof com.solegendary.reignofnether.unit.interfaces.WorkerUnit &&
+                level.getEntity(id) instanceof Unit unit && unit.getOwnerName().equals(ownerName))
+                builders.add(id);
+        if (builders.isEmpty()) {
+            com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(ownerName, "Il faut des ouvriers pour construire un rempart");
+            return;
+        }
+        RampartLine.Plan plan = RampartLine.plan(level, ownerName, building, start, end);
+        if (!plan.isValid()) {
+            com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(ownerName, plan.error());
+            return;
+        }
+        boolean wood = com.solegendary.reignofnether.resources.ResourcesServerEvents.canAfford(ownerName, com.solegendary.reignofnether.resources.ResourceName.WOOD, plan.wood());
+        boolean ore = com.solegendary.reignofnether.resources.ResourcesServerEvents.canAfford(ownerName, com.solegendary.reignofnether.resources.ResourceName.ORE, plan.ore());
+        if (!wood || !ore) {
+            com.solegendary.reignofnether.resources.ResourcesClientboundPacket.warnInsufficientResources(ownerName, true, wood, ore, true);
+            return;
+        }
+        com.solegendary.reignofnether.resources.ResourcesServerEvents.addSubtractResources(
+            new com.solegendary.reignofnether.resources.Resources(ownerName, 0, -plan.wood(), -plan.ore()));
+        int[] ids = builders.stream().mapToInt(Integer::intValue).toArray();
+        boolean queue = false;
+        for (List<RampartShapes.Column> segment : RampartLine.segments(building, plan.columns())) {
+            if (placeSegment(level, building, ownerName, segment, ids, false, queue) != null)
+                queue = true;
+        }
     }
 
     // removes a segment without a fight (eg. replaced by a better one): its blocks vanish and the building goes

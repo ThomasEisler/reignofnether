@@ -63,8 +63,23 @@ public class RampartBuilding extends Building {
         return Factions.NEUTRAL;
     }
 
+    // in the workers' build menu: starts drawing a rampart instead of placing a building
     public BuildingPlaceButton getBuildButton(Keybinding hotkey) {
-        return null; // built with the rampart tool, not from the build menu
+        String name = net.minecraft.network.chat.Component.translatable("buildings.reignofnether." +
+            com.solegendary.reignofnether.api.ReignOfNetherRegistries.BUILDING.getKey(this).getPath()).getString();
+        String cost = isGate()
+            ? RampartLine.woodCost(this, 1) + " bois" + (RampartLine.oreCost(this, 1) > 0 ? ", " + RampartLine.oreCost(this, 1) + " minerai" : "")
+            : RampartLine.woodCost(this, 1) + " bois" + (RampartLine.oreCost(this, 1) > 0 ? ", " + RampartLine.oreCost(this, 1) + " minerai" : "") + " par bloc de long";
+        List<net.minecraft.util.FormattedCharSequence> tooltip = List.of(
+            net.minecraft.util.FormattedCharSequence.forward(name, net.minecraft.network.chat.Style.EMPTY.withBold(true)),
+            net.minecraft.util.FormattedCharSequence.forward(cost + " — " + (int) maxHealth + " PV par morceau", net.minecraft.network.chat.Style.EMPTY),
+            net.minecraft.util.FormattedCharSequence.forward(isGate()
+                ? "Porte de 5 blocs : cliquez où elle commence, puis dans sa direction. S'ouvre pour vos unités."
+                : "Cliquez où il commence, puis où il finit (Maj : continuer). Clic droit pour arrêter.", net.minecraft.network.chat.Style.EMPTY));
+        BuildingPlaceButton button = new BuildingPlaceButton(name, icon, hotkey,
+            () -> RampartClientEvents.isPlacing(this), () -> false, () -> true, tooltip, this);
+        button.onLeftClick = () -> RampartClientEvents.startPlacing(this);
+        return button;
     }
 
     @Override

@@ -469,6 +469,12 @@ public final class PacketHandler {
                 .consumerMainThread(com.solegendary.reignofnether.rampart.RampartShapeClientboundPacket::handle)
                 .add();
 
+        INSTANCE.messageBuilder(com.solegendary.reignofnether.rampart.RampartServerboundPacket.class, index++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.solegendary.reignofnether.rampart.RampartServerboundPacket::encode)
+                .decoder(com.solegendary.reignofnether.rampart.RampartServerboundPacket::new)
+                .consumerMainThread(com.solegendary.reignofnether.rampart.RampartServerboundPacket::handle)
+                .add();
+
         INSTANCE.messageBuilder(com.solegendary.reignofnether.tech.TechServerboundPacket.class, index++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(com.solegendary.reignofnether.tech.TechServerboundPacket::encode)
                 .decoder(com.solegendary.reignofnether.tech.TechServerboundPacket::new)

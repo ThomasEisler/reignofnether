@@ -52,7 +52,7 @@ Faits de segments (5 colonnes de mur) qui sont chacun un bâtiment : ils ont de 
 | **Porte en bois** | `wooden_gate` | 220 | porte en bois de rempart (4 de haut) | Coulisse pour laisser passer ses unités |
 | **Herse** | `iron_gate` | 450 | herse (5 de haut) | Coulisse pour laisser passer ses unités |
 
-Pour l'instant, seuls les camps barbares en construisent.
+Les joueurs les construisent depuis le menu des ouvriers (Palissade **D**, Rempart de pierre **J** après Maçonnerie, Porte en bois **K**, Herse **Z** après Métallurgie) : deux clics pour tracer, construits par les ouvriers. Prix : palissade 4 bois par bloc de long, pierre 3 bois + 4 minerai par bloc, porte en bois 80 bois, herse 60 bois + 100 minerai. Les camps barbares en construisent aussi.
 
 ## Bâtiments neutres (cartes spéciales, modes de jeu)
 

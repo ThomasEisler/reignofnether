@@ -204,6 +204,10 @@ public class Factions {
 		registerBuildings(VILLAGERS, Buildings.SHRINE_OF_PROSPERITY, Keybindings.hotkey3);
 		registerBuildings(VILLAGERS, Buildings.IRON_GOLEM_BUILDING, Keybindings.hotkey9);
 		registerBuildings(VILLAGERS, Buildings.OAK_BRIDGE, Keybindings.hotkey4);
+		registerBuildings(VILLAGERS, Buildings.PALISADE, Keybindings.hotkey5);
+		registerBuildings(VILLAGERS, Buildings.STONE_RAMPART, Keybindings.hotkey6);
+		registerBuildings(VILLAGERS, Buildings.WOODEN_GATE, Keybindings.hotkey7);
+		registerBuildings(VILLAGERS, Buildings.IRON_GATE, Keybindings.hotkey8);
 		registerBuildings(VILLAGERS, Buildings.VILLAGER_MARKET, Keybindings.hotkey10);
 		registerBuildings(VILLAGERS, Buildings.BEACON);
 		
