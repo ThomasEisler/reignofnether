@@ -29,7 +29,8 @@ public class BuildingBlockData {
     public static final java.util.Set<String> GROUND_ROW_STRUCTURES = java.util.Set.of(
         "wheat_farm",
         "town_centre",
-        "stockpile_oak"
+        "stockpile_oak",
+        "villager_house"
     );
 
     public static ArrayList<BuildingBlock> getBuildingBlocksFromNbt(String structureName, LevelAccessor level) {
