@@ -140,7 +140,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 ### Arbre des technologies
 - Bouton **« Technologies x/8 »** à gauche de l'écran RTS (une barre bleue montre la recherche en cours), ou bouton **« Technologies »** de la **Bibliothèque** (touche **P**) : ouvre l'arbre presque plein écran (Échap pour fermer).
-- Une carte par technologie, reliée à celles qu'elle demande, avec son prix, sa durée et les petites icônes de ce qu'elle débloque. Cliquer une carte « Disponible » lance la recherche ; « Annuler » rembourse tout.
+- Écran **dans le style des Progrès** de Minecraft : même fenêtre, fond en planches de chêne noir, cadres (carré, arrondi, pointu selon le rang) avec une icône par technologie, traits blancs entre elles, cadre doré quand c'est découvert, assombri quand c'est verrouillé. **Au survol** : barre de titre (bleue, dorée au fur et à mesure de la recherche) et encadré avec l'état, le prix, la durée et ce que ça débloque. On **fait glisser** l'arbre à la souris. Clic = lancer la recherche ; « Annuler » (sous la fenêtre) rembourse tout.
 - **Une seule recherche à la fois**, et elle n'avance que si on a une **Bibliothèque terminée** (sinon en pause). Sauvegardée avec le monde, effacée par `/rts-reset`. `warpten` accélère, `modifythephasevariance` ignore les technologies.
 - Les bâtiments verrouillés sont **cachés du menu de construction** ; les niveaux 2 et 3 de la caserne et du Hôtel de ville demandent Architecture / Ingénierie.
 
@@ -201,7 +201,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Pouvoir **intégrer une tour de garde** dans les remparts.
 
 ### Arbre des technologies
-- [ ] Écran plus riche plus tard : glisser/zoomer, plus de technologies, effets autres que débloquer.
+- [ ] Plus tard : zoom, plus de technologies, effets autres que débloquer.
 
 ### Barbares
 - [ ] Construire mes propres formes de camps (niveaux 1, 2, 3), de la tente et de la tour.
@@ -277,3 +277,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Traduction française complète, jeu en français |
 | 13/10/2026 | Choix de nation ouvert automatiquement, bannières Minecraft ; noms de structure dans `BATIMENTS.md` |
 | 13/10/2026 | Correction : l'aperçu des routes disait « Aucun chemin possible » partout (et zone rouge à la mauvaise hauteur) |
+| 13/10/2026 | « Town Centre » renommé « Hôtel de ville » en français ; écran des technologies façon Progrès |
