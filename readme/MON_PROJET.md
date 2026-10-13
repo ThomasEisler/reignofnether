@@ -282,6 +282,10 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 ### Terrain
 - [ ] Vérifier en jeu (nouveau monde) si le relief est assez plat ; sinon baisser encore `vertical_scale`.
+- [ ] **Structures neutres générées avec la carte** (demandé le 14/10/2026) :
+  - **Ruines avec trésors** : éparpillées sur la carte ; les détruire donne une bonne quantité de ressources pour bien démarrer.
+  - **Vraies carrières / filons de minerai** : gisements visibles à exploiter, pour que l'emplacement de l'Hôtel de ville devienne stratégique (près d'une forêt et d'une carrière).
+  - **Nourriture** (pistes à choisir) : prairies fertiles (fermes plus productives dessus), troupeaux sauvages qui reviennent (chasse), bosquets de baies, vergers (pommiers), coins de pêche au bord de l'eau (cabane de pêcheur).
 
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Hôtel de ville).
