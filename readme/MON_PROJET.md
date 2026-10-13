@@ -277,7 +277,8 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Plus tard : encore plus de technologies.
 
 ### Barbares
-- [ ] Construire mes propres formes de camps (niveaux 1 à 5), de la tente, de la tour et des 8 nouveaux bâtiments.
+- [ ] Construire mes propres formes de camps (niveaux 1 à 5), de la tente et de la tour.
+- [ ] Construire les modèles des 8 nouveaux bâtiments barbares (feu de camp, réserve de butin, forge, cor d'alarme, cages, écurie, enclos à ravageurs, tente du chef) : `barbarian_campfire`, `barbarian_loot`, `barbarian_forge`, `barbarian_alarm`, `barbarian_cages`, `barbarian_stable`, `barbarian_ravager_pen`, `barbarian_chief_tent` (7 × 7 au plus).
 - [x] Apparence propre, cavaliers au niveau 3, réglages de difficulté.
 - [x] Camps à 5 niveaux et 8 nouveaux bâtiments (feu de camp, réserve de butin, forge, cor d'alarme, cages, écurie, enclos à ravageurs, tente du chef).
 
@@ -286,7 +287,11 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] **Structures neutres générées avec la carte** (demandé le 14/10/2026) :
   - **Ruines avec trésors** : éparpillées sur la carte ; les détruire donne une bonne quantité de ressources pour bien démarrer.
   - **Vraies carrières / filons de minerai** : gisements visibles à exploiter, pour que l'emplacement de l'Hôtel de ville devienne stratégique (près d'une forêt et d'une carrière).
-  - **Nourriture** (pistes à choisir) : prairies fertiles (fermes plus productives dessus), troupeaux sauvages qui reviennent (chasse), bosquets de baies, vergers (pommiers), coins de pêche au bord de l'eau (cabane de pêcheur).
+  - **Coins de pêche** au bord de l'eau (nourriture) ; plus tard, un bâtiment **port** à construire à côté.
+  - **Troupeaux sauvages** : plus de bêtes seules, les animaux se baladent en groupes (chasse, nourriture).
+  - **Afficher ces ressources sur la carte** (minicarte / grande carte) avec une icône (un objet : minerai, poisson, viande, coffre…).
+  - [ ] **Mes modèles** : plusieurs modèles de **carrières** et plusieurs de **ruines** (et de coins de pêche), choisis au hasard à la génération.
+  - Autres pistes nourriture non retenues pour l'instant : prairies fertiles, bosquets de baies, vergers.
 
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Hôtel de ville).
