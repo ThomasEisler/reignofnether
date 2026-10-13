@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import com.solegendary.reignofnether.ReignOfNether;
+import com.solegendary.reignofnether.barbarian.BarbarianServerEvents;
 import com.solegendary.reignofnether.building.BuildingPlacement;
 import com.solegendary.reignofnether.building.BuildingClientEvents;
 import com.solegendary.reignofnether.building.buildings.shared.AbstractBridge;
@@ -117,6 +118,7 @@ public class HealthBarClientEvents {
                 GL11.GL_ZERO);
 
         renderConstructionBars(matrix, camera);
+        renderBarbarianMarkers(matrix, camera, partialTick);
 
         for (LivingEntity entity : renderedEntities) {
             float scaleToGui = 0.025f;
@@ -160,6 +162,51 @@ public class HealthBarClientEvents {
         RenderSystem.disableBlend();
 
         renderedEntities.clear();
+    }
+
+    private static final double BARBARIAN_MARKER_MAX_DIST = 160;
+    private static final int MARKER_SEGMENTS = 16;
+
+    // red dot above each barbarian unit, so they can be told apart from other units at a glance
+    private static void renderBarbarianMarkers(PoseStack matrix, Camera camera, float partialTick) {
+        if (MC.level == null)
+            return;
+        Vec3 camPos = camera.getPosition();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.disableCull(); // the dot is seen from both sides
+        for (Entity entity : MC.level.entitiesForRendering()) {
+            if (!(entity instanceof Unit unit) || !(entity instanceof LivingEntity le) || !le.isAlive() ||
+                entity.isInvisible() || !BarbarianServerEvents.OWNER_NAME.equals(unit.getOwnerName()))
+                continue;
+            double x = Mth.lerp(partialTick, entity.xo, entity.getX());
+            double y = Mth.lerp(partialTick, entity.yo, entity.getY()) + entity.getBbHeight() + 1.1;
+            double z = Mth.lerp(partialTick, entity.zo, entity.getZ());
+            if (camPos.distanceToSqr(x, y, z) > BARBARIAN_MARKER_MAX_DIST * BARBARIAN_MARKER_MAX_DIST)
+                continue;
+            if (FogOfWarClientEvents.isEnabled() && !FogOfWarClientEvents.isInBrightChunk(entity))
+                continue;
+
+            float scale = OrthoviewClientEvents.isEnabled() ? 0.04f : 0.025f;
+            float radius = 5;
+            matrix.pushPose();
+            matrix.translate(x - camPos.x(), y - camPos.y(), z - camPos.z());
+            matrix.mulPose(Axis.YP.rotationDegrees(-camera.getYRot()));
+            matrix.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
+            matrix.scale(-scale, -scale, scale);
+            Matrix4f m4f = matrix.last().pose();
+            BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+            buffer.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+            buffer.vertex(m4f, 0, 0, 0).color(1f, 0.1f, 0.1f, 1f).endVertex();
+            for (int i = MARKER_SEGMENTS; i >= 0; i--) {
+                double angle = 2 * Math.PI * i / MARKER_SEGMENTS;
+                buffer.vertex(m4f, (float) (Math.cos(angle) * radius), (float) (Math.sin(angle) * radius), 0)
+                    .color(0.75f, 0f, 0f, 1f).endVertex();
+            }
+            Tesselator.getInstance().end();
+            matrix.popPose();
+        }
+        RenderSystem.enableCull();
     }
 
     private static final double CONSTRUCTION_BAR_MAX_DIST = 160;
