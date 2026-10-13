@@ -269,6 +269,22 @@ public class RoadServerEvents {
         syncToClients();
     }
 
+    // a road whose building was destroyed during the works: the part not built yet is paid back
+    private static void refundUnbuilt(RoadConnection connection) {
+        if (connection.blocks.isEmpty())
+            return;
+        float unbuilt = 1f - (float) connection.built / connection.blocks.size();
+        float nationMult = com.solegendary.reignofnether.nation.Nation.roadCost(false, connection.ownerName);
+        RoadType type = connection.getTypeInProgress();
+        int wood = Math.round(getWoodCost(type, connection.length) * nationMult * unbuilt);
+        int ore = Math.round(getOreCost(type, connection.length) * nationMult * unbuilt);
+        if (wood <= 0 && ore <= 0)
+            return;
+        ResourcesServerEvents.addSubtractResources(new Resources(connection.ownerName, 0, wood, ore));
+        com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(connection.ownerName,
+            "Chantier de route interrompu : " + wood + " bois" + (ore > 0 ? " et " + ore + " minerai" : "") + " remboursés");
+    }
+
     private static boolean payForRoad(String ownerName, RoadType type, int length) {
         float nationMult = com.solegendary.reignofnether.nation.Nation.roadCost(false, ownerName);
         int wood = Math.round(getWoodCost(type, length) * nationMult);
@@ -382,9 +398,14 @@ public class RoadServerEvents {
 
     // the network loses an edge when one of its buildings no longer exists; the road blocks stay in the world
     private static void removeConnectionsToMissingBuildings() {
+        if (BuildingServerEvents.getBuildings().isEmpty())
+            return; // buildings not loaded yet
         Set<BlockPos> origins = new HashSet<>();
         for (BuildingPlacement placement : BuildingServerEvents.getBuildings())
             origins.add(placement.originPos);
+        for (RoadConnection c : connections)
+            if ((!origins.contains(c.from) || !origins.contains(c.to)) && c.isUnderConstruction())
+                refundUnbuilt(c);
         connections.removeIf(c -> !origins.contains(c.from) || !origins.contains(c.to));
         roadBlocks.values().removeIf(c -> !connections.contains(c));
         workerRoads.values().removeIf(c -> !connections.contains(c));
