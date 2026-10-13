@@ -24,6 +24,12 @@ import java.util.Optional;
 
 public class BuildingBlockData {
 
+    // Structures whose bottom row (y = 0 in the structure block) is the ground itself: it replaces the terrain's top
+    // layer instead of sitting on top of it. Add a structure here when its model has been remade with its floor.
+    public static final java.util.Set<String> GROUND_ROW_STRUCTURES = java.util.Set.of(
+        "wheat_farm"
+    );
+
     public static ArrayList<BuildingBlock> getBuildingBlocksFromNbt(String structureName, LevelAccessor level) {
         ResourceManager resourceManager;
         if (level.isClientSide())
@@ -33,7 +39,11 @@ public class BuildingBlockData {
 
         CompoundTag nbt = getBuildingNbt(structureName, resourceManager);
 
-        return getBuildingBlocksFromNbt(nbt);
+        ArrayList<BuildingBlock> blocks = getBuildingBlocksFromNbt(nbt);
+        if (GROUND_ROW_STRUCTURES.contains(structureName)) // placement puts y = 0 one block above the ground: undo that
+            for (BuildingBlock block : blocks)
+                block.setBlockPos(block.getBlockPos().below());
+        return blocks;
     }
 
     public static ArrayList<BuildingBlock> getBuildingBlocksFromNbt(CompoundTag nbt) {

@@ -65,6 +65,8 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Un bâtiment est fait de vrais blocs, enregistrés dans un fichier `.nbt` avec un **bloc de structure** en jeu.
 - **Reconstruction automatique** : chaque bâtiment retient une « empreinte » de sa forme. Si je modifie une forme et mets le mod à jour, le serveur reconstruit tout seul les bâtiments déjà posés au redémarrage.
 - **Fondations** : si une forme n'a aucun des blocs de fondation prévus par le mod, toute la rangée du bas sert de fondation (corrige la défaite immédiate).
+- **Modèles avec sol** : pour les modèles refaits par moi, la rangée du bas (y = 0 dans le bloc de structure) **est le sol** : elle remplace la couche d'herbe du terrain au lieu d'être posée dessus. Si le bâtiment est détruit, ce sol redevient de la terre (pas de trou). Les modèles concernés sont listés dans `BuildingBlockData.GROUND_ROW_STRUCTURES` (pour l'instant : ferme de blé) ; les autres sont encore posés sur l'herbe, comme avant.
+- **Fermes** : la terre labourée reste humide toute seule, pas besoin d'eau.
 - **Sol** : dans mes structures, les cases de sol en **chemin de terre** sont « adaptables » : elles sont posées dans le matériau de la route reliée au bâtiment (ou « chemin » s'il n'y a pas de route). Les autres blocs de sol restent comme je les ai construits.
 
 ### Routes
@@ -163,14 +165,14 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 1. En jeu (créatif, triches activées) : `/give @s minecraft:structure_block`.
 2. Bloc de structure en mode **Load**, nom `reignofnether:barracks` (par exemple) → Load : le bâtiment actuel apparaît.
-3. Le modifier. **Inclure la rangée de sol** sous le bâtiment, en **chemin de terre** (`minecraft:dirt_path` : `/give @s dirt_path`, ou clic droit avec une pelle sur de l'herbe) : ces cases prendront le matériau de la route reliée. Les autres blocs de sol restent tels quels.
+3. Le modifier. La **rangée du bas (y = 0) est le sol** : elle remplace l'herbe du terrain. Pour la faire apparaître au niveau du sol, mettre la **position relative** du bloc de structure à **1, -1, 0** (le bloc reste posé sur l'herbe, à côté de la zone). Les cases en **chemin de terre** (`minecraft:dirt_path`) prendront le matériau de la route reliée. Les autres blocs de sol restent tels quels.
 4. Mode **Save**, nom du fichier :
    - niveau 1 : `reignofnether:barracks`
    - niveau 2 : `reignofnether:barracks_lvl2`
    - niveau 3 : `reignofnether:barracks_lvl3`
    - camps barbares : `reignofnether:barbarian_camp`, `reignofnether:barbarian_camp_lvl2`, `reignofnether:barbarian_camp_lvl3`, tente `reignofnether:barbarian_tent`, tour `reignofnether:barbarian_tower`
    - (camps : garder les bâtiments annexes à moins de ~8 blocs de large pour qu'ils tiennent entre le centre et les remparts)
-5. Le fichier est dans `saves/<monde>/generated/reignofnether/structures/` : le copier dans le mod (dossiers `assets` **et** `data`), puis reconstruire le mod.
+5. Le fichier est dans `saves/<monde>/generated/reignofnether/structures/` : le copier dans le mod (dossiers `assets` **et** `data`), **ajouter son nom à `GROUND_ROW_STRUCTURES`**, puis reconstruire le mod.
 
 ## Commandes utiles (triches activées)
 
@@ -193,6 +195,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Remboursement si un bâtiment relié est détruit pendant le chantier (pour l'instant : perdu).
 
 ### Bâtiments
+- [ ] Refaire tous les modèles avec leur sol en y = 0 (fait : ferme de blé).
 - [ ] Construire les formes des niveaux 2 et 3 (caserne, Hôtel de ville).
 - [ ] Tours de guet améliorables (portée et dégâts par niveau).
 
@@ -278,3 +281,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Choix de nation ouvert automatiquement, bannières Minecraft ; noms de structure dans `BATIMENTS.md` |
 | 13/10/2026 | Correction : l'aperçu des routes disait « Aucun chemin possible » partout (et zone rouge à la mauvaise hauteur) |
 | 13/10/2026 | « Town Centre » renommé « Hôtel de ville » en français ; écran des technologies façon Progrès |
+| 13/10/2026 | Modèles avec sol (y = 0 = sol du terrain) ; nouvelle ferme de blé (10 × 10, 29 cases) ; terre des fermes toujours humide |

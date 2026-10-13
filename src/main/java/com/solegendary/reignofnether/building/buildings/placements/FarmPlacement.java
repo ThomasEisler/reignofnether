@@ -73,6 +73,11 @@ public class FarmPlacement extends BuildingPlacement {
     private void tickCrops() {
         for (FarmCropBlock farmBlock : farmBlocks) {
 
+            // keep the farmland wet so it never dries back into dirt, even without water nearby
+            BlockState soil = level.getBlockState(farmBlock.bp.below());
+            if (soil.is(Blocks.FARMLAND) && soil.getValue(BlockStateProperties.MOISTURE) < 7)
+                level.setBlock(farmBlock.bp.below(), soil.setValue(BlockStateProperties.MOISTURE, 7), 2);
+
             BlockState bs = level.getBlockState(farmBlock.bp);
             Block block = bs.getBlock();
 

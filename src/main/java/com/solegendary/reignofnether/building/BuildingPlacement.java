@@ -606,6 +606,12 @@ public class BuildingPlacement {
                     }
     }
 
+    // blocks of a structure's ground row (see BuildingBlockData.GROUND_ROW_STRUCTURES) sit in the terrain's top layer:
+    // when destroyed they turn back into dirt instead of leaving a hole
+    public boolean isGroundRowBlock(BlockPos bp) {
+        return bp.getY() == this.originPos.getY() && !BuildingUtils.isBridge(getBuilding());
+    }
+
     // are we allowed to destroy this blockPos using destroyRandomBlocks
     public boolean canDestroyBlock(BlockPos relativeBp) {
         return getBuilding().canDestroyBlock(relativeBp, this);
@@ -651,7 +657,9 @@ public class BuildingPlacement {
         Collections.shuffle(placedBlocks);
         for (int i = 0; i < intAmount && i < placedBlocks.size(); i++) {
             BlockPos bp = placedBlocks.get(i).getBlockPos();
-            if (!getLevel().getBlockState(bp).getFluidState().isEmpty()) {
+            if (isGroundRowBlock(bp)) {
+                getLevel().setBlockAndUpdate(bp, Blocks.DIRT.defaultBlockState());
+            } else if (!getLevel().getBlockState(bp).getFluidState().isEmpty()) {
                 getLevel().setBlockAndUpdate(bp, Blocks.AIR.defaultBlockState());
             } else {
                 getLevel().destroyBlock(bp, false);
@@ -711,6 +719,10 @@ public class BuildingPlacement {
             if (!block.getBlockState().isAir())
                 serverLevel.destroyBlock(block.getBlockPos(), false);
         });
+        // fill the ground row back in
+        for (BuildingBlock block : this.blocks)
+            if (isGroundRowBlock(block.getBlockPos()) && !block.getBlockState().isAir())
+                serverLevel.setBlockAndUpdate(block.getBlockPos(), Blocks.DIRT.defaultBlockState());
 
         this.scaffoldBlocks.forEach((BuildingBlock block) -> {
             if (serverLevel.getBlockState(block.getBlockPos()).getBlock() == Blocks.SCAFFOLDING) {
@@ -913,7 +925,7 @@ public class BuildingPlacement {
         // prevent showing blocks on minimap unless previously explored
         if (this.level.isClientSide() && !isExploredClientside && !(getBuilding() instanceof CustomBuilding))
             for (BuildingBlock bb : blocks)
-                if (!this.level.getBlockState(bb.getBlockPos()).isAir())
+                if (!isGroundRowBlock(bb.getBlockPos()) && !this.level.getBlockState(bb.getBlockPos()).isAir())
                     this.level.setBlockAndUpdate(bb.getBlockPos(), Blocks.AIR.defaultBlockState());
 
         getBuilding().onBuilt(this);

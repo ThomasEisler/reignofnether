@@ -56,7 +56,7 @@ public class BuildingValidators {
 
         if (isBuildingPlacementInAirOrOnIllegalBlocks(level, building, absoluteBlocks)) {
             return "building.reignofnether.ground_not_flat";
-        } else if (isBuildingPlacementClipping(level, building, absoluteBlocks)) {
+        } else if (isBuildingPlacementClipping(level, building, absoluteBlocks, originPos.getY())) {
             return "building.reignofnether.ground_not_flat";
         } else if (isOverlappingAnyOtherBuilding(level, building, absoluteBlocks) && !isSandbox) {
             return "building.reignofnether.too_close";
@@ -82,7 +82,8 @@ public class BuildingValidators {
     }
 
     // disallow any building block from clipping into any other existing blocks
-    private static boolean isBuildingPlacementClipping(Level level, Building building, List<BuildingBlock> blocks) {
+    // groundY: the terrain's top layer, which a structure's ground row is allowed to replace
+    private static boolean isBuildingPlacementClipping(Level level, Building building, List<BuildingBlock> blocks, int groundY) {
         if (level == null) {
             return false;
         }
@@ -92,6 +93,8 @@ public class BuildingValidators {
 
         for (BuildingBlock block : blocks) {
             BlockPos bp = block.getBlockPos();
+            if (bp.getY() == groundY)
+                continue;
             if ((level.getBlockState(bp).isSolid() || !level.getBlockState(bp).getFluidState().isEmpty()) && (block.getBlockState().isSolid() || !block.getBlockState().getFluidState().isEmpty())) {
                 return true;
             }

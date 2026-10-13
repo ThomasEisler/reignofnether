@@ -7,6 +7,8 @@ Prix en bois / minerai. Durée de construction avec **1 ouvrier** (3 ouvriers : 
 
 ## Le nom à mettre dans le bloc de structure
 
+La **rangée du bas (y = 0) est le sol** du bâtiment pour les modèles refaits : utiliser la position relative **1, -1, 0** dans le bloc de structure pour qu'elle tombe au niveau de l'herbe.
+
 La colonne **« Nom dans le bloc de structure »** donne le nom exact à taper dans le champ « Structure Name » du bloc de structure, en mode **Load** pour charger le bâtiment actuel, puis en mode **Save** pour enregistrer ma version (avec le même nom). Le bâtiment doit garder sa **rangée de sol** en chemin de terre. Détails : « Ajouter ou modifier un bâtiment » dans [MON_PROJET.md](MON_PROJET.md).
 
 ## Bâtiments des joueurs
@@ -15,7 +17,7 @@ La colonne **« Nom dans le bloc de structure »** donne le nom exact à taper d
 |---|---|---|---|---|---|---|
 | **Hôtel de ville** | `reignofnether:town_centre` · niv. 2 : `reignofnether:town_centre_lvl2` · niv. 3 : `reignofnether:town_centre_lvl3` | 350 bois, 250 minerai | 150 s | 380 (niv. 2 : 500, niv. 3 : 650) | — | Bâtiment principal. Produit villageois, chien et chat éclaireurs. +10 population. Améliorable niv. 2 et 3 |
 | **Maison** | `reignofnether:villager_house` | 90 bois | 40 s | 175 | — | +10 population |
-| **Ferme de blé** | `reignofnether:wheat_farm` | 150 bois | 30 s | 65 | — | Nourriture (les villageois y récoltent) |
+| **Ferme de blé** | `reignofnether:wheat_farm` | 150 bois | 30 s | 65 | — | Nourriture : 29 cases de blé, semées et récoltées par les villageois (1 bois par case ressemée). 10 × 10 blocs, avec son sol |
 | **Entrepôt** | `reignofnether:stockpile_oak` | 75 bois | 40 s | 95 | — | Dépôt des ressources. Peut être construit loin de la base |
 | **Caserne** | `reignofnether:barracks` · niv. 2 : `reignofnether:barracks_lvl2` · niv. 3 : `reignofnether:barracks_lvl3` | 150 bois | 60 s | 150 (niv. 2 : 225, niv. 3 : 300) | — | Vindicateurs, pillards. Améliorable niv. 2 et 3 |
 | **Bibliothèque** | `reignofnether:library` · après la recherche « Grande bibliothèque » : `reignofnether:library_grand` | 300 bois, 100 minerai | 90 s | 125 | — | **Arbre des technologies** ; enchantements des unités ; recherches (vex des évocateurs, grande bibliothèque…) |
@@ -57,7 +59,8 @@ Les bâtiments des **monstres** et des **piglins** existent toujours dans le cod
 
 | Fichier de structure | État |
 |---|---|
-| `barracks`, `town_centre` | ✅ faites (niveau 1) |
+| `wheat_farm` | ✅ refaite avec son sol (y = 0) |
+| `barracks`, `town_centre` | ✅ faites (niveau 1), sol à refaire |
 | `barracks_lvl2`, `barracks_lvl3`, `town_centre_lvl2`, `town_centre_lvl3` | ⚠️ provisoires |
 | `barbarian_camp`, `_lvl2`, `_lvl3`, `barbarian_tent`, `barbarian_tower` | ⚠️ provisoires |
 
