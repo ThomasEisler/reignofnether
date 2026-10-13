@@ -142,7 +142,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | Suède | Gustave II Adolphe | Unités 10 % plus rapides |
 
 ### Arbre des technologies
-- Pendant une recherche, un **bandeau en haut de l'écran** montre son icône, son nom en grand, une grande barre de progression (pourcentage) et le temps restant (« en pause » sans Bibliothèque).
+- Pendant une recherche, un **bandeau au-dessus de la fenêtre de l'arbre** (pas sur l'écran principal) montre son icône, son nom en grand, une grande barre de progression (pourcentage) et le temps restant (« en pause » sans Bibliothèque).
 - Bouton **« Technologies x/8 »** à gauche de l'écran RTS (une barre bleue montre la recherche en cours), ou bouton **« Technologies »** de la **Bibliothèque** (touche **P**) : ouvre l'arbre presque plein écran (Échap pour fermer).
 - Écran **dans le style des Progrès** de Minecraft : même fenêtre, fond en planches de chêne noir, cadres (carré, arrondi, pointu selon le rang) avec une icône par technologie, traits blancs entre elles, cadre doré quand c'est découvert, assombri quand c'est verrouillé. **Au survol** : barre de titre (bleue, dorée au fur et à mesure de la recherche) et encadré avec l'état, le prix, la durée et **les images des bâtiments débloqués** (les mêmes que dans le menu de construction, avec leur nom). On **fait glisser** l'arbre à la souris. Clic = lancer la recherche ; « Annuler » (sous la fenêtre) rembourse tout.
 - **Une seule recherche à la fois**, et elle n'avance que si on a une **Bibliothèque terminée** (sinon en pause). Sauvegardée avec le monde, effacée par `/rts-reset`. `warpten` accélère, `modifythephasevariance` ignore les technologies.

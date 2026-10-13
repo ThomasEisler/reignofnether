@@ -137,9 +137,12 @@ public class TechClientEvents {
 
     // window
     private static int winW() { return Math.min(screenW() - 32, 400); }
-    private static int winH() { return Math.min(screenH() - 70, 240); }
+    private static int winH() { return Math.min(screenH() - 70 - (current != null ? BANNER_H : 0), 240); }
     private static int winX() { return (screenW() - winW()) / 2; }
-    private static int winY() { return Math.max(8, (screenH() - winH()) / 2 - 14); }
+    private static int winY() {
+        int y = Math.max(8, (screenH() - winH()) / 2 - 14);
+        return current != null ? Math.max(y, BANNER_H + 4) : y; // room for the research banner above
+    }
     // the window texture's see-through hole (its frame is 15 px left, 23 top, 14 right, 15 bottom)
     private static int inX0() { return winX() + 15; }
     private static int inY0() { return winY() + 23; }
@@ -349,6 +352,7 @@ public class TechClientEvents {
         g.drawString(MC.font, count, winX() + winW() - 8 - MC.font.width(count), winY() + 6, 0x404040, false);
         g.pose().popPose();
 
+        drawResearchBanner(g);
         Tech hovered = getNodeAt(mouseX, mouseY);
         if (hovered != null)
             drawHover(g, hovered);
@@ -391,11 +395,13 @@ public class TechClientEvents {
         }
     }
 
-    // the research in progress, big at the top of the screen (under the nation's name)
-    private static void drawResearchBanner(GuiGraphics g, int mouseX, int mouseY) {
+    // the research in progress, big above the tree's window
+    private static final int BANNER_H = 40;
+
+    private static void drawResearchBanner(GuiGraphics g) {
         if (current == null)
             return;
-        int w = Math.min(260, screenW() - 40), x = (screenW() - w) / 2, y = 20;
+        int w = Math.min(260, screenW() - 40), x = (screenW() - w) / 2, y = winY() - BANNER_H + 4;
         float progress = 1f - ticksLeft / (float) (current.seconds * 20);
         boolean paused = !hasLibrary();
         g.fill(x - 4, y - 3, x + w + 4, y + 33, 0xAA000000);
@@ -426,10 +432,8 @@ public class TechClientEvents {
         g.pose().translate(0, 0, 400);
         if (open)
             drawTree(g, evt.getMouseX(), evt.getMouseY());
-        else if (hasStarted()) {
+        else if (hasStarted())
             drawHudButton(g, evt.getMouseX(), evt.getMouseY());
-            drawResearchBanner(g, evt.getMouseX(), evt.getMouseY());
-        }
         g.pose().popPose();
     }
 
