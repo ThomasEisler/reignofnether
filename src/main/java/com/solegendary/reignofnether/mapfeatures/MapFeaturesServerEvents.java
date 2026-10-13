@@ -67,6 +67,7 @@ public class MapFeaturesServerEvents {
     private static final Queue<Long> pendingChunks = new ConcurrentLinkedQueue<>();
     private static final Random random = new Random();
     private static ServerLevel serverLevel = null;
+    private static boolean herdsChanged = false; // their icons are sent again
     private static int ticks = 0;
 
     private static MapFeaturesSaveData data() {
@@ -172,6 +173,7 @@ public class MapFeaturesServerEvents {
         herd.targetSize = herd.species.equals("minecraft:chicken") ? 5 + rand.nextInt(4) : 4 + rand.nextInt(4);
         herd.step = rand.nextInt(MIGRATION_POINTS);
         data().herds.add(herd);
+        herdsChanged = true;
         for (int i = 0; i < herd.targetSize; i++)
             spawnMember(level, herd, ground);
         data().setDirty();
@@ -254,8 +256,10 @@ public class MapFeaturesServerEvents {
                     int nz = herd.home.getZ() + (int) Math.round(dz / len * HERD_TOWN_STEP);
                     if (level.hasChunkAt(new BlockPos(nx, 0, nz))) {
                         BlockPos ground = groundAt(level, nx, nz);
-                        if (level.getBlockState(ground).getFluidState().isEmpty())
+                        if (level.getBlockState(ground).getFluidState().isEmpty()) {
                             herd.home = ground;
+                            herdsChanged = true;
+                        }
                     }
                 }
                 herd.step = (herd.step + 1) % MIGRATION_POINTS;
@@ -338,12 +342,18 @@ public class MapFeaturesServerEvents {
             scanForHerd(serverLevel, cp);
         }
         tickHerds(serverLevel);
+        if (herdsChanged && serverLevel.getGameTime() % 100 < TICK_INTERVAL) {
+            herdsChanged = false;
+            HerdsClientboundPacket.sync(data.herds);
+        }
     }
 
     @SubscribeEvent
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent evt) {
-        if (serverLevel != null && evt.getEntity() instanceof ServerPlayer player)
+        if (serverLevel != null && evt.getEntity() instanceof ServerPlayer player) {
             FishingSpotsClientboundPacket.sync(player, data().fishingSpots);
+            HerdsClientboundPacket.sync(player, data().herds);
+        }
     }
 
     @SubscribeEvent

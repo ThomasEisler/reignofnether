@@ -93,6 +93,7 @@ public class ClientEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.tech.TechClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.rampart.RampartClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.mapfeatures.FishingClientEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.mapfeatures.MapIconsClientEvents.class);
         vanillaEventBus.register(MinimapClientEvents.class);
         vanillaEventBus.register(TimeClientEvents.class);
         vanillaEventBus.register(BlockClientEvents.class);

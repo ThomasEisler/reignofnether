@@ -138,7 +138,8 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
   - **Placés comme des structures, à intervalles réguliers** : un troupeau par carré de 80 × 80 blocs sur toute la carte (à un endroit fixe dans le carré, sur de l'herbe), pour qu'on choisisse où s'installer entre forêt, carrière et troupeaux.
   - **Migration** : toutes les 30 s, le troupeau va au point suivant d'un petit cercle (rayon 8 à 14) autour de son coin. S'il est à moins de 48 blocs d'un bâtiment de joueur, son coin s'éloigne de 6 blocs à chaque étape.
   - **Repousse** : une bête de plus toutes les 90 s tant qu'il en manque ; un troupeau chassé jusqu'à la dernière revient au même endroit 5 min plus tard.
-- Code : dossier `mapfeatures/` (`MapFeaturesServerEvents` : repérage, troupeaux ; `FishingClientEvents` : bulles), `building/buildings/villagers/Port.java`, règle de pose dans `BuildingValidators.getPortError`.
+- **Icônes sur la minimap** : un poisson pour chaque coin de pêche, de la viande pour chaque troupeau (bœuf, mouton, porc ou poulet selon l'animal). Une icône n'apparaît qu'une fois l'endroit vu au moins une fois (sorti du brouillard de guerre) ; ce souvenir se perd en quittant le jeu.
+- Code : dossier `mapfeatures/` (`MapFeaturesServerEvents` : repérage, troupeaux ; `FishingClientEvents` : bulles ; `MapIconsClientEvents` : icônes de la minimap), `building/buildings/villagers/Port.java`, règle de pose dans `BuildingValidators.getPortError`.
 
 ### Limite de distance pour construire
 - On ne peut construire qu'à **24 blocs maximum** d'un de ses bâtiments (même en construction). Exceptions : **entrepôts** et **ponts**. Un joueur sans bâtiment construit où il veut (premier Hôtel de ville).
@@ -299,7 +300,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
   - **Vraies carrières / filons de minerai** : gisements visibles à exploiter, pour que l'emplacement de l'Hôtel de ville devienne stratégique (près d'une forêt et d'une carrière).
   - [x] **Coins de pêche** et **port** (faits le 14/10/2026, voir « Carte : pêche et troupeaux »).
   - [x] **Troupeaux sauvages** (faits le 14/10/2026).
-  - **Afficher ces ressources sur la carte** (minicarte / grande carte) avec une icône (un objet : minerai, poisson, viande, coffre…).
+  - [x] Icônes sur la minimap pour la pêche et les troupeaux. [ ] Ajouter celles des carrières et des ruines quand elles existeront.
   - [ ] **Mes modèles** : plusieurs modèles de **carrières** et plusieurs de **ruines** (et de coins de pêche), choisis au hasard à la génération.
   - Autres pistes nourriture non retenues pour l'instant : prairies fertiles, bosquets de baies, vergers.
 
@@ -375,6 +376,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Icônes des coins de pêche et des troupeaux sur la minimap |
 | 14/10/2026 | Coins de pêche (bulles), port de pêche, troupeaux sauvages qui migrent et repoussent, plus de bêtes seules |
 | 14/10/2026 | Butin volé et prisonniers des camps sauvegardés avec le monde |
 | 14/10/2026 | Camps barbares à 5 niveaux, 8 nouveaux bâtiments avec leur rôle, remparts plus tardifs qui s'agrandissent, camps plus loin des bases |
