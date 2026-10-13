@@ -110,6 +110,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
   - **Forge** : tant qu'elle tient, les barbares du camp ont Force et Résistance et portent un casque de mailles.
   - **Cor d'alarme** : un intrus approche → son du cor, **toute** la garnison attaque et le camp voisin le plus proche (140 blocs) envoie la moitié de la sienne. Sans cor, seuls les défenseurs à moins de 12 blocs de l'intrus réagissent.
   - **Cages** : 2 prisonniers au départ ; un villageois de joueur tué par un barbare de ce camp est **capturé** (8 au plus). Casser les cages (ou le camp) les libère : ils rejoignent le joueur le plus proche.
+  - Ce qui a été volé et les prisonniers sont **sauvegardés avec le monde** (par camp, dans `BarbarianSaveData.campStores`).
   - **Écurie** : sans elle, plus de cavaliers. **Enclos à ravageurs** : sans lui, plus de ravageurs.
   - **Tente du chef** : un **chef barbare** (vindicateur à casque d'or, 5 fois plus de vie, 2 fois plus de dégâts). S'il tombe : la garnison a Faiblesse et Lenteur pendant 3 min ; il revient 5 min plus tard tant que sa tente tient.
 - **Garnison** : milice et vindicateurs, puis pillards (niv. 2), plus de vindicateurs (niv. 3), cavaliers (niv. 4, avec écurie), ravageurs (niv. 5, avec enclos). Un soldat perdu est remplacé régulièrement. Ils patrouillent autour du camp.
@@ -358,6 +359,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Butin volé et prisonniers des camps sauvegardés avec le monde |
 | 14/10/2026 | Camps barbares à 5 niveaux, 8 nouveaux bâtiments avec leur rôle, remparts plus tardifs qui s'agrandissent, camps plus loin des bases |
 | 14/10/2026 | Pied des remparts : de temps en temps un buisson (feuilles) ou un caillou (pierre taillée, moussue ou non) posé au sol contre le mur |
 | 14/10/2026 | Remparts moins hauts : palissade 2-3, pierre 4, porte en bois 3, herse 4, tour 6 |

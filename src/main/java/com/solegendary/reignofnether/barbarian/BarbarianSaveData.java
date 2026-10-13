@@ -16,6 +16,8 @@ public class BarbarianSaveData extends SavedData {
     public long ticksEnabled = 0; // game time the barbarians have been active, makes new camps stronger
     // player -> ticksEnabled value when their first barracks was seen finished (removed if they lose all of them)
     public final Map<String, Long> barracksSince = new HashMap<>();
+    // per camp (origin as a long): food, wood and ore stolen in raids, and prisoners in its cages
+    public final Map<Long, int[]> campStores = new HashMap<>();
 
     private static BarbarianSaveData create() {
         return new BarbarianSaveData();
@@ -39,6 +41,12 @@ public class BarbarianSaveData extends SavedData {
         CompoundTag barracks = tag.getCompound("barracksSince");
         for (String player : barracks.getAllKeys())
             data.barracksSince.put(player, barracks.getLong(player));
+        CompoundTag stores = tag.getCompound("campStores");
+        for (String key : stores.getAllKeys()) {
+            int[] values = stores.getIntArray(key);
+            if (values.length == 4)
+                data.campStores.put(Long.parseLong(key), values);
+        }
         return data;
     }
 
@@ -50,6 +58,9 @@ public class BarbarianSaveData extends SavedData {
         CompoundTag barracks = new CompoundTag();
         barracksSince.forEach(barracks::putLong);
         tag.put("barracksSince", barracks);
+        CompoundTag stores = new CompoundTag();
+        campStores.forEach((origin, values) -> stores.putIntArray(Long.toString(origin), values));
+        tag.put("campStores", stores);
         return tag;
     }
 

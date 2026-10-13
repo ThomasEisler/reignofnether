@@ -581,6 +581,11 @@ public class BarbarianServerEvents {
         }
         giveBackStolen(camp, camp.origin);
         freePrisoners(serverLevel, camp, camp.origin);
+        if (serverLevel != null) {
+            BarbarianSaveData data = BarbarianSaveData.getInstance(serverLevel);
+            if (data.campStores.remove(camp.origin.asLong()) != null)
+                data.setDirty();
+        }
         // its secondary buildings and walls collapse with it
         for (BlockPos origin : camp.outbuildings)
             for (BuildingPlacement b : BuildingServerEvents.getBuildings())
@@ -637,6 +642,13 @@ public class BarbarianServerEvents {
         for (BuildingPlacement placement : BuildingServerEvents.getBuildings())
             if (placement.getBuilding() == Buildings.BARBARIAN_CAMP && !camps.containsKey(placement.originPos)) {
                 Camp camp = new Camp(placement.originPos, placement.getLevelIndex());
+                int[] store = data.campStores.get(placement.originPos.asLong()); // what it had stolen and its prisoners
+                if (store != null) {
+                    camp.stolen[0] = store[0];
+                    camp.stolen[1] = store[1];
+                    camp.stolen[2] = store[2];
+                    camp.prisoners = store[3];
+                }
                 adoptOutbuildings(camp, placement);
                 camps.put(placement.originPos, camp);
             }
@@ -657,6 +669,19 @@ public class BarbarianServerEvents {
             tickCamp(level, placement, camp, data.enabled);
         }
         tickRaiders(level);
+        saveCampStores(data);
+    }
+
+    // stolen resources and prisoners are kept with the world, per camp (written only when they change; a camp's entry
+    // goes when the camp is destroyed, so camps not loaded back yet after a restart keep theirs)
+    private static void saveCampStores(BarbarianSaveData data) {
+        for (Camp camp : camps.values()) {
+            int[] values = { camp.stolen[0], camp.stolen[1], camp.stolen[2], camp.prisoners };
+            if (!java.util.Arrays.equals(values, data.campStores.get(camp.origin.asLong()))) {
+                data.campStores.put(camp.origin.asLong(), values);
+                data.setDirty();
+            }
+        }
     }
 
     private static void tickCamp(ServerLevel level, BuildingPlacement placement, Camp camp, boolean enabled) {
