@@ -87,7 +87,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
 
 ### Barbares (première version)
-- Faction contrôlée par l'ordinateur, **ennemie de tous**. S'active avec `/rts-barbarians on` (désactiver : `off`), réglage sauvegardé avec le monde.
+- Faction contrôlée par l'ordinateur, **ennemie de tous**. **Actifs par défaut** dans tous les mondes ; `/rts-barbarians off` pour les désactiver (`on` pour les remettre), réglage sauvegardé avec le monde.
 - **Camps** : rien tant qu'aucun joueur n'a de caserne terminée. **5 minutes** après la première caserne d'un joueur, un camp apparaît (à 70-100 blocs des bases), puis un autre 5 minutes plus tard, etc., jusqu'à **n + 1 camps** (n = joueurs ayant une caserne depuis 5 minutes). Un joueur qui perd toutes ses casernes ne compte plus. Un camp détruit est remplacé au plus tôt 5 minutes après. Plus la partie avance, plus les nouveaux camps commencent haut (un niveau de plus toutes les 15 minutes).
 - **3 niveaux** : un camp gagne un niveau toutes les 10 minutes (200, 350 puis 500 PV).
 - **Garnison** : 3 / 5 / 8 soldats selon le niveau (milice, vindicateurs, puis arbalétriers, puis parfois un ravageur). Un soldat perdu est remplacé toutes les 30 s. Ils patrouillent autour du camp et attaquent toute unité qui approche à moins de 18 blocs.
@@ -152,7 +152,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Town Centre).
 - [ ] Routes : tracé, prix, place autour des bâtiments, passage aux niveaux pavée / avancée, sol des bâtiments qui change de matériau.
 - [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
-- [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin (`/rts-barbarians on`, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
+- [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin (actifs par défaut, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
 - [ ] Routes qui contournent les obstacles (eau, bâtiments, falaises, arbres).
 - [ ] Chantier de route par les ouvriers (envoi automatique, aide des ouvriers proches, nouvel ordre = quitte le chantier) et aperçu du tracé/prix.
 - [ ] Les unités vont plus vite sur la route et la préfèrent pour leurs trajets.

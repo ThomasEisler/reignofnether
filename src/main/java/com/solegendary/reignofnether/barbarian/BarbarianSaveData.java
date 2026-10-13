@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class BarbarianSaveData extends SavedData {
 
-    public boolean enabled = false;
+    public boolean enabled = true; // on by default, /rts-barbarians off to disable
     public long ticksEnabled = 0; // game time the barbarians have been active, makes new camps stronger
     // player -> ticksEnabled value when their first barracks was seen finished (removed if they lose all of them)
     public final Map<String, Long> barracksSince = new HashMap<>();
@@ -31,7 +31,7 @@ public class BarbarianSaveData extends SavedData {
 
     public static BarbarianSaveData load(CompoundTag tag) {
         BarbarianSaveData data = create();
-        data.enabled = tag.getBoolean("enabled");
+        data.enabled = !tag.contains("enabled") || tag.getBoolean("enabled");
         data.ticksEnabled = tag.getLong("ticksEnabled");
         CompoundTag barracks = tag.getCompound("barracksSince");
         for (String player : barracks.getAllKeys())
