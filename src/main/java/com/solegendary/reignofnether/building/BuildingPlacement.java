@@ -907,8 +907,7 @@ public class BuildingPlacement {
         if (!this.level.isClientSide()) {
             FrozenChunkClientboundPacket.setBuildingBuiltServerside(this.originPos);
             if (isCapitol && BuildingUtils.getTotalCompletedBuildingsOwned(false, ownerName) <= 1) {
-                // wild herds replace the lone animals once spawned here
-                com.solegendary.reignofnether.mapfeatures.MapFeaturesServerEvents.ensureHerdsNear((ServerLevel) level, centrePos);
+                // no animals spawned here any more: wild herds are spread over the map (mapfeatures)
             }
             RTSPlayer rtsPlayer = PlayerServerEvents.getRTSPlayer(ownerName);
             if (rtsPlayer != null)

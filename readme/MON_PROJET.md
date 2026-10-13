@@ -135,10 +135,9 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - **Coins de pêche** : sur l'eau profonde (2 blocs ou plus) près d'une rive (fleuves, lacs, mers), un emplacement sur 4 morceaux au plus, à 40 blocs au moins l'un de l'autre. On les voit à des **bulles** qui éclatent à la surface et de petites éclaboussures (cachées dans le brouillard de guerre).
 - **Port de pêche** (menu des ouvriers, 150 bois + 25 minerai) : à poser à moins de 10 blocs d'un coin de pêche, **un seul port par coin**. Rapporte **5 nourriture toutes les 5 s** (60 par minute). ⚠️ Forme provisoire (`port`, cabane de pêcheur faite par programme) : à construire par moi.
 - **Troupeaux sauvages** : vaches, moutons, cochons ou poules, **4 à 8 bêtes** ensemble. **Plus de bêtes seules** : tout animal chassable qui n'appartient pas à un troupeau est retiré (sauf dans le tutoriel), et l'Hôtel de ville ne fait plus apparaître d'animaux autour de lui.
-  - Un troupeau sur environ 18 morceaux de prairie, à 80 blocs au moins l'un de l'autre et à 48 blocs au moins des bâtiments.
+  - **Placés comme des structures, à intervalles réguliers** : un troupeau par carré de 80 × 80 blocs sur toute la carte (à un endroit fixe dans le carré, sur de l'herbe), pour qu'on choisisse où s'installer entre forêt, carrière et troupeaux.
   - **Migration** : toutes les 30 s, le troupeau va au point suivant d'un petit cercle (rayon 8 à 14) autour de son coin. S'il est à moins de 48 blocs d'un bâtiment de joueur, son coin s'éloigne de 6 blocs à chaque étape.
   - **Repousse** : une bête de plus toutes les 90 s tant qu'il en manque ; un troupeau chassé jusqu'à la dernière revient au même endroit 5 min plus tard.
-  - Chaque nouvel Hôtel de ville a **au moins 2 troupeaux à moins de 100 blocs** (créés s'il le faut, à 52-90 blocs).
 - Code : dossier `mapfeatures/` (`MapFeaturesServerEvents` : repérage, troupeaux ; `FishingClientEvents` : bulles), `building/buildings/villagers/Port.java`, règle de pose dans `BuildingValidators.getPortError`.
 
 ### Limite de distance pour construire

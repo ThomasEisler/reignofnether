@@ -53,16 +53,16 @@ public class MapFeaturesServerEvents {
     public static final int FISHING_CHUNK_CHANCE = 4; // one chunk in N may have a fishing spot
     public static final int FISHING_SPACING = 40;
 
-    public static final int HERD_CHUNK_CHANCE = 18; // one chunk in N may have a herd
-    public static final int HERD_SPACING = 80;
+    // herds are spread over the whole map at regular intervals, like structures: one per square of HERD_CELL blocks,
+    // somewhere inside it, so players choose where to settle between forests, quarries and herds
+    public static final int HERD_CELL = 80;
+    public static final int HERD_SPACING = 40; // at least this far apart (neighbouring squares)
     public static final int HERD_TOWN_DISTANCE = 48; // herds keep this far from players' buildings
     public static final int HERD_TOWN_STEP = 6; // how far a herd's home moves away from a town each migration step
     public static final int MIGRATION_INTERVAL = 20 * 30; // the herd heads to the next point of its circle
     public static final int MIGRATION_POINTS = 8;
     public static final int REGROW_INTERVAL = 20 * 90; // one animal back while the herd is short
     public static final int REGROW_EMPTY = 20 * 60 * 5; // a herd hunted to the last animal comes back after this
-    public static final int START_HERDS = 2; // herds within reach of a new Town Centre
-    public static final int START_HERD_RANGE = 100;
 
     private static final Queue<Long> pendingChunks = new ConcurrentLinkedQueue<>();
     private static final Random random = new Random();
@@ -161,7 +161,7 @@ public class MapFeaturesServerEvents {
     @Nullable
     private static Herd createHerd(ServerLevel level, BlockPos ground, long seed) {
         for (Herd other : data().herds)
-            if (other.home.distSqr(ground) < (double) HERD_SPACING * HERD_SPACING / 4)
+            if (other.home.distSqr(ground) < (double) HERD_SPACING * HERD_SPACING)
                 return null;
         Random rand = new Random(seed);
         Herd herd = new Herd();
@@ -196,32 +196,30 @@ public class MapFeaturesServerEvents {
             herd.members.add(mob.getUUID());
     }
 
+    // the herd of a square of the map stands at a point picked from the square's position (always the same one)
     private static void scanForHerd(ServerLevel level, ChunkPos cp) {
-        if (Math.floorMod(Mth.getSeed(cp.x, 113, cp.z) >> 12, (long) HERD_CHUNK_CHANCE) != 0)
-            return;
-        BlockPos ground = groundAt(level, cp.getMiddleBlockX(), cp.getMiddleBlockZ());
-        if (!isHerdGround(level, ground) || isNearTown(ground, HERD_TOWN_DISTANCE))
-            return;
-        for (Herd other : data().herds)
-            if (other.home.distSqr(ground) < (double) HERD_SPACING * HERD_SPACING)
-                return;
-        createHerd(level, ground, cp.toLong());
-    }
-
-    // a new Town Centre: make sure a couple of herds live within reach, for the first hunts
-    public static void ensureHerdsNear(ServerLevel level, BlockPos centre) {
-        int near = 0;
-        for (Herd herd : data().herds)
-            if (herd.home.distSqr(centre) < (double) START_HERD_RANGE * START_HERD_RANGE)
-                near++;
-        for (int attempt = 0; attempt < 60 && near < START_HERDS; attempt++) {
-            double angle = random.nextDouble() * Math.PI * 2;
-            int dist = random.nextInt(HERD_TOWN_DISTANCE + 4, START_HERD_RANGE - 10);
-            BlockPos ground = groundAt(level, centre.getX() + (int) (Math.cos(angle) * dist), centre.getZ() + (int) (Math.sin(angle) * dist));
-            if (!isHerdGround(level, ground) || isNearTown(ground, HERD_TOWN_DISTANCE))
-                continue;
-            if (createHerd(level, ground, random.nextLong()) != null)
-                near++;
+        for (int cellX = Math.floorDiv(cp.getMinBlockX(), HERD_CELL); cellX <= Math.floorDiv(cp.getMaxBlockX(), HERD_CELL); cellX++) {
+            for (int cellZ = Math.floorDiv(cp.getMinBlockZ(), HERD_CELL); cellZ <= Math.floorDiv(cp.getMaxBlockZ(), HERD_CELL); cellZ++) {
+                Random rand = new Random(Mth.getSeed(cellX, 113, cellZ));
+                int x = cellX * HERD_CELL + 12 + rand.nextInt(HERD_CELL - 24);
+                int z = cellZ * HERD_CELL + 12 + rand.nextInt(HERD_CELL - 24);
+                if (x < cp.getMinBlockX() || x > cp.getMaxBlockX() || z < cp.getMinBlockZ() || z > cp.getMaxBlockZ())
+                    continue;
+                // that spot, or the nearest good grass in its chunk
+                BlockPos best = null;
+                double bestDist = Double.MAX_VALUE;
+                for (int lx = 0; lx < 16; lx += 3)
+                    for (int lz = 0; lz < 16; lz += 3) {
+                        BlockPos ground = groundAt(level, cp.getMinBlockX() + lx, cp.getMinBlockZ() + lz);
+                        double dist = ground.distToCenterSqr(x, ground.getY(), z);
+                        if (dist < bestDist && isHerdGround(level, ground)) {
+                            bestDist = dist;
+                            best = ground;
+                        }
+                    }
+                if (best != null)
+                    createHerd(level, best, rand.nextLong());
+            }
         }
     }
 
