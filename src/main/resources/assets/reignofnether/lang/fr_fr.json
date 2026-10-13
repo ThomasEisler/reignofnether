@@ -1542,5 +1542,6 @@
     "hud.reignofnether.road_type.advanced": "route avancée",
     "hud.reignofnether.road_no_path": "Aucun chemin possible : eau, bâtiments ou pentes trop raides",
     "hud.reignofnether.barbarian_camp_destroyed": "Camp barbare détruit ! Vous pillez ses réserves.",
-    "buildings.reignofnether.barbarian_camp": "Camp barbare"
+    "buildings.reignofnether.barbarian_camp": "Camp barbare",
+    "building.reignofnether.too_far_from_base": "Trop loin de vos bâtiments"
 }

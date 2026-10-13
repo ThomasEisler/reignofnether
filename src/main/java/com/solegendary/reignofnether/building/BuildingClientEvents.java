@@ -228,6 +228,43 @@ public class BuildingClientEvents {
         }
     }
 
+    // while placing a building, tints red the ground too far from the player's buildings (see BuildRange)
+    private static final int RANGE_ZONE_RADIUS = 40;
+    private static BlockPos rangeZoneCentre = null;
+    private static long rangeZoneTick = 0;
+    private static List<BlockPos> rangeZoneBlocks = new ArrayList<>();
+
+    private static void drawBuildRangeZone(PoseStack matrix) {
+        if (buildingToPlace == null || MC.player == null || MC.level == null || BuildRange.isExempt(buildingToPlace) ||
+            SandboxClientEvents.isSandboxPlayer())
+            return;
+        BlockPos cursor = CursorClientEvents.getPreselectedBlockPos();
+        long tick = MC.level.getGameTime();
+        if (rangeZoneCentre == null || rangeZoneCentre.distManhattan(cursor) > 4 || tick - rangeZoneTick > 20) {
+            rangeZoneCentre = cursor;
+            rangeZoneTick = tick;
+            rangeZoneBlocks = new ArrayList<>();
+            List<BuildingPlacement> own = BuildRange.getOwnBuildingsForPreview(MC.level, MC.player.getName().getString());
+            if (!own.isEmpty()) {
+                for (int x = cursor.getX() - RANGE_ZONE_RADIUS; x <= cursor.getX() + RANGE_ZONE_RADIUS; x++) {
+                    for (int z = cursor.getZ() - RANGE_ZONE_RADIUS; z <= cursor.getZ() + RANGE_ZONE_RADIUS; z++) {
+                        int dx = x - cursor.getX(), dz = z - cursor.getZ();
+                        if (dx * dx + dz * dz > RANGE_ZONE_RADIUS * RANGE_ZONE_RADIUS || BuildRange.isColumnInRange(own, x, z))
+                            continue;
+                        int y = MC.level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
+                        rangeZoneBlocks.add(new BlockPos(x, y, z));
+                    }
+                }
+            }
+        }
+        if (rangeZoneBlocks.isEmpty())
+            return;
+        ResourceLocation rl = ResourceLocation.parse("forge:textures/white.png");
+        var vertexConsumer = MC.renderBuffers().bufferSource().getBuffer(RenderType.entityTranslucent(rl));
+        for (BlockPos bp : rangeZoneBlocks)
+            MyRenderer.drawBlockFace(matrix, vertexConsumer, net.minecraft.core.Direction.UP, bp, 0.9f, 0.1f, 0.1f, 0.3f);
+    }
+
     public static void drawBuildingToPlace(PoseStack matrix, int forceColour) {
         BlockPos bp = BuildingUtils.getBuildingOriginPos(CursorClientEvents.getPreselectedBlockPos(), isBridge(buildingToPlace), buildingRotation, buildingDimensions);
         drawBuildingToPlace(matrix, bp, forceColour);
@@ -374,6 +411,7 @@ public class BuildingClientEvents {
                 BuildingUtils.getBuildingOriginPos(CursorClientEvents.getPreselectedBlockPos(), isBridge(buildingToPlace), buildingRotation, buildingDimensions),
                 0
         );
+        drawBuildRangeZone(evt.getPoseStack());
 
         Map<BlockPos, List<BuildingBlock>> fogBlocksToDraw = new HashMap<>();
         for (LivingEntity le : UnitClientEvents.getAllUnits()) {

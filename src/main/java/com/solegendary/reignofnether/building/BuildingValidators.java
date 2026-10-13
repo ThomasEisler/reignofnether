@@ -70,6 +70,11 @@ public class BuildingValidators {
             return "building.reignofnether.outside_map";
         } else if (!isNotTutorialOrNearValidCapitolPosition(level, building, originPos)) {
             return "building.reignofnether.build_centre_here";
+        } else if (!isSandbox && !BuildRange.isExempt(building)) {
+            BlockPos min = BuildingUtils.getMinCorner(absoluteBlocks);
+            BlockPos max = BuildingUtils.getMaxCorner(absoluteBlocks);
+            if (!BuildRange.isFootprintInRange(level, ownerName, min.getX(), min.getZ(), max.getX(), max.getZ()))
+                return "building.reignofnether.too_far_from_base";
         }
         return null;
     }
