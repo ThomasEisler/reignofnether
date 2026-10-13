@@ -1,5 +1,6 @@
 package com.solegendary.reignofnether.barbarian;
 
+import com.solegendary.reignofnether.building.Building;
 import com.solegendary.reignofnether.building.BuildingPlacement;
 import com.solegendary.reignofnether.building.BuildingServerEvents;
 import com.solegendary.reignofnether.building.BuildingUtils;
@@ -21,14 +22,21 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nullable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,12 +67,29 @@ public class BarbarianServerEvents {
     public static final int HOME_RANGE = 32; // units further than this from their camp count as raiders
     public static final int LOOT_RANGE = 40; // the owner of the nearest unit this close to a destroyed camp gets the loot
 
+    // secondary buildings around the main one: slot -> building and direction (east, west, north, south),
+    // and the camp level (index) from which each slot is built
+    private static final Building[] SLOT_BUILDINGS = { Buildings.BARBARIAN_TENT, Buildings.BARBARIAN_TENT, Buildings.BARBARIAN_TOWER, Buildings.BARBARIAN_TENT };
+    private static final int[][] SLOT_DIRECTIONS = { { 1, 0 }, { -1, 0 }, { 0, -1 }, { 0, 1 } };
+    private static final int[] SLOT_MIN_LEVEL = { 0, 1, 1, 2 };
+    public static final int SLOT_DISTANCE = 13; // from the camp's centre to a secondary building's centre
+    public static final int OUTBUILDING_RANGE = 24; // secondary buildings this close belong to the camp (after a restart)
+
+    // ramparts from level 2: a square of walls around the camp with a gate in the middle of each side
+    public static final int WALL_RADIUS = 23;
+    public static final int GATE_HALF_WIDTH = 2;
+    public static final int WALL_COLUMNS_PER_TICK = 6; // walls go up progressively
+
     private static class Camp {
         final BlockPos origin;
         int level;
         long ticksAtLevel = 0;
         long ticksToRaid = RAID_INTERVAL;
         long ticksToSpawn = 0;
+        final boolean[] slotTried = new boolean[SLOT_BUILDINGS.length];
+        final List<BlockPos> outbuildings = new ArrayList<>();
+        int wallTier = 0; // 0 = none, 1 = wooden palisade, 2 = stone wall
+        final Deque<BlockPos> wallQueue = new ArrayDeque<>(); // ground positions of wall columns still to build
         Camp(BlockPos origin, int level) {
             this.origin = origin;
             this.level = level;
@@ -153,6 +178,125 @@ public class BarbarianServerEvents {
         ticksToNextCamp = CAMP_SPAWN_INTERVAL;
     }
 
+    private static boolean isOutbuilding(Building building) {
+        for (Building b : SLOT_BUILDINGS)
+            if (b == building)
+                return true;
+        return false;
+    }
+
+    // places the secondary buildings the camp's level calls for, each centred SLOT_DISTANCE away in its direction
+    private static void ensureOutbuildings(ServerLevel level, BuildingPlacement main, Camp camp) {
+        for (int slot = 0; slot < SLOT_BUILDINGS.length; slot++) {
+            if (camp.slotTried[slot] || camp.level < SLOT_MIN_LEVEL[slot])
+                continue;
+            camp.slotTried[slot] = true;
+            int cx = main.centrePos.getX() + SLOT_DIRECTIONS[slot][0] * SLOT_DISTANCE;
+            int cz = main.centrePos.getZ() + SLOT_DIRECTIONS[slot][1] * SLOT_DISTANCE;
+            int cy = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, cx, cz);
+            // measure the building to centre it on the slot
+            Building building = SLOT_BUILDINGS[slot];
+            BuildingPlacement probe = BuildingUtils.getNewBuildingPlacement(building, level, new BlockPos(cx, cy, cz),
+                Rotation.NONE, OWNER_NAME, false);
+            if (probe == null)
+                continue;
+            BlockPos origin = new BlockPos(cx - (probe.centrePos.getX() - cx), cy, cz - (probe.centrePos.getZ() - cz));
+            if (!level.getFluidState(origin.below()).isEmpty())
+                continue;
+            BuildingPlacement placement = BuildingServerEvents.placeBuilding(building, origin, Rotation.NONE, OWNER_NAME,
+                new int[] {}, false, false, true, true);
+            if (placement == null)
+                continue;
+            placement.selfBuilding = true;
+            BuildingUtils.clearBuildingArea(placement);
+            camp.outbuildings.add(placement.originPos);
+        }
+    }
+
+    // secondary buildings of camps placed before a restart
+    private static void adoptOutbuildings(Camp camp, BuildingPlacement main) {
+        for (BuildingPlacement b : BuildingServerEvents.getBuildings()) {
+            if (!isBarbarian(b.ownerName) || !isOutbuilding(b.getBuilding()) || camp.outbuildings.contains(b.originPos))
+                continue;
+            if (b.centrePos.distSqr(main.centrePos) <= OUTBUILDING_RANGE * OUTBUILDING_RANGE)
+                camp.outbuildings.add(b.originPos);
+        }
+        for (int slot = 0; slot < SLOT_BUILDINGS.length; slot++)
+            if (camp.level >= SLOT_MIN_LEVEL[slot])
+                camp.slotTried[slot] = true;
+    }
+
+    // ground block of a column, ignoring trees and plants; null over water
+    @Nullable
+    private static BlockPos getGround(ServerLevel level, int x, int z) {
+        BlockPos bp = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
+        for (int i = 0; i < 16; i++) {
+            BlockState bs = level.getBlockState(bp);
+            if (!bs.getFluidState().isEmpty())
+                return null;
+            if (!bs.is(BlockTags.LOGS) && !bs.is(BlockTags.LEAVES) && !bs.canBeReplaced() && !isWallBlock(bs))
+                return bp;
+            bp = bp.below();
+        }
+        return null;
+    }
+
+    private static boolean isWallBlock(BlockState bs) {
+        return bs.is(Blocks.SPRUCE_LOG) || bs.is(Blocks.STONE_BRICKS) || bs.is(Blocks.COBBLESTONE) ||
+            bs.is(Blocks.MOSSY_STONE_BRICKS) || bs.is(Blocks.COBBLESTONE_WALL);
+    }
+
+    private static void planWalls(BuildingPlacement main, Camp camp, int tier) {
+        camp.wallTier = tier;
+        camp.wallQueue.clear();
+        int x0 = main.centrePos.getX(), z0 = main.centrePos.getZ();
+        for (int d = -WALL_RADIUS; d <= WALL_RADIUS; d++) {
+            if (Math.abs(d) <= GATE_HALF_WIDTH)
+                continue; // gates in the middle of each side
+            camp.wallQueue.add(new BlockPos(x0 + d, 0, z0 - WALL_RADIUS));
+            camp.wallQueue.add(new BlockPos(x0 + WALL_RADIUS, 0, z0 + d));
+            camp.wallQueue.add(new BlockPos(x0 - d, 0, z0 + WALL_RADIUS));
+            camp.wallQueue.add(new BlockPos(x0 - WALL_RADIUS, 0, z0 - d));
+        }
+    }
+
+    // builds the next few wall columns: a jagged wooden palisade (tier 1) or a stone wall with crenels (tier 2),
+    // replacing a lower tier wall where it stands
+    private static void buildWalls(ServerLevel level, Camp camp) {
+        for (int i = 0; i < WALL_COLUMNS_PER_TICK && !camp.wallQueue.isEmpty(); i++) {
+            BlockPos column = camp.wallQueue.poll();
+            BlockPos ground = getGround(level, column.getX(), column.getZ());
+            if (ground == null)
+                continue;
+            long hash = Mth.getSeed(column.getX(), 21, column.getZ());
+            int height = camp.wallTier == 1 ? 3 + (int) Math.floorMod(hash >> 16, 2L) : 4;
+            for (int h = 1; h <= height + 1; h++) {
+                BlockPos bp = ground.above(h);
+                BlockState current = level.getBlockState(bp);
+                boolean free = (current.canBeReplaced() || current.is(BlockTags.LEAVES) || isWallBlock(current)) &&
+                    current.getFluidState().isEmpty();
+                if (!free || BuildingUtils.isPosInsideAnyBuilding(false, bp))
+                    break;
+                BlockState state;
+                if (h > height)
+                    state = Blocks.AIR.defaultBlockState(); // clears the old, taller palisade top if any
+                else if (camp.wallTier == 1)
+                    state = Blocks.SPRUCE_LOG.defaultBlockState();
+                else if (h == height)
+                    state = (column.getX() + column.getZ()) % 2 == 0 ? Blocks.COBBLESTONE_WALL.defaultBlockState() : Blocks.AIR.defaultBlockState();
+                else
+                    state = switch ((int) Math.floorMod(hash >> 20, 4L)) {
+                        case 0 -> Blocks.COBBLESTONE.defaultBlockState();
+                        case 1 -> Blocks.MOSSY_STONE_BRICKS.defaultBlockState();
+                        default -> Blocks.STONE_BRICKS.defaultBlockState();
+                    };
+                if (h > height && !isWallBlock(current))
+                    break;
+                level.setBlockAndUpdate(bp, state);
+            }
+        }
+    }
+
     private static List<EntityType<? extends Mob>> getUnitTypes(int level) {
         List<EntityType<? extends Mob>> types = new ArrayList<>(List.of(
             EntityRegistrar.MILITIA_UNIT.get(), EntityRegistrar.VINDICATOR_UNIT.get()));
@@ -227,6 +371,11 @@ public class BarbarianServerEvents {
             ResourcesServerEvents.addSubtractResources(new Resources(owner, loot, loot, loot));
             HudClientboundPacket.showTempMessageI18n(owner, "hud.reignofnether.barbarian_camp_destroyed");
         }
+        // its secondary buildings collapse with it (the walls stay as ruins)
+        for (BlockPos origin : camp.outbuildings)
+            for (BuildingPlacement b : BuildingServerEvents.getBuildings())
+                if (b.originPos.equals(origin))
+                    b.destroyRandomBlocks(b.getMaxHealth() * 10);
         // the survivors of the camp go on a rampage
         for (Map.Entry<Integer, BlockPos> entry : homes.entrySet())
             if (entry.getValue().equals(camp.origin))
@@ -270,8 +419,11 @@ public class BarbarianServerEvents {
         }
         // camps placed before a restart
         for (BuildingPlacement placement : BuildingServerEvents.getBuildings())
-            if (placement.getBuilding() == Buildings.BARBARIAN_CAMP && !camps.containsKey(placement.originPos))
-                camps.put(placement.originPos, new Camp(placement.originPos, placement.getLevelIndex()));
+            if (placement.getBuilding() == Buildings.BARBARIAN_CAMP && !camps.containsKey(placement.originPos)) {
+                Camp camp = new Camp(placement.originPos, placement.getLevelIndex());
+                adoptOutbuildings(camp, placement);
+                camps.put(placement.originPos, camp);
+            }
 
         // forget dead units
         homes.keySet().removeIf(id -> !(level.getEntity(id) instanceof LivingEntity le) || !le.isAlive());
@@ -297,6 +449,14 @@ public class BarbarianServerEvents {
             if (entry.getValue().equals(camp.origin) && level.getEntity(entry.getKey()) instanceof LivingEntity le)
                 garrison.add(le);
 
+        if (placement.isBuilt) {
+            camp.outbuildings.removeIf(origin -> BuildingServerEvents.getBuildings().stream().noneMatch(b -> b.originPos.equals(origin)));
+            ensureOutbuildings(level, placement, camp);
+            int wallTier = camp.level >= 2 ? 2 : camp.level >= 1 ? 1 : 0;
+            if (wallTier > camp.wallTier)
+                planWalls(placement, camp, wallTier);
+            buildWalls(level, camp);
+        }
         if (enabled && placement.isBuilt) {
             // grow
             camp.ticksAtLevel += TICK_INTERVAL;
