@@ -122,7 +122,8 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Le **mode Survie** est retiré du choix des modes de jeu (les barbares le remplacent).
 
 ### Nations (comme dans Civilization)
-- En cliquant sur le bouton de départ villageois, on choisit d'abord sa **nation** dans une **fenêtre presque plein écran** : à gauche un **grand villageois 3D** de la nation (on le fait tourner en glissant la souris ; tenue différente selon la nation), son **drapeau** à la couleur de la nation qui flotte, et des **cartes** autour (dirigeant, bonus, statut) ; à droite la **liste des nations** et le bouton « Jouer … » (Échap ou « Annuler » pour fermer). Puis on pose ses villageois. **Une nation par joueur** (une nation prise est grisée).
+- **En arrivant dans une partie** (pas encore commencée, hors bac à sable et tutoriel), la fenêtre de choix de nation **s'ouvre toute seule**. « Annuler » la ferme ; le bouton de départ villageois la rouvre.
+- En cliquant sur le bouton de départ villageois, on choisit d'abord sa **nation** dans une **fenêtre presque plein écran** : à gauche un **grand villageois 3D** de la nation (on le fait tourner en glissant la souris ; tenue différente selon la nation), sa **bannière** (une vraie bannière de Minecraft, motifs propres à chaque nation, qui flotte au vent ; petite bannière aussi dans la liste), et des **cartes** autour (dirigeant, bonus, statut) ; à droite la **liste des nations** et le bouton « Jouer … » (Échap ou « Annuler » pour fermer). Puis on pose ses villageois. **Une nation par joueur** (une nation prise est grisée).
 - Le nom de la nation et de son dirigeant s'affiche en haut de l'écran, avec sa couleur. Un message annonce le choix à tous.
 - `/rts-reset` efface les choix de nation.
 
@@ -215,7 +216,7 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 - [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
 - [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin, bâtiments annexes, remparts (actifs par défaut, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
 - [ ] Limite de distance (24 blocs) et zone rouge pendant le placement ; plus de villages.
-- [ ] Nations : fenêtre de choix au départ, une nation par joueur, nom en haut de l'écran, bonus de chaque nation.
+- [ ] Nations : fenêtre de choix qui s'ouvre toute seule, bannières Minecraft, une nation par joueur, nom en haut de l'écran, bonus de chaque nation.
 - [ ] Routes qui contournent les obstacles (eau, bâtiments, falaises, arbres).
 - [ ] Chantier de route par les ouvriers (envoi automatique, aide des ouvriers proches, nouvel ordre = quitte le chantier) et aperçu du tracé/prix.
 - [ ] Les unités vont plus vite sur la route et la préfèrent pour leurs trajets.
@@ -250,7 +251,7 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 - Les structures `.nbt` vont dans **`assets/` et `data/`** `reignofnether/structures/`.
 - `lang/fr_fr.json` a des fins de ligne Windows (CRLF) : ajouter des lignes sans reformater le fichier. Après une mise à jour de l'auteur, comparer avec `en_us.json` pour traduire les nouveaux textes.
 - Je ne peux pas cliquer dans la fenêtre du jeu (processus « java » non pilotable) : c'est l'utilisateur qui teste en jeu.
-- Mes documents sont dans le dossier `readme/` : ce journal et `BATIMENTS.md` (liste des bâtiments, à tenir à jour quand un bâtiment change).
+- Mes documents sont dans le dossier `readme/` : ce journal et `BATIMENTS.md` (liste des bâtiments avec le nom à mettre dans le bloc de structure, à tenir à jour quand un bâtiment change).
 - Enregistrer sur GitHub (`git push` sur `ma-version`) quand l'utilisateur le demande, et mettre ce fichier à jour à chaque étape.
 
 ---
@@ -273,3 +274,4 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 | 13/10/2026 | Arbre des technologies (8 recherches dans la Bibliothèque, bâtiments et niveaux à débloquer) |
 | 13/10/2026 | Dossier `readme/` (journal + liste des bâtiments) |
 | 13/10/2026 | Traduction française complète, jeu en français |
+| 13/10/2026 | Choix de nation ouvert automatiquement, bannières Minecraft ; noms de structure dans `BATIMENTS.md` |

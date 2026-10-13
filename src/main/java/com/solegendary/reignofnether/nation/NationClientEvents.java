@@ -3,7 +3,27 @@ package com.solegendary.reignofnether.nation;
 import com.solegendary.reignofnether.cursor.CursorClientEvents;
 import com.solegendary.reignofnether.orthoview.OrthoviewClientEvents;
 import com.solegendary.reignofnether.unit.UnitAction;
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Pair;
+import com.solegendary.reignofnether.gamemode.ClientGameModeHelper;
+import com.solegendary.reignofnether.gamemode.GameMode;
+import com.solegendary.reignofnether.player.PlayerClientEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BannerRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.entity.BannerBlockEntity;
+import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BannerPatterns;
+import net.minecraftforge.event.TickEvent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -38,6 +58,8 @@ public class NationClientEvents {
     private static float villagerYaw = 20;
     private static Villager villager = null;
     private static Nation villagerNation = null;
+    private static boolean autoOpened = false; // the screen opens by itself once when a player who hasn't started yet arrives
+    private static int ticksInWorld = 0;
 
     public static void setNations(Map<String, Nation> newNations) {
         nations = newNations;
@@ -79,6 +101,29 @@ public class NationClientEvents {
         } else {
             CursorClientEvents.setLeftClickAction(UnitAction.STARTRTS_VILLAGERS);
         }
+    }
+
+    // open the nation choice by itself when arriving in a game without having started yet
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent evt) {
+        if (evt.phase != TickEvent.Phase.END)
+            return;
+        if (MC.level == null || MC.player == null) {
+            ticksInWorld = 0;
+            autoOpened = false;
+            return;
+        }
+        if (PlayerClientEvents.isRTSPlayer()) {
+            autoOpened = false; // after a reset or a defeat it opens again
+            return;
+        }
+        if (++ticksInWorld < 40 || autoOpened || selecting || !OrthoviewClientEvents.isEnabled())
+            return;
+        if (!PlayerClientEvents.canStartRTS || ClientGameModeHelper.gameMode == GameMode.SANDBOX || getOwnNation() != null ||
+            com.solegendary.reignofnether.tutorial.TutorialClientEvents.isEnabled())
+            return;
+        autoOpened = true;
+        onStartButtonClicked();
     }
 
     private static void close() {
@@ -191,21 +236,50 @@ public class NationClientEvents {
             g.drawString(MC.font, lines.get(i), x + 8, y + 16 + i * 10, 0xE0E0E0);
     }
 
-    // a flag on a pole, waving gently
-    private static void drawFlag(GuiGraphics g, int poleX, int poleTop, int poleBottom, int colour) {
-        g.fill(poleX, poleTop - 3, poleX + 3, poleBottom, 0xFF8B6A3E);
-        g.fill(poleX - 1, poleTop - 5, poleX + 4, poleTop - 2, 0xFFD4AF37);
-        float time = (MC.level != null ? MC.level.getGameTime() : 0) + MC.getFrameTime();
-        int clothW = 48, clothH = 30, slices = 12;
-        for (int i = 0; i < slices; i++) {
-            int sx = poleX + 3 + i * clothW / slices;
-            int ex = poleX + 3 + (i + 1) * clothW / slices;
-            int wave = (int) Math.round(Math.sin(time * 0.15 + i * 0.6) * (1 + i * 0.25));
-            int top = poleTop + wave;
-            g.fill(sx, top, ex, top + clothH, 0xFF000000 | colour);
-            g.fill(sx, top + clothH / 2 - 2, ex, top + clothH / 2 + 2, darker(colour, 0.6f)); // stripe
-            g.fill(sx, top + clothH - 2, ex, top + clothH, darker(colour, 0.75f));
-        }
+    // ---- the nation's banner (a real Minecraft banner, waving like in the world) ---------------------------------
+
+    private static ModelPart bannerModel = null;
+    private static final Map<Nation, List<Pair<Holder<BannerPattern>, DyeColor>>> bannerPatterns = new HashMap<>();
+
+    private static List<Pair<Holder<BannerPattern>, DyeColor>> getBannerPatterns(Nation nation) {
+        return bannerPatterns.computeIfAbsent(nation, n -> {
+            BannerPattern.Builder b = new BannerPattern.Builder();
+            DyeColor base = switch (n) {
+                case FRANCE -> { b.addPattern(BannerPatterns.FLOWER, DyeColor.YELLOW); b.addPattern(BannerPatterns.BORDER, DyeColor.YELLOW); yield DyeColor.BLUE; }
+                case ENGLAND -> { b.addPattern(BannerPatterns.STRAIGHT_CROSS, DyeColor.RED); yield DyeColor.WHITE; }
+                case SPAIN -> { b.addPattern(BannerPatterns.STRIPE_TOP, DyeColor.RED); b.addPattern(BannerPatterns.STRIPE_BOTTOM, DyeColor.RED); yield DyeColor.YELLOW; }
+                case HRE -> { b.addPattern(BannerPatterns.RHOMBUS_MIDDLE, DyeColor.BLACK); b.addPattern(BannerPatterns.CIRCLE_MIDDLE, DyeColor.YELLOW); b.addPattern(BannerPatterns.BORDER, DyeColor.BLACK); yield DyeColor.YELLOW; }
+                case ROME -> { b.addPattern(BannerPatterns.CIRCLE_MIDDLE, DyeColor.YELLOW); b.addPattern(BannerPatterns.CURLY_BORDER, DyeColor.YELLOW); yield DyeColor.PURPLE; }
+                case PORTUGAL -> { b.addPattern(BannerPatterns.HALF_VERTICAL, DyeColor.GREEN); b.addPattern(BannerPatterns.CIRCLE_MIDDLE, DyeColor.YELLOW); yield DyeColor.RED; }
+                case RUSSIA -> { b.addPattern(BannerPatterns.HALF_HORIZONTAL_MIRROR, DyeColor.RED); b.addPattern(BannerPatterns.STRIPE_MIDDLE, DyeColor.BLUE); yield DyeColor.WHITE; }
+                case SWEDEN -> { b.addPattern(BannerPatterns.STRAIGHT_CROSS, DyeColor.YELLOW); yield DyeColor.BLUE; }
+            };
+            return BannerBlockEntity.createPatterns(base, b.toListTag());
+        });
+    }
+
+    // banner standing with its top bar at topY, `height` pixels tall, pole centred on x
+    private static void drawBanner(GuiGraphics g, Nation nation, int x, int topY, int height, boolean wave) {
+        if (bannerModel == null)
+            bannerModel = MC.getEntityModels().bakeLayer(ModelLayers.BANNER);
+        ModelPart flag = bannerModel.getChild("flag");
+        float s = height / 2.75f; // the model goes from the bar (-2) to the bottom of the pole (0.75)
+        PoseStack ps = g.pose();
+        ps.pushPose();
+        ps.translate(x, topY + 2f * s, 150);
+        ps.scale(-s, s, -s); // turned to face the screen
+        float time = (MC.level != null ? MC.level.getGameTime() % 100 : 0) + MC.getFrameTime();
+        flag.xRot = wave ? (-0.0125f + 0.01f * Mth.cos(Mth.TWO_PI * time / 100f)) * Mth.PI : 0;
+        flag.y = -32f;
+        Lighting.setupForEntityInInventory();
+        var buffers = g.bufferSource();
+        var consumer = ModelBakery.BANNER_BASE.buffer(buffers, RenderType::entitySolid);
+        bannerModel.getChild("pole").render(ps, consumer, 0xF000F0, OverlayTexture.NO_OVERLAY);
+        bannerModel.getChild("bar").render(ps, consumer, 0xF000F0, OverlayTexture.NO_OVERLAY);
+        BannerRenderer.renderPatterns(ps, buffers, 0xF000F0, OverlayTexture.NO_OVERLAY, flag, ModelBakery.BANNER_BASE, true, getBannerPatterns(nation));
+        g.flush();
+        Lighting.setupFor3DItems();
+        ps.popPose();
     }
 
     private static void drawSelection(GuiGraphics g, int mouseX, int mouseY) {
@@ -246,7 +320,7 @@ public class NationClientEvents {
 
         // flag next to the villager, cards around him
         int villagerHalfW = (int) (scale * 0.45f);
-        drawFlag(g, centreX + villagerHalfW + 14, feetY - (int) (scale * 2.0f), feetY, nation.colour);
+        drawBanner(g, nation, centreX + villagerHalfW + 24, feetY - (int) (scale * 2.1f), (int) (scale * 2.1f), true);
         int cardW = Math.min(150, (leftX1 - leftX0) / 2 - villagerHalfW - 16);
         String takenBy = getTakenBy(nation);
         drawCard(g, leftX0 + 8, leftY0 + 48, cardW, "Dirigeant", nation.leader, accent);
@@ -263,7 +337,7 @@ public class NationClientEvents {
             boolean available = getTakenBy(n) == null;
             int bg = n == previewed ? 0xFF3A3424 : n == hovered ? 0xFF2A2A2A : 0xFF1A1A1A;
             drawFrame(g, listX0(), rowY, listX1(), rowY + ROW_HEIGHT - 3, n == previewed ? 0xFFD4AF37 : 0xFF333333, bg);
-            g.fill(listX0() + 4, rowY + 4, listX0() + 18, rowY + ROW_HEIGHT - 7, 0xFF000000 | n.colour);
+            drawBanner(g, n, listX0() + 11, rowY + 1, ROW_HEIGHT - 5, false);
             g.drawString(MC.font, n.displayName, listX0() + 24, rowY + 3, available ? 0xFFFFFF : 0x777777);
             drawScaledString(g, available ? n.leader : "prise par " + getTakenBy(n), listX0() + 24, rowY + 13,
                 available ? 0xAAAAAA : 0x666666, 0.8f, false);
