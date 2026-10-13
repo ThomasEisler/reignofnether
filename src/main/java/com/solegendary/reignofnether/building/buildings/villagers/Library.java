@@ -107,6 +107,7 @@ public class Library extends ProductionBuilding implements RangeIndicatorAddon {
         this.abilities.add(ENCHANT_MULTISHOT, Keybindings.abilitySlot4);
         this.abilities.add(ENCHANT_VIGOR, Keybindings.abilitySlot5);
         this.abilities.add(ENCHANT_GUST, Keybindings.abilitySlot6);
+        this.abilities.add(new com.solegendary.reignofnether.tech.OpenTechTree(), Keybindings.abilitySlot10);
 
         this.productions.add(ProductionItems.RESEARCH_EVOKER_VEXES, Keybindings.abilitySlot7);
         this.productions.add(ProductionItems.RESEARCH_UPGRADED_WINDCALLERS, Keybindings.abilitySlot8);

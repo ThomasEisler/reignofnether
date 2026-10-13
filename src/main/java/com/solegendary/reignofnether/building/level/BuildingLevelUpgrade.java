@@ -63,6 +63,9 @@ public class BuildingLevelUpgrade extends ProductionItem {
             return "hud.reignofnether.level_upgrade_unavailable";
         if (pp.getUpgradeLevel() != targetLevelIndex - 1 || isAnyLevelUpgradeQueued(pp))
             return "hud.reignofnether.level_upgrade_unavailable";
+        if (!com.solegendary.reignofnether.tech.Tech.hasTech(false, pp.ownerName,
+                com.solegendary.reignofnether.tech.Tech.getRequiredForLevel(building.get(), targetLevelIndex)))
+            return "building.reignofnether.needs_tech";
         return null;
     }
 
@@ -99,7 +102,9 @@ public class BuildingLevelUpgrade extends ProductionItem {
                 Math.round(current.productionSpeed * 100), Math.round(next.productionSpeed * 100)), Style.EMPTY));
 
         return new StartProductionButton(getItemName(), ICON, FRAME, hotkey,
-            () -> prodBuilding.getUpgradeLevel() != targetLevelIndex - 1 || isAnyLevelUpgradeQueued(prodBuilding),
+            () -> prodBuilding.getUpgradeLevel() != targetLevelIndex - 1 || isAnyLevelUpgradeQueued(prodBuilding) ||
+                !com.solegendary.reignofnether.tech.Tech.hasTech(true, prodBuilding.ownerName,
+                    com.solegendary.reignofnether.tech.Tech.getRequiredForLevel(building.get(), targetLevelIndex)),
             () -> prodBuilding.isBuilt,
             tooltip,
             this

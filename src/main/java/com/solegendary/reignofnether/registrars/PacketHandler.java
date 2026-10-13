@@ -462,5 +462,17 @@ public final class PacketHandler {
                 .decoder(com.solegendary.reignofnether.nation.NationClientboundPacket::new)
                 .consumerMainThread(com.solegendary.reignofnether.nation.NationClientboundPacket::handle)
                 .add();
+
+        INSTANCE.messageBuilder(com.solegendary.reignofnether.tech.TechServerboundPacket.class, index++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.solegendary.reignofnether.tech.TechServerboundPacket::encode)
+                .decoder(com.solegendary.reignofnether.tech.TechServerboundPacket::new)
+                .consumerMainThread(com.solegendary.reignofnether.tech.TechServerboundPacket::handle)
+                .add();
+
+        INSTANCE.messageBuilder(com.solegendary.reignofnether.tech.TechClientboundPacket.class, index++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.solegendary.reignofnether.tech.TechClientboundPacket::encode)
+                .decoder(com.solegendary.reignofnether.tech.TechClientboundPacket::new)
+                .consumerMainThread(com.solegendary.reignofnether.tech.TechClientboundPacket::handle)
+                .add();
     }
 }

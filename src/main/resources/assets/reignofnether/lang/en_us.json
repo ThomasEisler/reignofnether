@@ -2391,5 +2391,6 @@
     "hud.reignofnether.road_no_path": "No possible route: water, buildings or slopes too steep in the way",
     "hud.reignofnether.barbarian_camp_destroyed": "Barbarian camp destroyed! You loot its supplies.",
     "buildings.reignofnether.barbarian_camp": "Barbarian Camp",
-    "building.reignofnether.too_far_from_base": "Too far from your buildings"
+    "building.reignofnether.too_far_from_base": "Too far from your buildings",
+    "building.reignofnether.needs_tech": "Requires a technology you haven't discovered yet"
 }

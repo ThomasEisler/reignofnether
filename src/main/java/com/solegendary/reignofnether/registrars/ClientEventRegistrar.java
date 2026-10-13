@@ -90,6 +90,7 @@ public class ClientEventRegistrar {
         vanillaEventBus.register(CursorClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.road.RoadClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.nation.NationClientEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.tech.TechClientEvents.class);
         vanillaEventBus.register(MinimapClientEvents.class);
         vanillaEventBus.register(TimeClientEvents.class);
         vanillaEventBus.register(BlockClientEvents.class);
@@ -149,5 +150,6 @@ public class ClientEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.building.ConstructionSiteServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.barbarian.BarbarianServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.nation.NationServerEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.tech.TechServerEvents.class);
     }
 }

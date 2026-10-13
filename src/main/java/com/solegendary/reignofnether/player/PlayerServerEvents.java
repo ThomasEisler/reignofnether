@@ -1220,6 +1220,7 @@ public class PlayerServerEvents {
         StartPosServerEvents.cancelStartGameCountdown(true);
         FogChunkSnapshot.clear();
         com.solegendary.reignofnether.nation.NationServerEvents.clearNations();
+        com.solegendary.reignofnether.tech.TechServerEvents.clearAll();
 
         boolean isSandboxOrScenario = SandboxServer.isAnyoneASandboxPlayer() || serverLevel.getGameRules().getRule(GameRuleRegistrar.SCENARIO_MODE).get();
 

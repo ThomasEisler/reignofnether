@@ -133,6 +133,25 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | Russie | Pierre le Grand | Récolte 15 % plus rapide |
 | Suède | Gustave II Adolphe | Unités 10 % plus rapides |
 
+### Arbre des technologies
+- Bouton **« Technologies x/8 »** à gauche de l'écran RTS (une barre bleue montre la recherche en cours), ou bouton **« Technologies »** de la **Bibliothèque** (touche **P**) : ouvre l'arbre presque plein écran (Échap pour fermer).
+- Une carte par technologie, reliée à celles qu'elle demande, avec son prix, sa durée et les petites icônes de ce qu'elle débloque. Cliquer une carte « Disponible » lance la recherche ; « Annuler » rembourse tout.
+- **Une seule recherche à la fois**, et elle n'avance que si on a une **Bibliothèque terminée** (sinon en pause). Sauvegardée avec le monde, effacée par `/rts-reset`. `warpten` accélère, `modifythephasevariance` ignore les technologies.
+- Les bâtiments verrouillés sont **cachés du menu de construction** ; les niveaux 2 et 3 de la caserne et du Town Centre demandent Architecture / Ingénierie.
+
+| Recherche | Il faut d'abord | Débloque | Prix | Durée |
+|---|---|---|---|---|
+| Maçonnerie | — | Tour de guet, Forge | 200 bois, 100 minerai | 5 min |
+| Commerce | — | Marché | 150 nourr., 150 bois | 5 min |
+| Métallurgie | Maçonnerie | Golem de fer | 150 bois, 250 minerai | 6 min |
+| Architecture | Maçonnerie | Caserne niv. 2, Town Centre niv. 2 | 300 bois, 200 minerai | 6 min |
+| Mysticisme | Commerce | Hutte de sorcière, Sanctuaire | 200 nourr., 100 bois, 150 minerai | 6 min |
+| Fortifications | Métallurgie | Château | 300 bois, 400 minerai | 10 min |
+| Ingénierie | Architecture + Métallurgie | Caserne niv. 3, Town Centre niv. 3 | 400 bois, 400 minerai | 8 min |
+| Arcanes | Mysticisme | Tour arcanique | 300 nourr., 200 bois, 300 minerai | 8 min |
+
+Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, pont.
+
 ---
 
 ## Ajouter ou modifier un bâtiment
@@ -176,23 +195,8 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - [ ] Construire des **remparts** comme les routes : choisir deux points, **aperçu** du tracé et du prix, construits par les ouvriers.
 - [ ] Pouvoir **intégrer une tour de garde** dans les remparts.
 
-### Arbre des technologies (en attente de ma décision, rien de codé)
-- [ ] Décidé : recherches dans la **Bibliothèque**, **une seule à la fois** par joueur, **5 min minimum**, l'arbre s'ouvre par un bouton de l'interface principale ou depuis la Bibliothèque ; les technologies **débloquent des bâtiments** et **des niveaux** de bâtiments.
-- [ ] Proposition d'arbre (villageois), à valider, prix non fixés :
-
-| Recherche | Il faut d'abord | Débloque | Durée |
-|---|---|---|---|
-| Maçonnerie | — | Tour de guet, Forge | 5 min |
-| Commerce | — | Marché | 5 min |
-| Métallurgie | Maçonnerie | Golem de fer | 6 min |
-| Architecture | Maçonnerie | Caserne niv. 2, Town Centre niv. 2 | 6 min |
-| Mysticisme | Commerce | Hutte de sorcière, Sanctuaire | 6 min |
-| Fortifications | Métallurgie | Château | 10 min |
-| Ingénierie | Architecture + Métallurgie | Caserne niv. 3, Town Centre niv. 3 | 8 min |
-| Arcanes | Mysticisme | Tour arcanique | 8 min |
-
-  Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque.
-- [ ] Écran prévu : cases reliées par des traits (comme l'écran des Progrès), glisser/zoomer, infobulle (prix, durée, effet), clic = lancer la recherche.
+### Arbre des technologies
+- [ ] Écran plus riche plus tard : glisser/zoomer, plus de technologies, effets autres que débloquer.
 
 ### Barbares
 - [ ] Construire mes propres formes de camps (niveaux 1, 2, 3), de la tente et de la tour.
@@ -212,6 +216,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - [ ] Chantier de route par les ouvriers (envoi automatique, aide des ouvriers proches, nouvel ordre = quitte le chantier) et aperçu du tracé/prix.
 - [ ] Les unités vont plus vite sur la route et la préfèrent pour leurs trajets.
 - [ ] Reconstruction automatique d'un bâtiment après modification de sa forme.
+- [ ] Arbre des technologies : bouton à gauche, écran, recherche une à la fois, bâtiments cachés tant que non découverts, niveaux bloqués.
 - [ ] La commande `/rts-rebuild-buildings` n'était pas reconnue lors d'un essai : probablement triches non activées dans ce monde, cause non confirmée.
 
 ---
@@ -229,6 +234,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Barbares : dossier `barbarian/` (`BarbarianServerEvents` : camps, garnisons, raids, butin ; `BarbarianSaveData`), bâtiments `building/buildings/neutral/BarbarianCamp.java` et `BarbarianOutbuilding.java` (tente, tour ; propriétaire « Barbarians »). Point rouge : `HealthBarClientEvents.renderBarbarianMarkers`. Annexes : `ensureOutbuildings` (emplacements `SLOT_*`) ; remparts : `planWalls` / `buildWalls` (`WALL_RADIUS`).
 - Limite de distance : `building/BuildRange.java` (rayon `RANGE`, exceptions), vérifiée dans `BuildingValidators.getPlacementValidityError`, zone rouge dans `BuildingClientEvents.drawBuildRangeZone`. Villages : tags vides `data/minecraft/tags/worldgen/biome/has_structure/village_*.json`.
 - Nations : dossier `nation/` (`Nation` = liste, dirigeants, couleurs, bonus ; `NationServerEvents` = qui joue quoi, sauvegarde ; `NationClientEvents` = fenêtre de choix et nom en haut de l'écran). Bonus branchés dans `BuildingPlacement` (construction), `RoadServerEvents`/`RoadClientEvents` (routes), `BarbarianServerEvents` (butin), `ProductionItem` (production), `GatherResourcesGoal` (récolte), `ResourcesServerEvents.resetResources` (départ), `Unit.tick` (vitesse). Factions cachées dans `hud/buttons/StartButtons.java`, Survie retirée dans `ClientGameModeHelper.cycleGameMode`.
+- Technologies : dossier `tech/` (`Tech` = liste, prix, durées, déblocages, position dans l'écran ; `TechServerEvents` = recherches des joueurs, sauvegarde `TechSaveData` ; `TechClientEvents` = écran et bouton à gauche). Bâtiments cachés dans `BuildingPlaceButton`, vérifié dans `BuildingValidators` ; niveaux dans `BuildingLevelUpgrade`. Bouton Bibliothèque : `OpenTechTree`.
 - Commandes : `commands/CommandsServerEvents.java` (`rts-rebuild-buildings`, `rts-road`).
 - Terrain : `src/main/resources/data/minecraft/worldgen/world_preset/normal.json` (`settings` = `minecraft:overworld`).
 
@@ -258,3 +264,4 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | 13/10/2026 | Barbares : camps à 3 niveaux, garnisons, raids, butin |
 | 13/10/2026 | Camps barbares : bâtiments annexes et remparts (palissade puis pierre) |
 | 13/10/2026 | Point rouge au-dessus des barbares ; une seule faction (villageois), Survie retirée, nations façon Civilization avec bonus |
+| 13/10/2026 | Arbre des technologies (8 recherches dans la Bibliothèque, bâtiments et niveaux à débloquer) |

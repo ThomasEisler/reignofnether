@@ -178,7 +178,8 @@ public class CursorClientEvents {
         // hides default cursor and locks it to the window to allow edge panning
         GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
         // raw mouse increases sensitivity massively for some reason
-        GLFW.glfwSetInputMode(window, GLFW.GLFW_RAW_MOUSE_MOTION, GLFW.GLFW_FALSE);
+        if (GLFW.glfwRawMouseMotionSupported()) // unsupported on macOS: setting it anyway spams GL errors in the log
+            GLFW.glfwSetInputMode(window, GLFW.GLFW_RAW_MOUSE_MOTION, GLFW.GLFW_FALSE);
 
         // blitting like this will cause it to be rendered 1 frame behind realtime (this hopefully shouldn't be noticeable...)
         RenderSystem.setShader(GameRenderer::getPositionTexShader);

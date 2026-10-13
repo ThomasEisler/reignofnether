@@ -14,6 +14,10 @@ public class BuildingPlaceButton extends Button {
                                List<FormattedCharSequence> tooltipLines, Building building) {
 
         // generate x/y based on given position (starting at 0 which is bottom left 1 row above generic action buttons)
-        super(name, Button.itemIconSize, rl, hotkey, isSelected, isHidden, isEnabled, () -> BuildingClientEvents.setBuildingToPlace(building), null, tooltipLines);
+        // buildings that need a technology the player hasn't discovered yet are hidden from the build menu
+        super(name, Button.itemIconSize, rl, hotkey, isSelected,
+            () -> isHidden.get() || (net.minecraft.client.Minecraft.getInstance().player != null &&
+                !com.solegendary.reignofnether.tech.Tech.canBuild(true, net.minecraft.client.Minecraft.getInstance().player.getName().getString(), building)),
+            isEnabled, () -> BuildingClientEvents.setBuildingToPlace(building), null, tooltipLines);
     }
 }
