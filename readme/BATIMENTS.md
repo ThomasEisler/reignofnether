@@ -13,7 +13,7 @@ La colonne **« Nom dans le bloc de structure »** donne le nom exact à taper d
 
 | Bâtiment | Nom dans le bloc de structure | Prix | Durée | PV | Technologie requise | À quoi il sert |
 |---|---|---|---|---|---|---|
-| **Town Centre** (centre-ville) | `reignofnether:town_centre` · niv. 2 : `reignofnether:town_centre_lvl2` · niv. 3 : `reignofnether:town_centre_lvl3` | 350 bois, 250 minerai | 150 s | 380 (niv. 2 : 500, niv. 3 : 650) | — | Bâtiment principal. Produit villageois, chien et chat éclaireurs. +10 population. Améliorable niv. 2 et 3 |
+| **Hôtel de ville** | `reignofnether:town_centre` · niv. 2 : `reignofnether:town_centre_lvl2` · niv. 3 : `reignofnether:town_centre_lvl3` | 350 bois, 250 minerai | 150 s | 380 (niv. 2 : 500, niv. 3 : 650) | — | Bâtiment principal. Produit villageois, chien et chat éclaireurs. +10 population. Améliorable niv. 2 et 3 |
 | **Maison** | `reignofnether:villager_house` | 90 bois | 40 s | 175 | — | +10 population |
 | **Ferme de blé** | `reignofnether:wheat_farm` | 150 bois | 30 s | 65 | — | Nourriture (les villageois y récoltent) |
 | **Entrepôt** | `reignofnether:stockpile_oak` | 75 bois | 40 s | 95 | — | Dépôt des ressources. Peut être construit loin de la base |

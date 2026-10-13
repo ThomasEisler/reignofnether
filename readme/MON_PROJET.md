@@ -39,9 +39,9 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | Bâtiment | Niveau 1 | Niveau 2 | Niveau 3 |
 |---|---|---|---|
 | **Barracks** (caserne) | 150 PV | 225 PV, production +25 % (150 bois, 100 minerai, 60 s) | 300 PV, production +50 % (250 bois, 200 minerai, 90 s) |
-| **Town Centre** | 380 PV | 500 PV, production +25 % (300 bois, 200 minerai, 90 s) | 650 PV, production +50 % (500 bois, 400 minerai, 120 s) |
+| **Hôtel de ville** | 380 PV | 500 PV, production +25 % (300 bois, 200 minerai, 90 s) | 650 PV, production +50 % (500 bois, 400 minerai, 120 s) |
 
-- Mes nouvelles formes de **niveau 1** sont en place (caserne en bois, Town Centre en campement).
+- Mes nouvelles formes de **niveau 1** sont en place (caserne en bois, Hôtel de ville en campement).
 - ⚠️ Les formes des **niveaux 2 et 3 sont provisoires** (copies des anciens bâtiments de pierre) : à construire.
 
 ### Chantiers
@@ -55,7 +55,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | Caserne | 60 s | | Hutte de sorcière | 90 s |
 | Golem de fer | 60 s | | Sanctuaire de prospérité | 90 s |
 | Tour de guet | 75 s | | Tour arcanique | 120 s |
-| Town Centre | 150 s | | Château | 180 s |
+| Hôtel de ville | 150 s | | Château | 180 s |
 
   Les bâtiments des autres factions (monstres, piglins) gardent le calcul d'origine, ralenti 1,5 fois. Les réparations ne changent pas.
 - **Tours d'échafaudage** dans la case du bâtiment et juste autour (entre 30 % et 70 % de la hauteur du bâtiment, jamais au-dessus) : elles poussent au fur et à mesure du chantier, chacune à son rythme (un peu au hasard), et montent devant les murs. Retirées quand le bâtiment est terminé ou détruit.
@@ -104,10 +104,10 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
   Ils se construisent tout seuls. Si le bâtiment principal est détruit, les annexes s'effondrent avec lui.
 - **Remparts** dès le niveau 2 : un carré de murs à 23 blocs du centre, avec une porte de 5 blocs au milieu de chaque côté. Niveau 2 : palissade de rondins d'épicéa (3-4 blocs de haut, irrégulière). Niveau 3 : remplacée par un mur de pierre (pierre taillée, moussue, pavé) avec créneaux. Les murs montent progressivement et restent en ruines quand le camp est détruit.
-- ⚠️ Les **formes des camps sont provisoires** (copies de la caserne, du Town Centre, de la maison et de la tour de guet) : à construire par moi.
+- ⚠️ Les **formes des camps sont provisoires** (copies de la caserne, du Hôtel de ville, de la maison et de la tour de guet) : à construire par moi.
 
 ### Limite de distance pour construire
-- On ne peut construire qu'à **24 blocs maximum** d'un de ses bâtiments (même en construction). Exceptions : **entrepôts** et **ponts**. Un joueur sans bâtiment construit où il veut (premier Town Centre).
+- On ne peut construire qu'à **24 blocs maximum** d'un de ses bâtiments (même en construction). Exceptions : **entrepôts** et **ponts**. Un joueur sans bâtiment construit où il veut (premier Hôtel de ville).
 - **Aperçu** : pendant le placement d'un bâtiment, le sol trop loin est **teinté en rouge** autour du curseur, et le bâtiment fantôme devient rouge avec le message « Trop loin de vos bâtiments ». Vérifié aussi par le serveur.
 
 ### Français
@@ -142,20 +142,20 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - Bouton **« Technologies x/8 »** à gauche de l'écran RTS (une barre bleue montre la recherche en cours), ou bouton **« Technologies »** de la **Bibliothèque** (touche **P**) : ouvre l'arbre presque plein écran (Échap pour fermer).
 - Une carte par technologie, reliée à celles qu'elle demande, avec son prix, sa durée et les petites icônes de ce qu'elle débloque. Cliquer une carte « Disponible » lance la recherche ; « Annuler » rembourse tout.
 - **Une seule recherche à la fois**, et elle n'avance que si on a une **Bibliothèque terminée** (sinon en pause). Sauvegardée avec le monde, effacée par `/rts-reset`. `warpten` accélère, `modifythephasevariance` ignore les technologies.
-- Les bâtiments verrouillés sont **cachés du menu de construction** ; les niveaux 2 et 3 de la caserne et du Town Centre demandent Architecture / Ingénierie.
+- Les bâtiments verrouillés sont **cachés du menu de construction** ; les niveaux 2 et 3 de la caserne et du Hôtel de ville demandent Architecture / Ingénierie.
 
 | Recherche | Il faut d'abord | Débloque | Prix | Durée |
 |---|---|---|---|---|
 | Maçonnerie | — | Tour de guet, Forge | 200 bois, 100 minerai | 5 min |
 | Commerce | — | Marché | 150 nourr., 150 bois | 5 min |
 | Métallurgie | Maçonnerie | Golem de fer | 150 bois, 250 minerai | 6 min |
-| Architecture | Maçonnerie | Caserne niv. 2, Town Centre niv. 2 | 300 bois, 200 minerai | 6 min |
+| Architecture | Maçonnerie | Caserne niv. 2, Hôtel de ville niv. 2 | 300 bois, 200 minerai | 6 min |
 | Mysticisme | Commerce | Hutte de sorcière, Sanctuaire | 200 nourr., 100 bois, 150 minerai | 6 min |
 | Fortifications | Métallurgie | Château | 300 bois, 400 minerai | 10 min |
-| Ingénierie | Architecture + Métallurgie | Caserne niv. 3, Town Centre niv. 3 | 400 bois, 400 minerai | 8 min |
+| Ingénierie | Architecture + Métallurgie | Caserne niv. 3, Hôtel de ville niv. 3 | 400 bois, 400 minerai | 8 min |
 | Arcanes | Mysticisme | Tour arcanique | 300 nourr., 200 bois, 300 minerai | 8 min |
 
-Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, pont.
+Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèque, pont.
 
 ---
 
@@ -193,7 +193,7 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 - [ ] Remboursement si un bâtiment relié est détruit pendant le chantier (pour l'instant : perdu).
 
 ### Bâtiments
-- [ ] Construire les formes des niveaux 2 et 3 (caserne, Town Centre).
+- [ ] Construire les formes des niveaux 2 et 3 (caserne, Hôtel de ville).
 - [ ] Tours de guet améliorables (portée et dégâts par niveau).
 
 ### Remparts
@@ -211,7 +211,7 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 - [ ] Vérifier en jeu (nouveau monde) si le relief est assez plat ; sinon baisser encore `vertical_scale`.
 
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
-- [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Town Centre).
+- [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Hôtel de ville).
 - [ ] Routes : tracé, prix, place autour des bâtiments, passage aux niveaux pavée / avancée, sol des bâtiments qui change de matériau.
 - [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
 - [ ] Barbares : apparition des camps, patrouilles, défense, raids, montée de niveau, butin, bâtiments annexes, remparts (actifs par défaut, ou `/rts-barbarian-camp ~ ~ ~ 1` pour tester).
@@ -263,7 +263,7 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 |---|---|
 | 12/10/2026 | Copie du mod, branche `ma-version`, Java 17, premier test en jeu |
 | 12/10/2026 | Tectonic pour le type de monde « Default » |
-| 12/10/2026 | Bâtiments à niveaux (caserne, Town Centre), empreinte des structures, commande de reconstruction |
+| 12/10/2026 | Bâtiments à niveaux (caserne, Hôtel de ville), empreinte des structures, commande de reconstruction |
 | 13/10/2026 | Correction des fondations, routes (tracé, prix, vitesse, réseau, niveaux, place autour des bâtiments, préférence des unités) |
 | 13/10/2026 | Routes en mélanges de blocs (gravier, terre grossière, andésite, pierre), journal `MON_PROJET.md` |
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
