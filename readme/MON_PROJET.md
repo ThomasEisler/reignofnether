@@ -336,3 +336,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Tour de rempart (3 × 3, garnison de 2), posable sur un mur |
 | 13/10/2026 | Niveaux de bâtiments plus grands centrés sur le bâtiment (décision : agrandir tous les bâtiments) |
 | 13/10/2026 | Détails rares au bord des routes (feuillage, barrières, lanternes) |
+| 14/10/2026 | Messages d'avertissement (ressources insuffisantes, etc.) en grand au milieu de l'écran |

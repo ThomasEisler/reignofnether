@@ -1417,13 +1417,20 @@ public class HudClientEvents {
             int ticksUnderFade = Math.min(tempMsgTicksLeft, TEMP_MSG_TICKS_FADE);
             int alpha = (int) (0xFF * ((float) ticksUnderFade / (float) TEMP_MSG_TICKS_FADE));
 
+            // big, in the middle of the screen, like a vanilla subtitle (shrunk to fit long messages)
+            float scale = Math.min(2f, (screenWidth - 40) / (float) Math.max(1, MC.font.width(tempMsg)));
+            var pose = evt.getGuiGraphics().pose();
+            pose.pushPose();
+            pose.translate(screenWidth / 2f, screenHeight * 0.4f, 500);
+            pose.scale(scale, scale, 1);
             evt.getGuiGraphics().drawCenteredString(
                 MC.font,
                 tempMsg,
-                screenWidth / 2,
-                screenHeight - iconFrameSize * 2 - 50,
-                0xFFFFFF + (alpha << 24)
+                0,
+                0,
+                0xFFFFFF + (Math.max(alpha, 5) << 24)
             );
+            pose.popPose();
         }
         if (tempMsgTicksLeft > 0) {
             tempMsgTicksLeft -= 1;
