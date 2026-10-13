@@ -17,7 +17,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | Code du mod | `~/locallab/mc/RTS/reignofnether` |
 | Java 17 | installé avec Homebrew (`openjdk@17`) |
 | Profil de jeu pour tester | **Prism Launcher → profil « RTS »** (CurseForge n'est plus utilisé) |
-| Mods du profil RTS | ma version de Reign of Nether, Distant Horizons, Embeddium, Oculus + shaders Complementary, Tectonic, Lithostitched, WorldEdit 7.2.15 (pour construire vite en solo) |
+| Mods du profil RTS | ma version de Reign of Nether, Distant Horizons, Embeddium, Oculus + shaders Complementary, Tectonic, Lithostitched, WorldEdit 7.2.15 (TEMPORAIRE : outil de construction, à retirer avant la version finale) |
 
 **Fabriquer le mod** : `./gradlew build` → le fichier est dans `build/libs/reignofnether-1.5.0.jar`, à copier (jeu fermé) dans le dossier `mods` du profil RTS.
 
@@ -214,6 +214,8 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 ---
 
 ## À faire
+
+- **Avant la version finale** : retirer WorldEdit du dossier mods du profil RTS (outil de construction seulement).
 
 ### Routes
 - [ ] Bâtiments qui **exigent une route** : aucun pour l'instant (décidé le 13/10), à revoir plus tard.
