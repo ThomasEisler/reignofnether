@@ -184,7 +184,8 @@ public class BarbarianServerEvents {
 
     // a player (not barbarians, survival enemies or neutral)
     private static boolean isPlayerOwner(String ownerName) {
-        return !ownerName.isBlank() && !isBarbarian(ownerName) && !SurvivalServerEvents.ENEMY_OWNER_NAME.equals(ownerName);
+        return !ownerName.isBlank() && !isBarbarian(ownerName) && !SurvivalServerEvents.ENEMY_OWNER_NAME.equals(ownerName) &&
+            !com.solegendary.reignofnether.mapfeatures.MapFeaturesServerEvents.RUINS_OWNER.equals(ownerName);
     }
 
     @Nullable

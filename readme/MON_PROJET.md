@@ -130,7 +130,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 - ⚠️ **Formes provisoires** : camp (niveaux 4 et 5 = copies du niveau 3), tente et tour (copies), et les 8 nouveaux bâtiments (formes simples faites par programme) : à construire par moi. Noms : `barbarian_camp_lvl4`, `barbarian_camp_lvl5`, `barbarian_campfire`, `barbarian_loot`, `barbarian_forge`, `barbarian_alarm`, `barbarian_cages`, `barbarian_stable`, `barbarian_ravager_pen`, `barbarian_chief_tent` (garder les annexes à 7 × 7 au plus).
 
-### Carte : pêche et troupeaux
+### Carte : pêche, troupeaux, carrières et ruines
 - Repérés la **première fois qu'un morceau de carte (chunk) est chargé**, marche aussi sur un monde existant pour les zones encore jamais chargées depuis. Sauvegardés avec le monde (`MapFeaturesSaveData`).
 - **Coins de pêche** : sur l'eau profonde (2 blocs ou plus) près d'une rive (fleuves, lacs, mers), un emplacement sur 4 morceaux au plus, à 40 blocs au moins l'un de l'autre. On les voit à des **bulles** qui éclatent à la surface et de petites éclaboussures (cachées dans le brouillard de guerre).
 - **Port de pêche** (menu des ouvriers, 150 bois + 25 minerai) : à poser à moins de 10 blocs d'un coin de pêche, **un seul port par coin**. Rapporte **5 nourriture toutes les 5 s** (60 par minute). ⚠️ Forme provisoire (`port`, cabane de pêcheur faite par programme) : à construire par moi.
@@ -138,7 +138,10 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
   - **Placés comme des structures, à intervalles réguliers** : un troupeau par carré de 80 × 80 blocs sur toute la carte (à un endroit fixe dans le carré, sur de l'herbe), pour qu'on choisisse où s'installer entre forêt, carrière et troupeaux.
   - **Migration** : toutes les 30 s, le troupeau va au point suivant d'un petit cercle (rayon 8 à 14) autour de son coin. S'il est à moins de 48 blocs d'un bâtiment de joueur, son coin s'éloigne de 6 blocs à chaque étape.
   - **Repousse** : une bête de plus toutes les 90 s tant qu'il en manque ; un troupeau chassé jusqu'à la dernière revient au même endroit 5 min plus tard.
-- **Icônes sur la minimap** : un poisson pour chaque coin de pêche, de la viande pour chaque troupeau (bœuf, mouton, porc ou poulet selon l'animal). Une icône n'apparaît qu'une fois l'endroit vu au moins une fois (sorti du brouillard de guerre) ; ce souvenir se perd en quittant le jeu.
+- **Carrières** : un affleurement de minerai (fer et charbon, ou cuivre, charbon et or) par carré de **128 × 128 blocs**, au milieu du morceau de carte qui contient l'endroit choisi pour ce carré, sur un sol sec et assez plat. Les ouvriers les minent comme d'habitude ; **un bloc de minerai miné repousse toutes les 45 s** (là où rien ne se tient).
+- **Ruines avec trésor** : une par carré de **176 × 176 blocs** (pas dans le même morceau qu'une carrière). Simples blocs tant qu'aucune unité de joueur n'est passée à moins de 40 blocs ; elles deviennent alors un bâtiment « Ruines » (150 PV, propriétaire « Ruins ») qu'on peut attaquer. **Détruites, elles donnent 150 à 300 de nourriture, de bois et de minerai** au joueur dont une unité est la plus proche. (Pourquoi pas tout de suite un bâtiment : chaque bâtiment du mod garde sa zone de carte chargée en permanence, des centaines de ruines ralentiraient le jeu.)
+- ⚠️ **Modèles provisoires** faits par programme : `quarry_1`, `quarry_2` (carrières), `ruin_1`, `ruin_2` (ruines), 9 × 9. Pour en ajouter : nouveaux fichiers + leur nom dans `QUARRY_MODELS` (carrières) ou un bâtiment `RUIN_n` dans `Buildings` et `ruinBuildings()` (ruines). Le rang du bas des carrières est enfoncé dans le sol ; celui des ruines est posé sur le sol.
+- **Icônes sur la minimap** : un lingot brut de fer pour les carrières, un coffre pour les ruines (disparaît quand elles sont détruites), un poisson pour chaque coin de pêche, de la viande pour chaque troupeau (bœuf, mouton, porc ou poulet selon l'animal). Une icône n'apparaît qu'une fois l'endroit vu au moins une fois (sorti du brouillard de guerre) ; ce souvenir se perd en quittant le jeu.
 - Code : dossier `mapfeatures/` (`MapFeaturesServerEvents` : repérage, troupeaux ; `FishingClientEvents` : bulles ; `MapIconsClientEvents` : icônes de la minimap), `building/buildings/villagers/Port.java`, règle de pose dans `BuildingValidators.getPortError`.
 
 ### Limite de distance pour construire
@@ -296,11 +299,11 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 ### Terrain
 - [ ] Vérifier en jeu (nouveau monde) si le relief est assez plat ; sinon baisser encore `vertical_scale`.
 - [ ] **Structures neutres générées avec la carte** (demandé le 14/10/2026) :
-  - **Ruines avec trésors** : éparpillées sur la carte ; les détruire donne une bonne quantité de ressources pour bien démarrer.
-  - **Vraies carrières / filons de minerai** : gisements visibles à exploiter, pour que l'emplacement de l'Hôtel de ville devienne stratégique (près d'une forêt et d'une carrière).
+  - [x] **Ruines avec trésors** (faites le 14/10/2026).
+  - [x] **Carrières** (faites le 14/10/2026).
   - [x] **Coins de pêche** et **port** (faits le 14/10/2026, voir « Carte : pêche et troupeaux »).
   - [x] **Troupeaux sauvages** (faits le 14/10/2026).
-  - [x] Icônes sur la minimap pour la pêche et les troupeaux. [ ] Ajouter celles des carrières et des ruines quand elles existeront.
+  - [x] Icônes sur la minimap (pêche, troupeaux, carrières, ruines).
   - [ ] **Mes modèles** : plusieurs modèles de **carrières** et plusieurs de **ruines** (et de coins de pêche), choisis au hasard à la génération.
   - Autres pistes nourriture non retenues pour l'instant : prairies fertiles, bosquets de baies, vergers.
 
@@ -313,6 +316,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Mes remparts : boutons du menu des ouvriers, tracé et aperçu, Maj pour continuer, construction par les ouvriers, portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
+- [ ] Carrières (minage, minerai qui repousse) et ruines (deviennent attaquables quand on approche, trésor) ; icônes.
 - [ ] Pêche et troupeaux : bulles sur l'eau près des rives, port posé seulement près des bulles et qui rapporte, troupeaux qui tournent en rond, s'éloignent des villes, repoussent ; plus de bêtes seules (nouveau monde conseillé).
 - [ ] Camps à 5 niveaux (`/rts-barbarian-camp ~ ~ ~ 5` pour voir le plus grand) : bâtiments qui apparaissent, remparts qui s'agrandissent, feu qui soigne, vol en raid et réserve qui rend, forge, cor d'alarme, prisonniers libérés, chef et sa défaite ; camps plus loin (130-170 blocs).
 - [ ] Barbares : nouvelle apparence (milice, vindicateur, pillard, ravageur), cavaliers au niveau 3, bouton de difficulté et ses effets.
@@ -376,6 +380,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Carrières (minerai qui repousse) et ruines à trésor sur toute la carte, avec leurs icônes |
 | 14/10/2026 | Icônes des coins de pêche et des troupeaux sur la minimap |
 | 14/10/2026 | Coins de pêche (bulles), port de pêche, troupeaux sauvages qui migrent et repoussent, plus de bêtes seules |
 | 14/10/2026 | Butin volé et prisonniers des camps sauvegardés avec le monde |

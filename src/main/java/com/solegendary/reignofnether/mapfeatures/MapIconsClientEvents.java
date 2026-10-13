@@ -22,7 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// icons of the map's resources on the minimap: a fish for fishing spots, meat (or wool, a feather...) for herds.
+// icons of the map's resources on the minimap: a fish for fishing spots, meat for herds, raw iron for quarries and
+// a chest for ruins.
 // A place shows once it has been seen (out of the fog of war) at least once.
 public class MapIconsClientEvents {
 
@@ -30,6 +31,13 @@ public class MapIconsClientEvents {
     private static final float ICON_SCALE = 0.6f; // items are 16 px
 
     private static List<HerdsClientboundPacket.HerdInfo> herds = new ArrayList<>();
+    private static List<BlockPos> quarries = new ArrayList<>();
+    private static List<BlockPos> ruins = new ArrayList<>();
+
+    public static void setSites(List<BlockPos> newQuarries, List<BlockPos> newRuins) {
+        quarries = newQuarries;
+        ruins = newRuins;
+    }
     private static final Set<Long> discovered = new HashSet<>();
 
     public static void setHerds(List<HerdsClientboundPacket.HerdInfo> newHerds) {
@@ -80,5 +88,11 @@ public class MapIconsClientEvents {
             drawIcon(g, spot, fish);
         for (HerdsClientboundPacket.HerdInfo herd : herds)
             drawIcon(g, herd.home(), herdIcon(herd.species()));
+        ItemStack ore = new ItemStack(Items.RAW_IRON);
+        for (BlockPos quarry : quarries)
+            drawIcon(g, quarry, ore);
+        ItemStack chest = new ItemStack(Items.CHEST);
+        for (BlockPos ruin : ruins)
+            drawIcon(g, ruin, chest);
     }
 }

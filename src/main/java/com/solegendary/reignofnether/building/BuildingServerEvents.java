@@ -469,7 +469,8 @@ public class BuildingServerEvents {
             if ((fromCommand ||
                     (serverLevel.getGameRules().getRule(GameRuleRegistrar.SLANTED_BUILDING).get() &&
                             !(newBuilding.getBuilding() instanceof AbstractBridge))) &&
-                    !(newBuilding.getBuilding() instanceof com.solegendary.reignofnether.rampart.RampartBuilding)) {
+                    !(newBuilding.getBuilding() instanceof com.solegendary.reignofnether.rampart.RampartBuilding) &&
+                    !(newBuilding.getBuilding() instanceof com.solegendary.reignofnether.building.buildings.neutral.Ruin)) { // ruins stand already
                 BuildingUtils.clearBuildingArea(newBuilding);
             }
             buildings.add(newBuilding);

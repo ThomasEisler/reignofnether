@@ -2401,6 +2401,8 @@
     "hud.reignofnether.barbarians.hard.desc": "Camps every 3.5 min, one level more every 25 min, garrisons of 4 to 15, raids every 4 min, one extra camp.",
     "hud.reignofnether.barbarians.change": "Left click: change difficulty",
     "buildings.reignofnether.barbarian_camp": "Barbarian Camp",
+    "buildings.reignofnether.ruin_1": "Ruins",
+    "buildings.reignofnether.ruin_2": "Ruins",
     "buildings.reignofnether.port": "Fishing Port",
     "buildings.reignofnether.port.tooltip1": "On the shore, right next to a fishing spot (bubbles on the water).",
     "buildings.reignofnether.port.tooltip2": "Brings in %s food every %s seconds.",

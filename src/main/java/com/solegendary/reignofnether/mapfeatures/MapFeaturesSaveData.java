@@ -30,6 +30,22 @@ public class MapFeaturesSaveData extends SavedData {
         public final Set<UUID> members = new HashSet<>();
     }
 
+    // a quarry: its ore blocks (position -> block id), which grow back slowly once mined
+    public static class Quarry {
+        public BlockPos centre;
+        public final List<Long> orePositions = new ArrayList<>();
+        public final List<String> oreBlocks = new ArrayList<>();
+    }
+
+    // ruins: plain blocks until a player's unit comes close, then a building (owner "Ruins") to destroy for its treasure
+    public static class RuinSite {
+        public BlockPos origin;
+        public String building; // building id, eg. reignofnether:ruin_1
+        public boolean converted = false;
+    }
+
+    public final List<Quarry> quarries = new ArrayList<>();
+    public final List<RuinSite> ruins = new ArrayList<>();
     public final Set<Long> scannedChunks = new HashSet<>();
     public final List<BlockPos> fishingSpots = new ArrayList<>();
     public final List<Herd> herds = new ArrayList<>();
@@ -55,6 +71,28 @@ public class MapFeaturesSaveData extends SavedData {
         for (long l : tag.getLongArray("fishingSpots"))
             data.fishingSpots.add(BlockPos.of(l));
         data.nextHerdId = Math.max(1, tag.getInt("nextHerdId"));
+        ListTag quarries = tag.getList("quarries", Tag.TAG_COMPOUND);
+        for (int i = 0; i < quarries.size(); i++) {
+            CompoundTag q = quarries.getCompound(i);
+            Quarry quarry = new Quarry();
+            quarry.centre = BlockPos.of(q.getLong("centre"));
+            for (long l : q.getLongArray("orePositions"))
+                quarry.orePositions.add(l);
+            ListTag blocks = q.getList("oreBlocks", Tag.TAG_STRING);
+            for (int j = 0; j < blocks.size(); j++)
+                quarry.oreBlocks.add(blocks.getString(j));
+            if (quarry.oreBlocks.size() == quarry.orePositions.size())
+                data.quarries.add(quarry);
+        }
+        ListTag ruins = tag.getList("ruins", Tag.TAG_COMPOUND);
+        for (int i = 0; i < ruins.size(); i++) {
+            CompoundTag r = ruins.getCompound(i);
+            RuinSite ruin = new RuinSite();
+            ruin.origin = BlockPos.of(r.getLong("origin"));
+            ruin.building = r.getString("building");
+            ruin.converted = r.getBoolean("converted");
+            data.ruins.add(ruin);
+        }
         ListTag herds = tag.getList("herds", Tag.TAG_COMPOUND);
         for (int i = 0; i < herds.size(); i++) {
             CompoundTag h = herds.getCompound(i);
@@ -79,6 +117,27 @@ public class MapFeaturesSaveData extends SavedData {
         tag.put("scannedChunks", new LongArrayTag(new ArrayList<>(scannedChunks)));
         tag.put("fishingSpots", new LongArrayTag(fishingSpots.stream().map(BlockPos::asLong).toList()));
         tag.putInt("nextHerdId", nextHerdId);
+        ListTag quarryList = new ListTag();
+        for (Quarry quarry : quarries) {
+            CompoundTag q = new CompoundTag();
+            q.putLong("centre", quarry.centre.asLong());
+            q.put("orePositions", new LongArrayTag(quarry.orePositions));
+            ListTag blocks = new ListTag();
+            for (String b : quarry.oreBlocks)
+                blocks.add(net.minecraft.nbt.StringTag.valueOf(b));
+            q.put("oreBlocks", blocks);
+            quarryList.add(q);
+        }
+        tag.put("quarries", quarryList);
+        ListTag ruinList = new ListTag();
+        for (RuinSite ruin : ruins) {
+            CompoundTag r = new CompoundTag();
+            r.putLong("origin", ruin.origin.asLong());
+            r.putString("building", ruin.building);
+            r.putBoolean("converted", ruin.converted);
+            ruinList.add(r);
+        }
+        tag.put("ruins", ruinList);
         ListTag list = new ListTag();
         for (Herd herd : herds) {
             CompoundTag h = new CompoundTag();

@@ -41,11 +41,24 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 // Things placed on the map the first time each chunk is loaded:
 // - fishing spots: bubbles on deep water near the shore of rivers, lakes and seas; a Port is built next to one
+// - quarries: outcrops of ore spread over the map at regular intervals; mined ore grows back slowly
+// - ruins with a treasure, spread the same way: plain blocks until a player's unit comes close, then a building to
+//   destroy for a good amount of resources
 // - wild herds: groups of animals (no more lone ones) that walk small migration circles around their home, move away
 //   from towns, and regrow slowly around the same place when hunted
 public class MapFeaturesServerEvents {
 
     public static final String HERD_TAG = "rtsHerd";
+    public static final String RUINS_OWNER = "Ruins";
+
+    // quarries and ruins: one per square of the map, at a fixed spot in it (the middle of the chunk holding that spot)
+    public static final int QUARRY_CELL = 128;
+    public static final int RUIN_CELL = 176;
+    public static final String[] QUARRY_MODELS = { "quarry_1", "quarry_2" }; // structures; add more models here
+    public static final int QUARRY_REGROW = 20 * 45; // one mined ore block grows back this often
+    public static final int RUIN_DISCOVER_RANGE = 40; // a player's unit this close turns the ruins into a building
+    public static final int RUIN_LOOT_MIN = 150, RUIN_LOOT_MAX = 300; // of each resource
+    public static final int LOOT_RANGE = 40;
 
     private static final int TICK_INTERVAL = 20;
     private static final int CHUNKS_PER_TICK = 6;
@@ -68,6 +81,18 @@ public class MapFeaturesServerEvents {
     private static final Random random = new Random();
     private static ServerLevel serverLevel = null;
     private static boolean herdsChanged = false; // their icons are sent again
+    private static boolean sitesChanged = false;
+
+    private static java.util.List<com.solegendary.reignofnether.building.buildings.neutral.Ruin> ruinBuildings() {
+        return java.util.List.of(com.solegendary.reignofnether.building.Buildings.RUIN_1, com.solegendary.reignofnether.building.Buildings.RUIN_2);
+    }
+
+    // a player (not barbarians, ruins, survival enemies or neutral)
+    public static boolean isPlayerName(String owner) {
+        return !owner.isBlank() && !owner.equals(RUINS_OWNER) &&
+            !owner.equals(com.solegendary.reignofnether.barbarian.BarbarianServerEvents.OWNER_NAME) &&
+            !owner.equals(com.solegendary.reignofnether.survival.SurvivalServerEvents.ENEMY_OWNER_NAME);
+    }
     private static int ticks = 0;
 
     private static MapFeaturesSaveData data() {
@@ -136,14 +161,186 @@ public class MapFeaturesServerEvents {
         FishingSpotsClientboundPacket.sync(data().fishingSpots);
     }
 
+    // ---- quarries and ruins -------------------------------------------------------------------------------------
+
+    // the fixed spot of a square of the map, if it falls in this chunk: {x, z, seed}
+    @Nullable
+    private static long[] gridSpotInChunk(ChunkPos cp, int cell, int salt) {
+        for (int cellX = Math.floorDiv(cp.getMinBlockX(), cell); cellX <= Math.floorDiv(cp.getMaxBlockX(), cell); cellX++)
+            for (int cellZ = Math.floorDiv(cp.getMinBlockZ(), cell); cellZ <= Math.floorDiv(cp.getMaxBlockZ(), cell); cellZ++) {
+                Random rand = new Random(Mth.getSeed(cellX, salt, cellZ));
+                int x = cellX * cell + 16 + rand.nextInt(cell - 32);
+                int z = cellZ * cell + 16 + rand.nextInt(cell - 32);
+                if (x >= cp.getMinBlockX() && x <= cp.getMaxBlockX() && z >= cp.getMinBlockZ() && z <= cp.getMaxBlockZ())
+                    return new long[] { x, z, rand.nextLong() };
+            }
+        return null;
+    }
+
+    // dry, fairly flat ground, not in a tree
+    private static boolean isSiteGround(ServerLevel level, BlockPos ground) {
+        BlockState bs = level.getBlockState(ground);
+        return bs.getFluidState().isEmpty() && level.getBlockState(ground.above()).getFluidState().isEmpty() &&
+            !bs.is(net.minecraft.tags.BlockTags.LEAVES) && !bs.is(net.minecraft.tags.BlockTags.LOGS) &&
+            WaveSpawner.getYVariance(level, ground, 5) < 3;
+    }
+
+    // trees and plants above a site go
+    private static void clearAbove(ServerLevel level, int x0, int z0, int x1, int z1, int fromY) {
+        for (int x = x0; x <= x1; x++)
+            for (int z = z0; z <= z1; z++)
+                for (int y = fromY; y < fromY + 16; y++) {
+                    BlockPos bp = new BlockPos(x, y, z);
+                    BlockState bs = level.getBlockState(bp);
+                    if (bs.is(net.minecraft.tags.BlockTags.LEAVES) || bs.is(net.minecraft.tags.BlockTags.LOGS) ||
+                        (bs.canBeReplaced() && bs.getFluidState().isEmpty() && !bs.isAir()))
+                        level.setBlock(bp, Blocks.AIR.defaultBlockState(), 2);
+                }
+    }
+
+    private static void placeQuarry(ServerLevel level, ChunkPos cp, long seed) {
+        String model = QUARRY_MODELS[new Random(seed).nextInt(QUARRY_MODELS.length)];
+        List<com.solegendary.reignofnether.building.BuildingBlock> blocks =
+            com.solegendary.reignofnether.building.BuildingBlockData.getBuildingBlocksFromNbt(model, level);
+        if (blocks.isEmpty())
+            return;
+        int sx = 0, sz = 0;
+        for (var bb : blocks) {
+            sx = Math.max(sx, bb.getBlockPos().getX() + 1);
+            sz = Math.max(sz, bb.getBlockPos().getZ() + 1);
+        }
+        BlockPos ground = groundAt(level, cp.getMiddleBlockX(), cp.getMiddleBlockZ());
+        if (!isSiteGround(level, ground))
+            return;
+        BlockPos origin = new BlockPos(cp.getMiddleBlockX() - sx / 2, ground.getY(), cp.getMiddleBlockZ() - sz / 2);
+        clearAbove(level, origin.getX(), origin.getZ(), origin.getX() + sx - 1, origin.getZ() + sz - 1, ground.getY() + 1);
+        MapFeaturesSaveData.Quarry quarry = new MapFeaturesSaveData.Quarry();
+        quarry.centre = new BlockPos(cp.getMiddleBlockX(), ground.getY(), cp.getMiddleBlockZ());
+        for (var bb : blocks) {
+            BlockState state = bb.getBlockState();
+            if (state.isAir() && bb.getBlockPos().getY() == 0)
+                continue; // the bottom row sits in the ground: no holes around the outcrop
+            BlockPos pos = origin.offset(bb.getBlockPos());
+            level.setBlock(pos, state, 2);
+            String id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+            if (id.endsWith("_ore")) {
+                quarry.orePositions.add(pos.asLong());
+                quarry.oreBlocks.add(id);
+            }
+        }
+        data().quarries.add(quarry);
+        data().setDirty();
+        sitesChanged = true;
+    }
+
+    private static void placeRuin(ServerLevel level, ChunkPos cp, long seed) {
+        var ruins = ruinBuildings();
+        var building = ruins.get(new Random(seed).nextInt(ruins.size()));
+        BlockPos ground = groundAt(level, cp.getMiddleBlockX(), cp.getMiddleBlockZ());
+        if (!isSiteGround(level, ground))
+            return;
+        int sx = 0, sz = 0;
+        for (var bb : building.getRelativeBlockData(level)) {
+            sx = Math.max(sx, bb.getBlockPos().getX() + 1);
+            sz = Math.max(sz, bb.getBlockPos().getZ() + 1);
+        }
+        BlockPos origin = new BlockPos(cp.getMiddleBlockX() - sx / 2, ground.getY() + 1, cp.getMiddleBlockZ() - sz / 2);
+        BuildingPlacement shape = com.solegendary.reignofnether.building.BuildingUtils.getNewBuildingPlacement(building, level, origin,
+            net.minecraft.world.level.block.Rotation.NONE, RUINS_OWNER, false);
+        if (shape == null)
+            return;
+        clearAbove(level, origin.getX() - 1, origin.getZ() - 1, origin.getX() + sx, origin.getZ() + sz, origin.getY());
+        for (var bb : shape.getBlocks())
+            if (!bb.getBlockState().isAir())
+                level.setBlock(bb.getBlockPos(), bb.getBlockState(), 2);
+        MapFeaturesSaveData.RuinSite site = new MapFeaturesSaveData.RuinSite();
+        site.origin = origin;
+        site.building = com.solegendary.reignofnether.api.ReignOfNetherRegistries.BUILDING.getKey(building).toString();
+        data().ruins.add(site);
+        data().setDirty();
+        sitesChanged = true;
+    }
+
+    @Nullable
+    private static net.minecraft.world.entity.LivingEntity getNearestPlayerUnit(BlockPos pos, int range) {
+        net.minecraft.world.entity.LivingEntity nearest = null;
+        double nearestDist = (double) range * range;
+        for (net.minecraft.world.entity.LivingEntity le : com.solegendary.reignofnether.unit.UnitServerEvents.getAllUnits()) {
+            if (!le.isAlive() || !isPlayerName(((Unit) le).getOwnerName()))
+                continue;
+            double dist = le.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+            if (dist < nearestDist) {
+                nearestDist = dist;
+                nearest = le;
+            }
+        }
+        return nearest;
+    }
+
+    // ruins become a building when a player's unit comes close (only then: every building keeps its chunk loaded)
+    private static void tickRuins(ServerLevel level) {
+        for (MapFeaturesSaveData.RuinSite site : data().ruins) {
+            if (site.converted || !level.hasChunkAt(site.origin) || getNearestPlayerUnit(site.origin, RUIN_DISCOVER_RANGE) == null)
+                continue;
+            var building = com.solegendary.reignofnether.api.ReignOfNetherRegistries.BUILDING.get(net.minecraft.resources.ResourceLocation.tryParse(site.building));
+            if (building == null)
+                continue;
+            BuildingPlacement placement = BuildingServerEvents.placeBuilding(building, site.origin,
+                net.minecraft.world.level.block.Rotation.NONE, RUINS_OWNER, new int[] {}, false, false, true, true);
+            if (placement != null)
+                placement.selfBuilding = true; // fills in any block missing since
+            site.converted = true;
+            data().setDirty();
+        }
+    }
+
+    // ruins destroyed: their treasure goes to the player whose unit is nearest
+    public static void onRuinDestroyed(ServerLevel level, BuildingPlacement placement) {
+        if (serverLevel == null)
+            return;
+        data().ruins.removeIf(site -> site.origin.equals(placement.originPos));
+        data().setDirty();
+        sitesChanged = true;
+        net.minecraft.world.entity.LivingEntity looter = getNearestPlayerUnit(placement.centrePos, LOOT_RANGE);
+        if (looter == null)
+            return;
+        String owner = ((Unit) looter).getOwnerName();
+        int food = random.nextInt(RUIN_LOOT_MIN, RUIN_LOOT_MAX + 1);
+        int wood = random.nextInt(RUIN_LOOT_MIN, RUIN_LOOT_MAX + 1);
+        int ore = random.nextInt(RUIN_LOOT_MIN, RUIN_LOOT_MAX + 1);
+        com.solegendary.reignofnether.resources.ResourcesServerEvents.addSubtractResources(
+            new com.solegendary.reignofnether.resources.Resources(owner, food, wood, ore));
+        com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(owner,
+            "Trésor des ruines : +" + food + " nourriture, +" + wood + " bois, +" + ore + " minerai !");
+    }
+
+    // a mined ore block of a quarry grows back now and then (where nothing stands)
+    private static void tickQuarries(ServerLevel level) {
+        long beat = level.getGameTime() / TICK_INTERVAL;
+        for (int i = 0; i < data().quarries.size(); i++) {
+            MapFeaturesSaveData.Quarry quarry = data().quarries.get(i);
+            if ((beat + i * 13L) % (QUARRY_REGROW / TICK_INTERVAL) != 0 || !level.hasChunkAt(quarry.centre) || quarry.orePositions.isEmpty())
+                continue;
+            for (int attempt = 0; attempt < 4; attempt++) {
+                int k = random.nextInt(quarry.orePositions.size());
+                BlockPos pos = BlockPos.of(quarry.orePositions.get(k));
+                if (!level.getBlockState(pos).isAir() ||
+                    !level.getEntities((Entity) null, new net.minecraft.world.phys.AABB(pos)).isEmpty())
+                    continue;
+                var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(net.minecraft.resources.ResourceLocation.tryParse(quarry.oreBlocks.get(k)));
+                level.setBlockAndUpdate(pos, block.defaultBlockState());
+                break;
+            }
+        }
+    }
+
     // ---- herds --------------------------------------------------------------------------------------------------
 
     private static final String[] SPECIES = { "minecraft:cow", "minecraft:cow", "minecraft:sheep", "minecraft:sheep", "minecraft:pig", "minecraft:chicken" };
 
     private static boolean isNearTown(BlockPos pos, int range) {
         for (BuildingPlacement b : BuildingServerEvents.getBuildings())
-            if (!b.ownerName.isBlank() && !b.ownerName.equals(com.solegendary.reignofnether.barbarian.BarbarianServerEvents.OWNER_NAME) &&
-                b.centrePos.distSqr(pos) < (double) range * range)
+            if (isPlayerName(b.ownerName) && b.centrePos.distSqr(pos) < (double) range * range)
                 return true;
         return false;
     }
@@ -245,7 +442,7 @@ public class MapFeaturesServerEvents {
                 BuildingPlacement town = null;
                 double townDist = (double) HERD_TOWN_DISTANCE * HERD_TOWN_DISTANCE;
                 for (BuildingPlacement b : BuildingServerEvents.getBuildings())
-                    if (!b.ownerName.isBlank() && b.centrePos.distSqr(herd.home) < townDist) {
+                    if (isPlayerName(b.ownerName) && b.centrePos.distSqr(herd.home) < townDist) {
                         townDist = b.centrePos.distSqr(herd.home);
                         town = b;
                     }
@@ -339,9 +536,21 @@ public class MapFeaturesServerEvents {
             data.setDirty();
             if (Math.floorMod(Mth.getSeed(cp.x, 71, cp.z) >> 8, (long) FISHING_CHUNK_CHANCE) == 0)
                 scanForFishingSpot(serverLevel, cp);
+            long[] quarrySpot = gridSpotInChunk(cp, QUARRY_CELL, 131);
+            if (quarrySpot != null)
+                placeQuarry(serverLevel, cp, quarrySpot[2]);
+            long[] ruinSpot = gridSpotInChunk(cp, RUIN_CELL, 157);
+            if (ruinSpot != null && (quarrySpot == null))
+                placeRuin(serverLevel, cp, ruinSpot[2]);
             scanForHerd(serverLevel, cp);
         }
         tickHerds(serverLevel);
+        tickQuarries(serverLevel);
+        tickRuins(serverLevel);
+        if (sitesChanged && serverLevel.getGameTime() % 100 < TICK_INTERVAL) {
+            sitesChanged = false;
+            SitesClientboundPacket.sync(data);
+        }
         if (herdsChanged && serverLevel.getGameTime() % 100 < TICK_INTERVAL) {
             herdsChanged = false;
             HerdsClientboundPacket.sync(data.herds);
@@ -353,6 +562,7 @@ public class MapFeaturesServerEvents {
         if (serverLevel != null && evt.getEntity() instanceof ServerPlayer player) {
             FishingSpotsClientboundPacket.sync(player, data().fishingSpots);
             HerdsClientboundPacket.sync(player, data().herds);
+            SitesClientboundPacket.sync(player, data());
         }
     }
 
