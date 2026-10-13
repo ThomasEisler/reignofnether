@@ -196,7 +196,7 @@ public class TitleScreenMixin extends Screen {
                 RenderSystem.enableDepthTest();
             }
         };
-        this.mapsButton.setTooltip(Tooltip.create(Component.literal("Get RTS maps!")));
+        this.mapsButton.setTooltip(Tooltip.create(Component.literal("Cartes RTS !")));
 
         this.addRenderableWidget(this.lilypadButton);
         this.addRenderableWidget(this.discordButton);

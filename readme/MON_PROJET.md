@@ -110,6 +110,10 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 - On ne peut construire qu'à **24 blocs maximum** d'un de ses bâtiments (même en construction). Exceptions : **entrepôts** et **ponts**. Un joueur sans bâtiment construit où il veut (premier Town Centre).
 - **Aperçu** : pendant le placement d'un bâtiment, le sol trop loin est **teinté en rouge** autour du curseur, et le bâtiment fantôme devient rouge avec le message « Trop loin de vos bâtiments ». Vérifié aussi par le serveur.
 
+### Français
+- **Tous les textes du mod sont traduits** en français (`lang/fr_fr.json` complet : 815 textes ajoutés, 57 restés en anglais traduits), et le jeu du profil RTS est réglé en français (`options.txt` : `lang:fr_fr`). Noms choisis : Windcaller = « Mande-vent », Bogged = « Embourbé ».
+- Restent en anglais : quelques messages de débogage ou d'erreur technique écrits directement dans le code.
+
 ### Monde
 - **Plus de villages Minecraft** générés (seulement dans les nouvelles zones / nouveaux mondes).
 
@@ -217,6 +221,7 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 - [ ] Les unités vont plus vite sur la route et la préfèrent pour leurs trajets.
 - [ ] Reconstruction automatique d'un bâtiment après modification de sa forme.
 - [ ] Arbre des technologies : bouton à gauche, écran, recherche une à la fois, bâtiments cachés tant que non découverts, niveaux bloqués.
+- [ ] Traduction française : vérifier les textes trop longs pour leurs cases.
 - [ ] La commande `/rts-rebuild-buildings` n'était pas reconnue lors d'un essai : probablement triches non activées dans ce monde, cause non confirmée.
 
 ---
@@ -243,7 +248,7 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 - Installer : copier `build/libs/reignofnether-1.5.0.jar` dans `~/Library/Application Support/PrismLauncher/instances/RTS/.minecraft/mods/` **jeu fermé**.
 - Lancer : `"/Applications/Prism Launcher.app/Contents/MacOS/prismlauncher" --launch RTS`, puis surveiller `.../instances/RTS/.minecraft/logs/latest.log` (« Sound engine started » = prêt).
 - Les structures `.nbt` vont dans **`assets/` et `data/`** `reignofnether/structures/`.
-- `lang/fr_fr.json` a des fins de ligne Windows (CRLF) : ajouter des lignes sans reformater le fichier.
+- `lang/fr_fr.json` a des fins de ligne Windows (CRLF) : ajouter des lignes sans reformater le fichier. Après une mise à jour de l'auteur, comparer avec `en_us.json` pour traduire les nouveaux textes.
 - Je ne peux pas cliquer dans la fenêtre du jeu (processus « java » non pilotable) : c'est l'utilisateur qui teste en jeu.
 - Mes documents sont dans le dossier `readme/` : ce journal et `BATIMENTS.md` (liste des bâtiments, à tenir à jour quand un bâtiment change).
 - Enregistrer sur GitHub (`git push` sur `ma-version`) quand l'utilisateur le demande, et mettre ce fichier à jour à chaque étape.
@@ -267,3 +272,4 @@ Sans recherche : Town Centre, maison, ferme, entrepôt, caserne, Bibliothèque, 
 | 13/10/2026 | Point rouge au-dessus des barbares ; une seule faction (villageois), Survie retirée, nations façon Civilization avec bonus |
 | 13/10/2026 | Arbre des technologies (8 recherches dans la Bibliothèque, bâtiments et niveaux à débloquer) |
 | 13/10/2026 | Dossier `readme/` (journal + liste des bâtiments) |
+| 13/10/2026 | Traduction française complète, jeu en français |

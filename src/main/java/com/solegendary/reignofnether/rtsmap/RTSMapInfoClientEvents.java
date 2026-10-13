@@ -46,7 +46,7 @@ public class RTSMapInfoClientEvents {
                     RTSMapInfoServerboundPacket.setStartingMode(mode);
                 })
                 .tooltipLines(List.of(
-                        Component.literal("Map Mode: " + selectedMode).getVisualOrderText()
+                        Component.literal("Mode de carte : " + selectedMode).getVisualOrderText()
                 ))
                 .build();
     }

@@ -83,6 +83,15 @@ public class TechClientEvents {
         return null;
     }
 
+    // translated name, as shown in the build menu
+    private static String displayName(Building building) {
+        var key = ReignOfNetherRegistries.BUILDING.getKey(building);
+        if (key == null)
+            return building.name;
+        return net.minecraft.network.chat.Component.translatable("buildings." + building.getFaction().getName() + "." +
+            key.getNamespace() + "." + key.getPath()).getString();
+    }
+
     private static String formatTime(int seconds) {
         return (seconds / 60) + ":" + String.format("%02d", seconds % 60);
     }
@@ -161,11 +170,12 @@ public class TechClientEvents {
         List<String> names = new ArrayList<>();
         for (String b : tech.unlockedBuildings) {
             Building building = findBuilding(b);
-            names.add(building != null ? building.name : b);
+            names.add(building != null ? displayName(building) : b);
         }
         for (String l : tech.unlockedLevels) {
             String[] parts = l.split(":");
-            names.add(parts[0] + " niv. " + (Integer.parseInt(parts[1]) + 1));
+            Building building = findBuilding(parts[0]);
+            names.add((building != null ? displayName(building) : parts[0]) + " niv. " + (Integer.parseInt(parts[1]) + 1));
         }
         return names;
     }

@@ -802,7 +802,7 @@ public class CommandsServerEvents {
 		BuildingPlacement camp = com.solegendary.reignofnether.barbarian.BarbarianServerEvents.placeCamp(
 			BlockPosArgument.getLoadedBlockPos(ctx, "pos"), level - 1);
 		if (camp == null) {
-			ctx.getSource().sendFailure(Component.literal("Could not place a barbarian camp here"));
+			ctx.getSource().sendFailure(Component.literal("Impossible de poser un camp barbare ici"));
 			return 0;
 		}
 		return 1;
