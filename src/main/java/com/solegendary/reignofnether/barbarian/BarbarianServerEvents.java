@@ -75,9 +75,10 @@ public class BarbarianServerEvents {
     public static final int SLOT_DISTANCE = 13; // from the camp's centre to a secondary building's centre
     public static final int OUTBUILDING_RANGE = 24; // secondary buildings this close belong to the camp (after a restart)
 
-    // ramparts from level 2: a square of walls around the camp with a gate in the middle of each side
-    public static final int WALL_RADIUS = 23;
-    public static final int GATE_HALF_WIDTH = 2;
+    // ramparts from level 2: a rough circle of walls around the camp with 4 gates
+    public static final int WALL_RADIUS = 23; // average radius
+    public static final double WALL_RADIUS_VARIATION = 3; // how far the wall wanders in and out
+    public static final int GATE_HALF_WIDTH = 2; // gates are 5 blocks wide
     public static final int WALL_COLUMNS_PER_TICK = 6; // walls go up progressively
 
     private static class Camp {
@@ -246,17 +247,49 @@ public class BarbarianServerEvents {
             bs.is(Blocks.MOSSY_STONE_BRICKS) || bs.is(Blocks.COBBLESTONE_WALL);
     }
 
+    // the wall's radius in each direction: a few slow waves with phases from the camp's position, so the circle looks
+    // hand-made and the stone wall is rebuilt exactly where the palisade stood
+    private static double wallRadius(double angle, double[] phases) {
+        return WALL_RADIUS + WALL_RADIUS_VARIATION * (0.55 * Math.sin(2 * angle + phases[0]) +
+            0.3 * Math.sin(3 * angle + phases[1]) + 0.15 * Math.sin(5 * angle + phases[2]));
+    }
+
     private static void planWalls(BuildingPlacement main, Camp camp, int tier) {
         camp.wallTier = tier;
         camp.wallQueue.clear();
         int x0 = main.centrePos.getX(), z0 = main.centrePos.getZ();
-        for (int d = -WALL_RADIUS; d <= WALL_RADIUS; d++) {
-            if (Math.abs(d) <= GATE_HALF_WIDTH)
-                continue; // gates in the middle of each side
-            camp.wallQueue.add(new BlockPos(x0 + d, 0, z0 - WALL_RADIUS));
-            camp.wallQueue.add(new BlockPos(x0 + WALL_RADIUS, 0, z0 + d));
-            camp.wallQueue.add(new BlockPos(x0 - d, 0, z0 + WALL_RADIUS));
-            camp.wallQueue.add(new BlockPos(x0 - WALL_RADIUS, 0, z0 - d));
+        Random rand = new Random(Mth.getSeed(x0, 7, z0));
+        double[] phases = { rand.nextDouble() * Math.PI * 2, rand.nextDouble() * Math.PI * 2, rand.nextDouble() * Math.PI * 2 };
+        // 4 gates roughly a quarter turn apart
+        double gateStart = rand.nextDouble() * Math.PI / 2;
+        double[] gates = new double[4];
+        for (int g = 0; g < 4; g++)
+            gates[g] = gateStart + g * Math.PI / 2 + (rand.nextDouble() - 0.5) * 0.5;
+
+        Set<Long> seen = new HashSet<>();
+        int prevX = Integer.MIN_VALUE, prevZ = 0;
+        int steps = (int) (Math.PI * 2 * (WALL_RADIUS + WALL_RADIUS_VARIATION) * 3);
+        for (int i = 0; i <= steps; i++) {
+            double angle = i * Math.PI * 2 / steps;
+            double r = wallRadius(angle, phases);
+            boolean inGate = false;
+            for (double gate : gates) {
+                double diff = Math.abs(Math.atan2(Math.sin(angle - gate), Math.cos(angle - gate)));
+                if (diff * r <= GATE_HALF_WIDTH + 0.5)
+                    inGate = true;
+            }
+            int x = x0 + (int) Math.round(Math.cos(angle) * r), z = z0 + (int) Math.round(Math.sin(angle) * r);
+            if (inGate) {
+                prevX = Integer.MIN_VALUE;
+                continue;
+            }
+            // no diagonal-only joins, units could squeeze through
+            if (prevX != Integer.MIN_VALUE && x != prevX && z != prevZ && seen.add(BlockPos.asLong(x, 0, prevZ)))
+                camp.wallQueue.add(new BlockPos(x, 0, prevZ));
+            if (seen.add(BlockPos.asLong(x, 0, z)))
+                camp.wallQueue.add(new BlockPos(x, 0, z));
+            prevX = x;
+            prevZ = z;
         }
     }
 
