@@ -83,13 +83,17 @@ public class TechClientEvents {
         return null;
     }
 
-    // translated name, as shown in the build menu
+    // the building's button in the build menu: same name and picture as there
+    private static final java.util.Map<Building, com.solegendary.reignofnether.hud.buttons.Button> buildButtons = new java.util.HashMap<>();
+
+    @Nullable
+    private static com.solegendary.reignofnether.hud.buttons.Button getBuildButton(Building building) {
+        return buildButtons.computeIfAbsent(building, b -> b.getBuildButton(null));
+    }
+
     private static String displayName(Building building) {
-        var key = ReignOfNetherRegistries.BUILDING.getKey(building);
-        if (key == null)
-            return building.name;
-        return net.minecraft.network.chat.Component.translatable("buildings." + building.getFaction().getName() + "." +
-            key.getNamespace() + "." + key.getPath()).getString();
+        var button = getBuildButton(building);
+        return button != null ? button.name : building.name;
     }
 
     private static String formatTime(int seconds) {
@@ -264,13 +268,26 @@ public class TechClientEvents {
             add.accept("Coût : " + costText(tech), 0xE0E0E0);
             add.accept("Durée : " + formatTime(tech.seconds), 0xE0E0E0);
         }
-        add.accept("Débloque : " + String.join(", ", getUnlockNames(tech)), 0xAAAAAA);
+        add.accept("Débloque :", 0xAAAAAA);
+        List<Building> unlockBuildings = new ArrayList<>();
+        List<String> unlockLabels = new ArrayList<>();
+        for (String b : tech.unlockedBuildings) {
+            Building building = findBuilding(b);
+            if (building != null) { unlockBuildings.add(building); unlockLabels.add(displayName(building)); }
+        }
+        for (String l : tech.unlockedLevels) {
+            String[] parts = l.split(":");
+            Building building = findBuilding(parts[0]);
+            if (building != null) { unlockBuildings.add(building); unlockLabels.add(displayName(building) + " niv. " + (Integer.parseInt(parts[1]) + 1)); }
+        }
 
         int textW = 0;
         for (FormattedCharSequence l : lines)
             textW = Math.max(textW, MC.font.width(l));
+        for (String label : unlockLabels)
+            textW = Math.max(textW, 22 + MC.font.width(label));
         int w = Math.max(MC.font.width(tech.displayName) + FRAME + 16, textW + 12);
-        int boxH = 8 + lines.size() * 9 + 4;
+        int boxH = 8 + lines.size() * 9 + unlockBuildings.size() * 19 + 4;
         boolean toLeft = x + w > inX1() + 40;
         int bx = toLeft ? x + FRAME - w : x;
 
@@ -280,6 +297,17 @@ public class TechClientEvents {
         g.blitNineSliced(WIDGETS, bx, y + 18, w, boxH, 10, 200, 26, 0, 52);
         for (int i = 0; i < lines.size(); i++)
             g.drawString(MC.font, lines.get(i), bx + 6, y + 18 + 8 + i * 9, 0xFFFFFF, false);
+        // pictures of what it unlocks, as in the build menu
+        int iy = y + 18 + 8 + lines.size() * 9 + 1;
+        for (int i = 0; i < unlockBuildings.size(); i++) {
+            var button = getBuildButton(unlockBuildings.get(i));
+            int ix = bx + 6, rowY = iy + i * 19;
+            g.fill(ix - 1, rowY - 1, ix + 17, rowY + 17, 0xFF6B5A3A);
+            g.fill(ix, rowY, ix + 16, rowY + 16, 0xFF101010);
+            if (button != null && button.iconResource != null)
+                g.blit(button.iconResource, ix, rowY, 0, 0, 16, 16, 16, 16);
+            g.drawString(MC.font, unlockLabels.get(i), ix + 22, rowY + 4, isDone ? 0xD4AF37 : 0xE0E0E0, false);
+        }
         // bar: gold for what's done (part of it for the research in progress), blue for the rest
         int filled = isDone ? w : isCurrent ? (int) (w * (1f - ticksLeft / (float) (tech.seconds * 20))) : 0;
         if (filled < w)
