@@ -86,6 +86,8 @@ public class RampartClientEvents {
         if (!preview.isValid())
             return name + " : " + preview.error();
         String cost = preview.wood() + " bois" + (preview.ore() > 0 ? ", " + preview.ore() + " minerai" : "");
+        if (placing.isTower())
+            return name + " — " + cost;
         if (start == null)
             return name + " : cliquez où il commence";
         return name + " : " + preview.columns().size() + " blocs de long — " + cost;
@@ -135,6 +137,14 @@ public class RampartClientEvents {
             return;
         evt.setCanceled(true);
         BlockPos cursor = CursorClientEvents.getPreselectedBlockPos();
+        if (placing.isTower()) { // one click
+            if (preview != null && preview.isValid()) {
+                RampartServerboundPacket.build(placing, cursor, cursor, getSelectedWorkerIds());
+                if (!Keybindings.shiftMod.isDown())
+                    stop();
+            }
+            return;
+        }
         if (start == null) {
             start = cursor;
             preview = null;

@@ -2372,5 +2372,6 @@
     "entity.reignofnether.cavalier_unit": "Cavalier",
     "entity.reignofnether.cavalier_unit.tooltip1": "Un vindicateur sur un cheval de guerre en armure. Rapide et puissant, il charge l'ennemi.",
     "entity.reignofnether.horse_unit": "Cheval de guerre",
-    "research.reignofnether.level_upgrade.garrison_damage": "Dégâts de la garnison : %s%% -> %s%%"
+    "research.reignofnether.level_upgrade.garrison_damage": "Dégâts de la garnison : %s%% -> %s%%",
+    "buildings.reignofnether.rampart_tower": "Tour de rempart"
 }

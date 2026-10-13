@@ -77,6 +77,9 @@ public class Buildings {
     public static final com.solegendary.reignofnether.rampart.RampartBuilding IRON_GATE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "iron_gate"),
         new com.solegendary.reignofnether.rampart.RampartBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.IRON_GATE, "Portcullis", 450d, net.minecraft.world.level.block.Blocks.IRON_BARS, "textures/block/iron_bars.png"));
 
+    public static final com.solegendary.reignofnether.rampart.RampartTowerBuilding RAMPART_TOWER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "rampart_tower"),
+        new com.solegendary.reignofnether.rampart.RampartTowerBuilding("Rampart Tower", 500d, net.minecraft.world.level.block.Blocks.CHISELED_STONE_BRICKS, "textures/block/chiseled_stone_bricks.png"));
+
     private static <T extends Building> T register(ResourceLocation id, T building) {
         return Registry.register(ReignOfNetherRegistries.BUILDING, id, building);
     }

@@ -92,10 +92,39 @@ public class RampartServerEvents {
         com.solegendary.reignofnether.resources.ResourcesServerEvents.addSubtractResources(
             new com.solegendary.reignofnether.resources.Resources(ownerName, 0, -plan.wood(), -plan.ore()));
         int[] ids = builders.stream().mapToInt(Integer::intValue).toArray();
+        if (building.isTower())
+            cutWallsUnder(level, ownerName, plan.columns());
         boolean queue = false;
         for (List<RampartShapes.Column> segment : RampartLine.segments(building, plan.columns())) {
             if (placeSegment(level, building, ownerName, segment, ids, false, queue) != null)
                 queue = true;
+        }
+    }
+
+    // a tower set into walls: the wall segments under it are split, their blocks staying where they are; the
+    // remaining parts become new (already built) segments on either side
+    private static void cutWallsUnder(ServerLevel level, String ownerName, List<RampartShapes.Column> footprint) {
+        Set<Long> cells = new HashSet<>();
+        for (RampartShapes.Column c : footprint)
+            cells.add(BlockPos.asLong(c.x(), 0, c.z()));
+        List<BuildingPlacement> cut = new ArrayList<>();
+        for (BuildingPlacement b : BuildingServerEvents.getBuildings()) {
+            if (!(b.getBuilding() instanceof RampartBuilding rb) || rb.isGate() || rb.isTower() || !b.ownerName.equals(ownerName))
+                continue;
+            List<RampartShapes.Column> columns = RampartShapes.get(level, b.originPos);
+            if (columns != null && columns.stream().anyMatch(c -> cells.contains(BlockPos.asLong(c.x(), 0, c.z()))))
+                cut.add(b);
+        }
+        for (BuildingPlacement b : cut) {
+            List<RampartShapes.Column> columns = RampartShapes.get(level, b.originPos);
+            BuildingServerEvents.getBuildings().remove(b);
+            com.solegendary.reignofnether.building.BuildingClientboundPacket.removeBuilding(b.originPos);
+            List<RampartShapes.Column> left = new ArrayList<>();
+            for (RampartShapes.Column c : columns)
+                if (!cells.contains(BlockPos.asLong(c.x(), 0, c.z())))
+                    left.add(c);
+            for (List<RampartShapes.Column> part : RampartLine.segments((RampartBuilding) b.getBuilding(), left))
+                placeSegment(level, (RampartBuilding) b.getBuilding(), ownerName, part, new int[] {}, false);
         }
     }
 

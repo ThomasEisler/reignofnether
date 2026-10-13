@@ -208,6 +208,7 @@ public class Factions {
 		registerBuildings(VILLAGERS, Buildings.STONE_RAMPART, Keybindings.hotkey6);
 		registerBuildings(VILLAGERS, Buildings.WOODEN_GATE, Keybindings.hotkey7);
 		registerBuildings(VILLAGERS, Buildings.IRON_GATE, Keybindings.hotkey8);
+		registerBuildings(VILLAGERS, Buildings.RAMPART_TOWER, Keybindings.hotkey1);
 		registerBuildings(VILLAGERS, Buildings.VILLAGER_MARKET, Keybindings.hotkey10);
 		registerBuildings(VILLAGERS, Buildings.BEACON);
 		

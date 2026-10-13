@@ -51,8 +51,9 @@ Faits de segments (5 colonnes de mur) qui sont chacun un bâtiment : ils ont de 
 | **Rempart de pierre** | `stone_rampart` | 300 | rempart de pierre, créneaux (5 de haut) | Mur en pierre |
 | **Porte en bois** | `wooden_gate` | 220 | porte en bois de rempart (4 de haut) | Coulisse pour laisser passer ses unités |
 | **Herse** | `iron_gate` | 450 | herse (5 de haut) | Coulisse pour laisser passer ses unités |
+| **Tour de rempart** | `rampart_tower` | 500 | rempart de pierre, 3 × 3, 8 de haut, créneaux | Garnison de 2 qui tire d'en haut ; se pose sur un mur |
 
-Les joueurs les construisent depuis le menu des ouvriers (Palissade **D**, Rempart de pierre **J** après Maçonnerie, Porte en bois **K**, Herse **Z** après Métallurgie) : deux clics pour tracer, construits par les ouvriers. Prix : palissade 4 bois par bloc de long, pierre 3 bois + 4 minerai par bloc, porte en bois 80 bois, herse 60 bois + 100 minerai. Les camps barbares en construisent aussi.
+Les joueurs les construisent depuis le menu des ouvriers (Palissade **D**, Rempart de pierre **J** après Maçonnerie, Porte en bois **K**, Herse **Z** après Métallurgie, Tour de rempart **V** après Maçonnerie) : deux clics pour tracer, construits par les ouvriers. Prix : palissade 4 bois par bloc de long, pierre 3 bois + 4 minerai par bloc, porte en bois 80 bois, herse 60 bois + 100 minerai. Les camps barbares en construisent aussi.
 
 ## Bâtiments neutres (cartes spéciales, modes de jeu)
 

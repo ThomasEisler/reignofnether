@@ -28,7 +28,7 @@ import java.util.List;
 // follow any line and the terrain.
 public class RampartBuilding extends Building {
 
-    public enum Kind { PALISADE, STONE, WOODEN_GATE, IRON_GATE }
+    public enum Kind { PALISADE, STONE, WOODEN_GATE, IRON_GATE, TOWER }
 
     public final Kind kind;
 
@@ -56,7 +56,12 @@ public class RampartBuilding extends Building {
             case STONE -> 5;
             case WOODEN_GATE -> 4;
             case IRON_GATE -> 5;
+            case TOWER -> 8;
         };
+    }
+
+    public boolean isTower() {
+        return kind == Kind.TOWER;
     }
 
     public Faction getFaction() {
@@ -69,11 +74,14 @@ public class RampartBuilding extends Building {
             com.solegendary.reignofnether.api.ReignOfNetherRegistries.BUILDING.getKey(this).getPath()).getString();
         String cost = isGate()
             ? RampartLine.woodCost(this, 1) + " bois" + (RampartLine.oreCost(this, 1) > 0 ? ", " + RampartLine.oreCost(this, 1) + " minerai" : "")
+            : isTower() ? RampartLine.woodCost(this, 1) + " bois, " + RampartLine.oreCost(this, 1) + " minerai"
             : RampartLine.woodCost(this, 1) + " bois" + (RampartLine.oreCost(this, 1) > 0 ? ", " + RampartLine.oreCost(this, 1) + " minerai" : "") + " par bloc de long";
         List<net.minecraft.util.FormattedCharSequence> tooltip = List.of(
             net.minecraft.util.FormattedCharSequence.forward(name, net.minecraft.network.chat.Style.EMPTY.withBold(true)),
             net.minecraft.util.FormattedCharSequence.forward(cost + " — " + (int) maxHealth + " PV par morceau", net.minecraft.network.chat.Style.EMPTY),
-            net.minecraft.util.FormattedCharSequence.forward(isGate()
+            net.minecraft.util.FormattedCharSequence.forward(isTower()
+                ? "Tour de 3 x 3 : un clic la pose, aussi sur un mur. 2 unités peuvent s'y installer et tirer d'en haut."
+                : isGate()
                 ? "Porte de 5 blocs : cliquez où elle commence, puis dans sa direction. S'ouvre pour vos unités."
                 : "Cliquez où il commence, puis où il finit (Maj : continuer). Clic droit pour arrêter.", net.minecraft.network.chat.Style.EMPTY));
         BuildingPlaceButton button = new BuildingPlaceButton(name, icon, hotkey,
@@ -95,6 +103,11 @@ public class RampartBuilding extends Building {
         return new BuildingPlacement(this, level, pos, Rotation.NONE, ownerName, getBlocks(columns), false);
     }
 
+    static boolean isTowerCentre(RampartShapes.Column c, List<RampartShapes.Column> columns) {
+        RampartShapes.Column centre = columns.get(columns.size() / 2);
+        return c.x() == centre.x() && c.z() == centre.z();
+    }
+
     public static Direction.Axis getAxis(List<RampartShapes.Column> columns) {
         RampartShapes.Column a = columns.get(0), b = columns.get(columns.size() - 1);
         return Math.abs(b.x() - a.x()) >= Math.abs(b.z() - a.z()) ? Direction.Axis.X : Direction.Axis.Z;
@@ -110,6 +123,9 @@ public class RampartBuilding extends Building {
                     case STONE -> h < c.height() || Math.floorMod(c.x() + c.z(), 2) == 0 ? BlockRegistrar.STONE_RAMPART.get().defaultBlockState() : null;
                     case WOODEN_GATE -> BlockRegistrar.WOODEN_GATE.get().defaultBlockState().setValue(RampartGateBlock.AXIS, axis);
                     case IRON_GATE -> BlockRegistrar.IRON_GATE.get().defaultBlockState().setValue(RampartGateBlock.AXIS, axis);
+                    // a 3 x 3 stone tower, crenels round the top and a spot for the garrison in the middle
+                    case TOWER -> h < c.height() || (!isTowerCentre(c, columns) && Math.floorMod(c.x() + c.z(), 2) == 0)
+                        ? BlockRegistrar.STONE_RAMPART.get().defaultBlockState() : null;
                 };
                 if (state != null)
                     blocks.add(new BuildingBlock(new BlockPos(c.x(), c.y() + h, c.z()), state));

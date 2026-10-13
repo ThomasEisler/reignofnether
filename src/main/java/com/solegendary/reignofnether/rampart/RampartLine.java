@@ -33,6 +33,7 @@ public class RampartLine {
             case STONE -> 3 * columns;
             case WOODEN_GATE -> 80;
             case IRON_GATE -> 60;
+            case TOWER -> 100;
         };
     }
 
@@ -41,11 +42,23 @@ public class RampartLine {
             case PALISADE, WOODEN_GATE -> 0;
             case STONE -> 4 * columns;
             case IRON_GATE -> 100;
+            case TOWER -> 150;
         };
     }
 
     // x, z of the line's columns, joined side by side (never only by a corner, units could squeeze through)
     public static List<int[]> lineColumns(BlockPos start, BlockPos end, boolean gate) {
+        return lineColumns(start, end, gate, false);
+    }
+
+    public static List<int[]> lineColumns(BlockPos start, BlockPos end, boolean gate, boolean tower) {
+        if (tower) { // 3 x 3 around the clicked block, the centre in the middle of the list
+            List<int[]> cols = new ArrayList<>();
+            for (int dz = -1; dz <= 1; dz++)
+                for (int dx = -1; dx <= 1; dx++)
+                    cols.add(new int[] { start.getX() + dx, start.getZ() + dz });
+            return cols;
+        }
         int dx = end.getX() - start.getX(), dz = end.getZ() - start.getZ();
         List<int[]> cols = new ArrayList<>();
         if (gate) { // always GATE_WIDTH wide, straight along the main direction
@@ -78,14 +91,25 @@ public class RampartLine {
             return new Plan(List.of(), 0, 0, "Il faut d'abord rechercher : " + (tech != null ? tech.displayName : "?"));
         }
         List<RampartShapes.Column> columns = new ArrayList<>();
-        for (int[] xz : lineColumns(start, end, building.isGate())) {
+        for (int[] xz : lineColumns(start, end, building.isGate(), building.isTower())) {
             BlockPos ground = getGround(level, xz[0], xz[1]);
             if (ground == null) {
-                if (building.isGate())
+                if (building.isGate() || building.isTower())
                     return new Plan(List.of(), 0, 0, "Pas de porte sur l'eau");
                 continue; // a wall stops at water
             }
             if (BuildingUtils.isPosInsideAnyBuilding(level.isClientSide(), ground.above())) {
+                if (building.isTower()) { // a tower can stand on one of the player's walls, which is cut around it
+                    var other = BuildingUtils.findBuilding(level.isClientSide(), ground.above());
+                    if (other == null || !(other.getBuilding() instanceof RampartBuilding rb) || rb.isGate() || rb.isTower() ||
+                        !other.ownerName.equals(ownerName))
+                        return new Plan(List.of(), 0, 0, "Un bâtiment est dans le passage");
+                    ground = new BlockPos(xz[0], other.minCorner.getY() - 1, xz[1]);
+                    BlockPos g2 = getGround(level, xz[0], xz[1]);
+                    if (g2 != null) ground = g2;
+                    columns.add(new RampartShapes.Column(xz[0], ground.getY(), xz[1], building.columnHeight(xz[0], xz[1])));
+                    continue;
+                }
                 if (building.isGate())
                     return new Plan(List.of(), 0, 0, "Un bâtiment est dans le passage");
                 continue; // joins an existing wall or building
@@ -103,7 +127,7 @@ public class RampartLine {
     // splits the plan into segments (buildings) of a few columns; a gate is one segment; gaps start a new segment
     public static List<List<RampartShapes.Column>> segments(RampartBuilding building, List<RampartShapes.Column> columns) {
         List<List<RampartShapes.Column>> segments = new ArrayList<>();
-        if (building.isGate()) {
+        if (building.isGate() || building.isTower()) {
             segments.add(columns);
             return segments;
         }
