@@ -37,15 +37,17 @@ import java.util.Random;
 import java.util.Set;
 
 // Barbarians: an AI faction hostile to everyone. While enabled (/rts-barbarians on), camps appear on the map away from
-// players' bases, grow through 3 levels over time, keep a garrison that patrols around them and attacks anyone coming
+// players' bases once they have a finished barracks, grow through 3 levels over time, keep a garrison that patrols around them and attacks anyone coming
 // close, send raids against the nearest player buildings from level 2, and give loot to whoever destroys them.
 public class BarbarianServerEvents {
 
     public static final String OWNER_NAME = "Barbarians";
 
     private static final int TICK_INTERVAL = 20;
-    public static final int CAMP_SPAWN_INTERVAL = 20 * 60 * 4; // a new camp every 4 minutes...
-    public static final int BASE_MAX_CAMPS = 2; // ...up to this many, plus one per player
+    // camps only come once a player has had a finished barracks for this long, then one more each time this passes,
+    // up to one camp per such player plus one
+    public static final int CAMP_SPAWN_INTERVAL = 20 * 60 * 5;
+    public static final int EXTRA_CAMPS = 1;
     public static final int CAMP_UPGRADE_INTERVAL = 20 * 60 * 10; // a camp gains a level every 10 minutes
     public static final int NEW_CAMP_LEVEL_INTERVAL = 20 * 60 * 15; // new camps start one level higher every 15 minutes
     public static final int RAID_INTERVAL = 20 * 60 * 6; // from level 2, a raid every 6 minutes
@@ -74,7 +76,7 @@ public class BarbarianServerEvents {
     private static final Map<Integer, BlockPos> homes = new HashMap<>(); // defender entity id -> its camp
     private static final Set<Integer> raiders = new HashSet<>();
     private static ServerLevel serverLevel = null;
-    private static long ticksToNextCamp = 20 * 60; // first camp a minute after enabling
+    private static long ticksToNextCamp = CAMP_SPAWN_INTERVAL;
     private static int ticks = 0;
 
     public static boolean isEnabled() {
@@ -87,7 +89,7 @@ public class BarbarianServerEvents {
         BarbarianSaveData data = BarbarianSaveData.getInstance(serverLevel);
         data.enabled = enabled;
         data.save();
-        ticksToNextCamp = 20 * 60;
+        ticksToNextCamp = CAMP_SPAWN_INTERVAL;
     }
 
     private static boolean isBarbarian(String ownerName) {
@@ -123,10 +125,24 @@ public class BarbarianServerEvents {
         return placement;
     }
 
-    private static void trySpawnNewCamp(ServerLevel level) {
-        int maxCamps = BASE_MAX_CAMPS + (int) BuildingServerEvents.getBuildings().stream()
-            .map(b -> b.ownerName).filter(BarbarianServerEvents::isPlayerOwner).distinct().count();
-        if (camps.size() >= maxCamps)
+    // remembers since when each player has a finished barracks; returns how many have had one for long enough
+    private static int updateBarracksOwners(BarbarianSaveData data) {
+        Set<String> owners = new HashSet<>();
+        for (BuildingPlacement b : BuildingServerEvents.getBuildings())
+            if (b.getBuilding() == Buildings.BARRACKS && b.isBuilt && isPlayerOwner(b.ownerName))
+                owners.add(b.ownerName);
+        data.barracksSince.keySet().removeIf(player -> !owners.contains(player));
+        for (String owner : owners)
+            data.barracksSince.putIfAbsent(owner, data.ticksEnabled);
+        int ready = 0;
+        for (long since : data.barracksSince.values())
+            if (data.ticksEnabled - since >= CAMP_SPAWN_INTERVAL)
+                ready++;
+        return ready;
+    }
+
+    private static void trySpawnNewCamp(ServerLevel level, int playersReady) {
+        if (playersReady == 0 || camps.size() >= playersReady + EXTRA_CAMPS)
             return;
         // 70-100 blocks away from players' buildings (and other camps, which count as buildings there)
         List<BlockPos> spawns = WaveSpawner.getValidSpawnPoints(1, level, false, 8);
@@ -134,6 +150,7 @@ public class BarbarianServerEvents {
             return;
         long ticksEnabled = BarbarianSaveData.getInstance(level).ticksEnabled;
         placeCamp(spawns.get(0), (int) (ticksEnabled / NEW_CAMP_LEVEL_INTERVAL));
+        ticksToNextCamp = CAMP_SPAWN_INTERVAL;
     }
 
     private static List<EntityType<? extends Mob>> getUnitTypes(int level) {
@@ -202,6 +219,7 @@ public class BarbarianServerEvents {
     }
 
     private static void onCampDestroyed(Camp camp) {
+        ticksToNextCamp = Math.max(ticksToNextCamp, CAMP_SPAWN_INTERVAL); // a respite before a new camp replaces it
         LivingEntity looter = getNearestPlayerUnit(camp.origin, LOOT_RANGE);
         if (looter != null) {
             String owner = ((Unit) looter).getOwnerName();
@@ -243,11 +261,12 @@ public class BarbarianServerEvents {
         if (data.enabled) {
             data.ticksEnabled += TICK_INTERVAL;
             data.setDirty();
+            int playersReady = updateBarracksOwners(data);
+            // the first camp comes as soon as a barracks has stood long enough (the countdown waits at 0 until then),
+            // the next ones one interval apart
             ticksToNextCamp -= TICK_INTERVAL;
-            if (ticksToNextCamp <= 0) {
-                ticksToNextCamp = CAMP_SPAWN_INTERVAL;
-                trySpawnNewCamp(level);
-            }
+            if (ticksToNextCamp <= 0)
+                trySpawnNewCamp(level, playersReady);
         }
         // camps placed before a restart
         for (BuildingPlacement placement : BuildingServerEvents.getBuildings())
@@ -343,7 +362,7 @@ public class BarbarianServerEvents {
         camps.clear();
         homes.clear();
         raiders.clear();
-        ticksToNextCamp = 20 * 60;
+        ticksToNextCamp = CAMP_SPAWN_INTERVAL;
     }
 
     @SubscribeEvent

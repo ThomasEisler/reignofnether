@@ -6,11 +6,15 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BarbarianSaveData extends SavedData {
 
     public boolean enabled = false;
     public long ticksEnabled = 0; // game time the barbarians have been active, makes new camps stronger
+    // player -> ticksEnabled value when their first barracks was seen finished (removed if they lose all of them)
+    public final Map<String, Long> barracksSince = new HashMap<>();
 
     private static BarbarianSaveData create() {
         return new BarbarianSaveData();
@@ -29,6 +33,9 @@ public class BarbarianSaveData extends SavedData {
         BarbarianSaveData data = create();
         data.enabled = tag.getBoolean("enabled");
         data.ticksEnabled = tag.getLong("ticksEnabled");
+        CompoundTag barracks = tag.getCompound("barracksSince");
+        for (String player : barracks.getAllKeys())
+            data.barracksSince.put(player, barracks.getLong(player));
         return data;
     }
 
@@ -36,6 +43,9 @@ public class BarbarianSaveData extends SavedData {
     public CompoundTag save(CompoundTag tag) {
         tag.putBoolean("enabled", enabled);
         tag.putLong("ticksEnabled", ticksEnabled);
+        CompoundTag barracks = new CompoundTag();
+        barracksSince.forEach(barracks::putLong);
+        tag.put("barracksSince", barracks);
         return tag;
     }
 
