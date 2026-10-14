@@ -204,7 +204,7 @@ public class ExplorerUnit extends Vindicator implements Unit, VillagerDataHolder
     @Override
     public AABB getInflatedSelectionBox() {
         AABB aabb = this.getBoundingBox().inflate(0.2f, 0, 0.2f);
-        aabb.setMaxY(aabb.maxY + 0.2f);
+        aabb.setMaxY(aabb.maxY + 0.8f); // rides a dog, so drawn higher
         return aabb;
     }
 
