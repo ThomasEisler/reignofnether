@@ -14,6 +14,7 @@ public class BuildTimes {
         // Villagers
         Map.entry("Wheat Farm", 30),
         Map.entry("Sawmill", 60),
+        Map.entry("Mill", 60),
         Map.entry("Hospice", 90),
         Map.entry("Stockpile", 40),
         Map.entry("Villager House", 40),

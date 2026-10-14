@@ -2448,5 +2448,7 @@
     "entity.reignofnether.priest_unit.tooltip2": "Does not fight.",
     "buildings.reignofnether.hospice": "Hospice",
     "buildings.reignofnether.hospice.tooltip1": "Slowly heals the units around it.",
-    "buildings.reignofnether.hospice.tooltip2": "Trains priests."
+    "buildings.reignofnether.hospice.tooltip2": "Trains priests.",
+    "buildings.reignofnether.mill": "Mill",
+    "buildings.reignofnether.mill.tooltip1": "Farms within 24 blocks grow 30% faster."
 }

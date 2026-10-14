@@ -214,6 +214,7 @@ public class Factions {
 		registerBuildings(VILLAGERS, Buildings.VILLAGER_MARKET, Keybindings.hotkey10);
 		registerBuildings(VILLAGERS, Buildings.PORT);
 		registerBuildings(VILLAGERS, Buildings.SAWMILL);
+		registerBuildings(VILLAGERS, Buildings.MILL);
 		registerBuildings(VILLAGERS, Buildings.HOSPICE);
 		registerBuildings(VILLAGERS, Buildings.BEACON);
 		

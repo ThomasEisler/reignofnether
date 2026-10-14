@@ -71,6 +71,7 @@ public class FarmPlacement extends BuildingPlacement {
 
     // tick crop growth here to have precise control over growth speed with no RNG
     private void tickCrops() {
+        float millBonus = com.solegendary.reignofnether.building.buildings.villagers.Mill.getGrowthMultiplier(this);
         for (FarmCropBlock farmBlock : farmBlocks) {
 
             // keep the farmland wet so it never dries back into dirt, even without water nearby
@@ -85,6 +86,7 @@ public class FarmPlacement extends BuildingPlacement {
             if (getWorker() != null) {
                 ticksToIncrement = (int) (TICK_CROPS_INTERVAL * CivilEnchantment.getEfficiencyMultiplier(getWorker()));
             }
+            ticksToIncrement = Math.round(ticksToIncrement * millBonus);
 
             if (block instanceof CropBlock cropBlock && (cropBlock == Blocks.WHEAT || cropBlock == Blocks.CARROTS || cropBlock == Blocks.POTATOES)) {
                 farmBlock.tickAge += ticksToIncrement;

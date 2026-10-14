@@ -2415,5 +2415,7 @@
     "entity.reignofnether.priest_unit.tooltip2": "Ne se bat pas.",
     "buildings.reignofnether.hospice": "Hospice",
     "buildings.reignofnether.hospice.tooltip1": "Soigne lentement les unités autour de lui.",
-    "buildings.reignofnether.hospice.tooltip2": "Forme des prêtres."
+    "buildings.reignofnether.hospice.tooltip2": "Forme des prêtres.",
+    "buildings.reignofnether.mill": "Moulin",
+    "buildings.reignofnether.mill.tooltip1": "Les fermes à moins de 24 blocs poussent 30 % plus vite."
 }
