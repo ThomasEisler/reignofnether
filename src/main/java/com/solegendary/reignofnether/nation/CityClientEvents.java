@@ -54,8 +54,11 @@ public class CityClientEvents {
             matrix.mulPose(camera.rotation());
             matrix.scale(-scale, -scale, scale);
             float w = font.width(name) / 2f;
-            font.drawInBatch(name, -w, 0, 0xFF000000 | colour, true, matrix.last().pose(), buffers,
+            // like players' name tags: a faint pass seen through blocks (with the background), then the crisp text
+            font.drawInBatch(name, -w, 0, 0x40FFFFFF, false, matrix.last().pose(), buffers,
                 Font.DisplayMode.SEE_THROUGH, 0x90000000, 0xF000F0);
+            font.drawInBatch(name, -w, 0, 0xFF000000 | colour, false, matrix.last().pose(), buffers,
+                Font.DisplayMode.NORMAL, 0, 0xF000F0);
             matrix.popPose();
         }
         buffers.endBatch();
