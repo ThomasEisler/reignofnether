@@ -35,6 +35,10 @@ public class RoadPathTracer {
     private static final double SLOPE_COST = 1.5;
     private static final double TREE_COST = 3;
     private static final double DIAGONAL_COST = Math.sqrt(2);
+    // roads wind a little: the centre line sways sideways along a slow wave (straight near both buildings)
+    private static final double WINDING_AMPLITUDE = 1.6; // blocks to each side
+    private static final double WINDING_WAVELENGTH = 28; // blocks
+    private static final int WINDING_FADE = 8; // steps at each end with no sway
 
     public static class Result {
         public final List<BlockPos> blocks; // road surface blocks, in order from the first building to the second
@@ -151,6 +155,8 @@ public class RoadPathTracer {
             centreLine.add(k);
         Collections.reverse(centreLine);
 
+        centreLine = wind(level, columns, centreLine, a, b);
+
         Set<BlockPos> blocks = new LinkedHashSet<>();
         int length = 0;
         for (long k : centreLine) {
@@ -174,6 +180,51 @@ public class RoadPathTracer {
         if (length > MAX_PATH_LENGTH)
             return Result.error("hud.reignofnether.road_too_long");
         return new Result(new ArrayList<>(blocks), length, null);
+    }
+
+    // sways the centre line a little; a point that would land on water, a building or too steep a step stays put.
+    // The wave depends only on the two buildings, so the preview and the road built match.
+    private static List<Long> wind(Level level, Map<Long, Column> columns, List<Long> line, BuildingPlacement a, BuildingPlacement b) {
+        int n = line.size();
+        if (n < WINDING_FADE * 2 + 4)
+            return line;
+        double phase = Math.floorMod(a.centrePos.getX() * 31 + a.centrePos.getZ() * 17 + b.centrePos.getX() * 13 + b.centrePos.getZ() * 7, 628) / 100.0;
+        List<Long> out = new ArrayList<>(n);
+        Column prev = null;
+        for (int i = 0; i < n; i++) {
+            long k = line.get(i);
+            int x = keyX(k), z = keyZ(k);
+            int fade = Math.min(i, n - 1 - i);
+            double weight = Math.min(1, Math.max(0, (fade - WINDING_FADE) / (double) WINDING_FADE));
+            if (weight <= 0 || isInFootprint(a, x, z) || isInFootprint(b, x, z)) {
+                out.add(k);
+                prev = getColumn(level, columns, x, z);
+                continue;
+            }
+            // direction of the road around here, and the side to sway towards
+            long before = line.get(Math.max(0, i - 3)), after = line.get(Math.min(n - 1, i + 3));
+            double tx = keyX(after) - keyX(before), tz = keyZ(after) - keyZ(before);
+            double len = Math.sqrt(tx * tx + tz * tz);
+            if (len < 1e-6) {
+                out.add(k);
+                continue;
+            }
+            double offset = WINDING_AMPLITUDE * weight * Math.sin(2 * Math.PI * i / WINDING_WAVELENGTH + phase);
+            int sx = (int) Math.round(x - tz / len * offset), sz = (int) Math.round(z + tx / len * offset);
+            Column col = getColumn(level, columns, sx, sz);
+            boolean ok = col.surface != null && !col.blocked && !col.tree &&
+                (prev == null || prev.surface == null || Math.abs(col.surface.getY() - prev.surface.getY()) <= MAX_STEP_HEIGHT);
+            long chosen = ok ? key(sx, sz) : k;
+            // keep the line connected (no gap of more than one block between two points)
+            if (!out.isEmpty()) {
+                long last = out.get(out.size() - 1);
+                if (Math.abs(keyX(chosen) - keyX(last)) > 1 || Math.abs(keyZ(chosen) - keyZ(last)) > 1)
+                    chosen = k;
+            }
+            out.add(chosen);
+            prev = getColumn(level, columns, keyX(chosen), keyZ(chosen));
+        }
+        return out;
     }
 
     // octile distance: admissible for 8-way moves costing 1 straight and sqrt(2) diagonally

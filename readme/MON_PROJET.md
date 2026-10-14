@@ -90,6 +90,7 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et Wor
 - **Aperçu** : en survolant le second bâtiment, le tracé s'affiche en surbrillance au sol et le prix apparaît à côté du curseur (en rouge si la route est impossible, avec la raison).
 - **Construite par les ouvriers** : une fois payée, la route est un chantier. Les 3 ouvriers libres les plus proches (dans un rayon de 64 blocs) y vont tout seuls et posent les blocs un par un, en avançant d'un bâtiment à l'autre. Tout ouvrier libre qui passe à moins de 12 blocs du chantier vient aider. Donner un autre ordre à un ouvrier le retire du chantier. Les améliorations de route se construisent de la même façon.
 - Route de 3 blocs de large qui suit le relief et **contourne les obstacles** : eau, autres bâtiments, pentes de plus d'un bloc par case ; elle évite aussi les arbres et les montées quand le détour est court. Refusée s'il n'existe aucun chemin, si les bâtiments sont à plus de 256 blocs ou si la route ferait plus de 384 blocs.
+- **Légèrement sinueuse** : le tracé ondule de 1 à 2 blocs de chaque côté sur une vague d'environ 28 blocs (droit sur les 8 premiers et derniers blocs ; pas d'ondulation là où elle tomberait sur l'eau, un bâtiment, un arbre ou une pente trop forte). Réglages : `WINDING_AMPLITUDE`, `WINDING_WAVELENGTH` dans `RoadPathTracer`.
 - Le **prix dépend de la longueur**. Si un des deux bâtiments est détruit pendant le chantier, la partie pas encore construite est **remboursée** (message à l'écran).
 - Recliquer sur deux bâtiments déjà reliés **améliore la route** :
 
@@ -408,6 +409,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Routes légèrement sinueuses |
 | 14/10/2026 | Plusieurs Hôtels de ville = villes nommées selon la nation, distances minimales entre villes |
 | 14/10/2026 | Port au bord de l'eau ; pêcheurs en bateau vers les bulles |
 | 14/10/2026 | Carrières, troupeaux et coins de pêche épuisables |
