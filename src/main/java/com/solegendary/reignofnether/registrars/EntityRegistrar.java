@@ -141,6 +141,12 @@ public class EntityRegistrar {
                     .clientTrackingRange(UNIT_CLIENT_TRACKING_RANGE)
                     .build(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "mercenary_archer_unit").toString()));
 
+    public static final RegistryObject<EntityType<com.solegendary.reignofnether.unit.units.villagers.CatapultUnit>> CATAPULT_UNIT = ENTITIES.register("catapult_unit",
+            () -> EntityType.Builder.of(com.solegendary.reignofnether.unit.units.villagers.CatapultUnit::new, MobCategory.CREATURE)
+                    .sized(EntityType.HORSE.getWidth(), EntityType.HORSE.getHeight())
+                    .clientTrackingRange(UNIT_CLIENT_TRACKING_RANGE)
+                    .build(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "catapult_unit").toString()));
+
     public static final RegistryObject<EntityType<com.solegendary.reignofnether.unit.units.villagers.ExplorerUnit>> EXPLORER_UNIT = ENTITIES.register("explorer_unit",
             () -> EntityType.Builder.of(com.solegendary.reignofnether.unit.units.villagers.ExplorerUnit::new, MobCategory.CREATURE)
                     .sized(EntityType.VILLAGER.getWidth(), EntityType.VILLAGER.getHeight())
@@ -511,6 +517,7 @@ public class EntityRegistrar {
             case VillagerProd.itemName -> EntityRegistrar.VILLAGER_UNIT.get();
             case ScoutDogProd.itemName -> EntityRegistrar.SCOUT_DOG_UNIT.get();
             case com.solegendary.reignofnether.unit.units.villagers.ExplorerProd.itemName -> EntityRegistrar.EXPLORER_UNIT.get();
+            case com.solegendary.reignofnether.unit.units.villagers.CatapultProd.itemName -> EntityRegistrar.CATAPULT_UNIT.get();
             case com.solegendary.reignofnether.unit.units.villagers.MercenaryArcherProd.itemName -> EntityRegistrar.MERCENARY_ARCHER_UNIT.get();
             case com.solegendary.reignofnether.unit.units.villagers.MercenaryProd.itemName -> EntityRegistrar.MERCENARY_UNIT.get();
             case com.solegendary.reignofnether.unit.units.villagers.CrossbowmanProd.itemName -> EntityRegistrar.CROSSBOWMAN_UNIT.get();

@@ -2430,5 +2430,10 @@
     "entity.reignofnether.mercenary_archer_unit": "Tirailleur mercenaire",
     "entity.reignofnether.mercenary_archer_unit.tooltip1": "Arbalétrier à louer : prêt presque tout de suite, mais cher.",
     "buildings.reignofnether.tavern": "Taverne",
-    "buildings.reignofnether.tavern.tooltip1": "Loue des mercenaires (tenue rouge et noire), prêts en quelques secondes."
+    "buildings.reignofnether.tavern.tooltip1": "Loue des mercenaires (tenue rouge et noire), prêts en quelques secondes.",
+    "entity.reignofnether.catapult_unit": "Catapulte",
+    "entity.reignofnether.catapult_unit.tooltip1": "Lance des rochers de très loin : dégâts de zone sur les unités.",
+    "entity.reignofnether.catapult_unit.tooltip2": "Très efficace contre les bâtiments. Lente et sans défense de près.",
+    "buildings.reignofnether.siege_workshop": "Atelier de siège",
+    "buildings.reignofnether.siege_workshop.tooltip1": "Construit des catapultes."
 }

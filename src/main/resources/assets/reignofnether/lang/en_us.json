@@ -2463,5 +2463,10 @@
     "entity.reignofnether.mercenary_archer_unit": "Mercenary Crossbowman",
     "entity.reignofnether.mercenary_archer_unit.tooltip1": "Hired crossbowman: ready almost at once, but expensive.",
     "buildings.reignofnether.tavern": "Tavern",
-    "buildings.reignofnether.tavern.tooltip1": "Hires mercenaries (red and black clothes), ready in a few seconds."
+    "buildings.reignofnether.tavern.tooltip1": "Hires mercenaries (red and black clothes), ready in a few seconds.",
+    "entity.reignofnether.catapult_unit": "Catapult",
+    "entity.reignofnether.catapult_unit.tooltip1": "Throws boulders from very far: splash damage to units.",
+    "entity.reignofnether.catapult_unit.tooltip2": "Very strong against buildings. Slow and helpless up close.",
+    "buildings.reignofnether.siege_workshop": "Siege Workshop",
+    "buildings.reignofnether.siege_workshop.tooltip1": "Builds catapults."
 }

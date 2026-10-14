@@ -19,7 +19,7 @@ public enum Tech {
     MYSTICISM      ("Mysticisme",     200, 100, 150, 360,     1,     2,   List.of("COMMERCE"), List.of("Witch Hut", "Shrine of Prosperity", "Hospice"), List.of(),
                     List.of(), List.of("grand_library")),
     FORTIFICATIONS ("Fortifications", 0,   300, 400, 600,     2,     0,   List.of("METALLURGY"), List.of("Castle"),                       List.of("Watchtower:2")),
-    ENGINEERING    ("Ingénierie",     0,   400, 400, 480,     2,     1,   List.of("ARCHITECTURE", "METALLURGY"), List.of(),               List.of("Barracks:2", "Town Centre:2")),
+    ENGINEERING    ("Ingénierie",     0,   400, 400, 480,     2,     1,   List.of("ARCHITECTURE", "METALLURGY"), List.of("Siege Workshop"),               List.of("Barracks:2", "Town Centre:2")),
     ARCANA         ("Arcanes",        300, 200, 300, 480,     2,     2,   List.of("MYSTICISM"), List.of("Arcane Tower"),                 List.of()),
 
     // the original game's researches (were bought in buildings), now in the tree

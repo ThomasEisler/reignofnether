@@ -119,6 +119,7 @@ public class ClientModEvents {
         evt.registerEntityRenderer(EntityRegistrar.SCOUT_CAT_UNIT.get(), CatUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.MILITIA_UNIT.get(), VillagerUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.EXPLORER_UNIT.get(), com.solegendary.reignofnether.unit.modelling.renderers.ExplorerUnitRenderer::new);
+        evt.registerEntityRenderer(EntityRegistrar.CATAPULT_UNIT.get(), com.solegendary.reignofnether.unit.modelling.renderers.CatapultRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.MERCENARY_ARCHER_UNIT.get(), (net.minecraft.client.renderer.entity.EntityRendererProvider) com.solegendary.reignofnether.unit.modelling.renderers.MercenaryRenderer.Archer::new);
         evt.registerEntityRenderer(EntityRegistrar.MERCENARY_UNIT.get(), (net.minecraft.client.renderer.entity.EntityRendererProvider) com.solegendary.reignofnether.unit.modelling.renderers.MercenaryRenderer.Sword::new);
         evt.registerEntityRenderer(EntityRegistrar.CROSSBOWMAN_UNIT.get(), (net.minecraft.client.renderer.entity.EntityRendererProvider) com.solegendary.reignofnether.unit.modelling.renderers.PillagerUnitRenderer::new);
