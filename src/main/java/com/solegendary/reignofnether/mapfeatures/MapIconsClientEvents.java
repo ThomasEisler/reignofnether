@@ -45,8 +45,8 @@ public class MapIconsClientEvents {
     }
 
     private static boolean isDiscovered(BlockPos pos) {
-        if (!com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(pos))
-            return false;
+        if (com.solegendary.reignofnether.exploration.ExplorationClientEvents.isActive())
+            return com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(pos); // seen once = kept
         if (!FogOfWarClientEvents.isEnabled())
             return true;
         long key = new net.minecraft.world.level.ChunkPos(pos).toLong();

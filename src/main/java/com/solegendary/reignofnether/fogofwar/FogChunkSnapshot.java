@@ -51,6 +51,10 @@ public class FogChunkSnapshot {
 
     public static void captureFogChunks(ServerLevel level) {
         shouldRecapture = false;
+        // a big map can't be copied in full: no snapshot there, dark chunks are served live once and then frozen
+        // (ChunkMapInitialSendMixin); land never explored is hidden under the clouds anyway (exploration/)
+        if (!com.solegendary.reignofnether.worldborder.WorldBorderServerEvents.isRtsOptimisedMap(level))
+            return;
         clear();
         dir = resolveDir(level);
         deleteDir(); // wipe stale files left on disk by a prior server session before recapturing

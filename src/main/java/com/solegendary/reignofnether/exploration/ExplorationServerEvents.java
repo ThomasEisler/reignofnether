@@ -49,6 +49,8 @@ public class ExplorationServerEvents {
         data.enabled = enabled;
         data.setDirty();
         syncAll();
+        // the fog of war (dark, frozen land out of sight) goes with the clouds
+        com.solegendary.reignofnether.fogofwar.FogOfWarServerEvents.setEnabled(enabled);
     }
 
     // everyone's map goes back under the clouds

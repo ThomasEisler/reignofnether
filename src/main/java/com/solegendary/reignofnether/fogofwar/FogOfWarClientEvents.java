@@ -230,7 +230,7 @@ public class FogOfWarClientEvents {
                         return -1;
                     // Fog only works on RTS-optimised maps; refuse locally so the toggle is effectively
                     // hidden on vanilla-sized maps instead of bouncing off the server.
-                    if (!isOnRtsOptimisedMap()) {
+                    if (false) { // fog now works on every map
                         MC.player.sendSystemMessage(Component.literal(
                                 I18n.get("server.reignofnether.fog_requires_rts_map")));
                         return -1;

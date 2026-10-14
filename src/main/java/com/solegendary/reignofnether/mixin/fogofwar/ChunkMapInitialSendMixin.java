@@ -36,9 +36,9 @@ public abstract class ChunkMapInitialSendMixin {
 
         if (FogOfWarServerEvents.isChunkLiveFor(sp, pos)) return;
         ClientboundLevelChunkWithLightPacket snap = FogChunkSnapshot.get(pos);
-        if (snap != null) {
-            sp.connection.send(snap);
-        }
+        if (snap == null)
+            return; // no snapshot (big map): send the chunk as it is now; its later changes stay hidden while dark
+        sp.connection.send(snap);
         if (FogOfWarServerEvents.isChunkSentFor(sp, pos))
             FogOfWarServerEvents.queueResend(sp.getUUID(), pos);
 

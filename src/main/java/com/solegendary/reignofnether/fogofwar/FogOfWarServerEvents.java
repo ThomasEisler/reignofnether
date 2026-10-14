@@ -276,12 +276,8 @@ public class FogOfWarServerEvents {
         // pre-match snapshot (FogChunkSnapshot) can cover it in full and dark chunks can never fall back
         // to the live world on reload/relog. On a vanilla-sized border the snapshot can't be captured, so
         // refuse rather than silently leaking. A null serverLevel can't be verified, so it's refused too.
-        if (value && !WorldBorderServerEvents.isRtsOptimisedMap(serverLevel)) {
-            ReignOfNether.LOGGER.info("[FogOfWar] Enable refused: not an RTS-optimised map (world border > {})",
-                    WorldBorderServerEvents.RTS_OPTIMIZED_BORDER);
-            sendMessageToAllPlayers("server.reignofnether.fog_requires_rts_map", true);
-            return;
-        }
+        // (the original game refused fog on big maps; it now works there too, without the pre-match snapshot:
+        // see FogChunkSnapshot.captureFogChunks)
         boolean wasEnabled = enabled;
         enabled = value;
         if (enabled)
@@ -330,7 +326,8 @@ public class FogOfWarServerEvents {
 
         // Only attempt the forced auto-enable on an RTS-optimised map; otherwise setEnabled would refuse
         // and spam the log/chat every tick. On a vanilla-sized map force-fog simply stays inert.
-        if (!enabled && isForceFog() && WorldBorderServerEvents.isRtsOptimisedMap(serverLevel))
+        // on whenever the clouds are on (/rts-nuages on|off switches both), or forced by the gamerule
+        if (!enabled && (isForceFog() || com.solegendary.reignofnether.exploration.ExplorationServerEvents.isEnabled()))
             setEnabled(true);
 
         if (!enabled) return;
