@@ -93,6 +93,7 @@ public class Factions {
 		registerEntity(VILLAGERS, EntityRegistrar.MILITIA_UNIT.get(), ProductionItems.VILLAGER);
 		registerEntity(VILLAGERS, EntityRegistrar.SCOUT_DOG_UNIT.get(), ProductionItems.SCOUT_DOG);
 		registerScoutEntity(VILLAGERS, EntityRegistrar.EXPLORER_UNIT.get(), ProductionItems.EXPLORER);
+		registerEntity(VILLAGERS, EntityRegistrar.CROSSBOWMAN_UNIT.get(), ProductionItems.CROSSBOWMAN);
 		registerEntity(VILLAGERS, EntityRegistrar.PRIEST_UNIT.get(), ProductionItems.PRIEST);
 		registerEntity(VILLAGERS, EntityRegistrar.SCOUT_CAT_UNIT.get(), ProductionItems.SCOUT_CAT);
 		registerEntity(VILLAGERS, EntityRegistrar.VINDICATOR_UNIT.get(), ProductionItems.VINDICATOR);

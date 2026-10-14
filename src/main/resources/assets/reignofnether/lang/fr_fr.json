@@ -2421,5 +2421,8 @@
     "buildings.reignofnether.mine": "Mine",
     "buildings.reignofnether.mine.tooltip1": "À poser près d'une carrière : les villageois y travaillent et elle produit du minerai sans fin.",
     "buildings.reignofnether.mine.tooltip2": "Clic droit avec des villageois (3 au plus).",
-    "building.reignofnether.mine_needs_quarry": "Une mine doit être près d'une carrière"
+    "building.reignofnether.mine_needs_quarry": "Une mine doit être près d'une carrière",
+    "entity.reignofnether.crossbowman_unit": "Arbalétrier",
+    "entity.reignofnether.crossbowman_unit.tooltip1": "Arbalète lourde : tire lentement, mais fort et loin.",
+    "entity.reignofnether.crossbowman_unit.tooltip2": "Dégâts x1,75 contre les cavaliers et leurs montures."
 }

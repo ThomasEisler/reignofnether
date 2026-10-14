@@ -2454,5 +2454,8 @@
     "buildings.reignofnether.mine": "Mine",
     "buildings.reignofnether.mine.tooltip1": "Build it near a quarry: villagers work in it and it makes ore without end.",
     "buildings.reignofnether.mine.tooltip2": "Right click with villagers (3 at most).",
-    "building.reignofnether.mine_needs_quarry": "A mine must be near a quarry"
+    "building.reignofnether.mine_needs_quarry": "A mine must be near a quarry",
+    "entity.reignofnether.crossbowman_unit": "Crossbowman",
+    "entity.reignofnether.crossbowman_unit.tooltip1": "Heavy crossbow: shoots slowly, but hard and far.",
+    "entity.reignofnether.crossbowman_unit.tooltip2": "x1.75 damage against riders and their mounts."
 }

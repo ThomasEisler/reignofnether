@@ -26,7 +26,7 @@ public enum Tech {
     //              name                     food wood ore  seconds col row  prerequisites           researches given (production item ids)     building upgrades unlocked (production item ids)
     COMMAND        ("Commandement",          200, 150, 150, 240,    3,  0,   List.of("FORTIFICATIONS"), List.of(), List.of(), List.of(),                                     List.of("castle_flag")),
     SIEGE          ("Artillerie de siège",   400, 0,   350, 300,    4,  0,   List.of("COMMAND"),     List.of(), List.of(), List.of("ravager_cavalry"),                       List.of()),
-    ARCHERY        ("Tir à l'arc",           250, 500, 0,   300,    0,  1,   List.of(),              List.of(), List.of(), List.of("militia_bows"),                          List.of()),
+    ARCHERY        ("Tir à l'arc",           250, 500, 0,   300,    0,  1,   List.of(),              List.of(), List.of(), List.of("militia_bows"),                          List.of("crossbowman")),
     VEXES          ("Invocations vexantes",  500, 0,   300, 240,    3,  2,   List.of("ARCANA"),      List.of(), List.of(), List.of("evoker_vexes"),                          List.of()),
     WINDS          ("Porté par le vent",     300, 150, 150, 280,    4,  2,   List.of("VEXES"),       List.of(), List.of(), List.of("upgraded_windcallers"),                  List.of()),
     TRADE          ("Grand commerce",        100, 150, 100, 300,    1,  3,   List.of("COMMERCE"),    List.of(), List.of(), List.of(),                                        List.of("research_market_upgrade_villager")),

@@ -43,6 +43,7 @@ public class Barracks extends ProductionBuilding {
         this.productions.add(ProductionItems.VINDICATOR, Keybindings.abilitySlot1);
         this.productions.add(ProductionItems.PILLAGER, Keybindings.abilitySlot2);
         this.productions.add(ProductionItems.CAVALIER, Keybindings.abilitySlot4);
+        this.productions.add(ProductionItems.CROSSBOWMAN, Keybindings.abilitySlot5);
 
         // PLACEHOLDER structures: barracks_lvl2/barracks_lvl3 are copies of barracks.nbt until real ones are made
         setLevels(
