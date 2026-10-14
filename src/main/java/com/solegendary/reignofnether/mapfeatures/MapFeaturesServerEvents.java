@@ -60,6 +60,11 @@ public class MapFeaturesServerEvents {
     public static final int RUIN_LOOT_MIN = 150, RUIN_LOOT_MAX = 300; // of each resource
     public static final int LOOT_RANGE = 40;
 
+    // every resource runs out after a while
+    public static final int QUARRY_REGROW_TOTAL = 30; // ore blocks a quarry grows back in all; then it is spent
+    public static final int HERD_REGROW_TOTAL = 10; // animals a herd grows back in all; it is gone after the last one
+    public static final int FISHING_CATCHES = 240; // catches of a fishing spot (5 food each); then the fish are gone
+
     private static final int TICK_INTERVAL = 20;
     private static final int CHUNKS_PER_TICK = 6;
 
@@ -121,6 +126,23 @@ public class MapFeaturesServerEvents {
         return nearest;
     }
 
+    // a port's catch: true while the spot has fish; the spot is gone once emptied
+    public static boolean takeCatch(BlockPos spot, String owner) {
+        if (serverLevel == null || !data().fishingSpots.contains(spot))
+            return false;
+        int left = data().fishingCatchesLeft.getOrDefault(spot.asLong(), FISHING_CATCHES) - 1;
+        if (left <= 0) {
+            data().fishingSpots.remove(spot);
+            data().fishingCatchesLeft.remove(spot.asLong());
+            FishingSpotsClientboundPacket.sync(data().fishingSpots);
+            com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(owner, "Un coin de pêche est épuisé : plus de poisson pour ce port.");
+        } else {
+            data().fishingCatchesLeft.put(spot.asLong(), left);
+        }
+        data().setDirty();
+        return true;
+    }
+
     private static boolean isWater(BlockState bs) {
         return bs.getFluidState().is(FluidTags.WATER) && bs.getFluidState().isSource();
     }
@@ -157,6 +179,7 @@ public class MapFeaturesServerEvents {
             if (other.distSqr(spot) < FISHING_SPACING * FISHING_SPACING)
                 return;
         data().fishingSpots.add(spot);
+        data().fishingCatchesLeft.put(spot.asLong(), FISHING_CATCHES);
         data().setDirty();
         FishingSpotsClientboundPacket.sync(data().fishingSpots);
     }
@@ -321,6 +344,19 @@ public class MapFeaturesServerEvents {
             MapFeaturesSaveData.Quarry quarry = data().quarries.get(i);
             if ((beat + i * 13L) % (QUARRY_REGROW / TICK_INTERVAL) != 0 || !level.hasChunkAt(quarry.centre) || quarry.orePositions.isEmpty())
                 continue;
+            if (quarry.regrowLeft <= 0) {
+                // spent: once its last ore block is mined, the quarry is gone from the map
+                boolean anyOre = false;
+                for (int k = 0; k < quarry.orePositions.size(); k++)
+                    if (net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(level.getBlockState(BlockPos.of(quarry.orePositions.get(k))).getBlock()).toString().equals(quarry.oreBlocks.get(k)))
+                        anyOre = true;
+                if (!anyOre) {
+                    data().quarries.remove(i--);
+                    data().setDirty();
+                    sitesChanged = true;
+                }
+                continue;
+            }
             for (int attempt = 0; attempt < 4; attempt++) {
                 int k = random.nextInt(quarry.orePositions.size());
                 BlockPos pos = BlockPos.of(quarry.orePositions.get(k));
@@ -329,6 +365,8 @@ public class MapFeaturesServerEvents {
                     continue;
                 var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(net.minecraft.resources.ResourceLocation.tryParse(quarry.oreBlocks.get(k)));
                 level.setBlockAndUpdate(pos, block.defaultBlockState());
+                quarry.regrowLeft--;
+                data().setDirty();
                 break;
             }
         }
@@ -424,6 +462,7 @@ public class MapFeaturesServerEvents {
 
     private static void tickHerds(ServerLevel level) {
         long beat = level.getGameTime() / TICK_INTERVAL;
+        List<Herd> spentHerds = new ArrayList<>();
         for (Herd herd : data().herds) {
             if (!level.hasChunkAt(herd.home))
                 continue;
@@ -472,19 +511,30 @@ public class MapFeaturesServerEvents {
                 }
                 data().setDirty();
             }
-            // regrowth around the herd (or its home when none is left)
-            if (herd.members.size() < herd.targetSize) {
+            // regrowth around the herd (or its home when none is left), while it can; a spent herd is gone with its last animal
+            if (herd.regrowLeft <= 0 && herd.members.isEmpty()) {
+                spentHerds.add(herd);
+                continue;
+            }
+            if (herd.members.size() < herd.targetSize && herd.regrowLeft > 0) {
                 herd.ticksToRegrow -= TICK_INTERVAL;
                 if (herd.ticksToRegrow <= 0) {
                     BlockPos at = herd.home;
                     if (!loaded.isEmpty())
                         at = loaded.get(random.nextInt(loaded.size())).blockPosition();
-                    if (!herd.members.isEmpty() || !isNearTown(herd.home, HERD_TOWN_DISTANCE / 2))
+                    if (!herd.members.isEmpty() || !isNearTown(herd.home, HERD_TOWN_DISTANCE / 2)) {
                         spawnMember(level, herd, at);
+                        herd.regrowLeft--;
+                    }
                     herd.ticksToRegrow = herd.members.isEmpty() ? REGROW_EMPTY : REGROW_INTERVAL;
                     data().setDirty();
                 }
             }
+        }
+        if (!spentHerds.isEmpty()) {
+            data().herds.removeAll(spentHerds);
+            data().setDirty();
+            herdsChanged = true;
         }
     }
 

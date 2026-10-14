@@ -52,8 +52,9 @@ public class Port extends Building {
         super.tick(level, placement);
         if (level.isClientSide() || !placement.isBuilt || placement.ownerName.isBlank() || level.getGameTime() % TICKS_PER_CATCH != 0)
             return;
-        if (MapFeaturesServerEvents.getNearestFishingSpot(false, placement.centrePos.getX() + 0.5, placement.centrePos.getZ() + 0.5,
-                FISHING_SPOT_RANGE + 2) != null)
+        var spot = MapFeaturesServerEvents.getNearestFishingSpot(false, placement.centrePos.getX() + 0.5, placement.centrePos.getZ() + 0.5,
+            FISHING_SPOT_RANGE + 2);
+        if (spot != null && MapFeaturesServerEvents.takeCatch(spot, placement.ownerName)) // the spot runs out after a while
             ResourcesServerEvents.addSubtractResources(new Resources(placement.ownerName, FOOD_PER_CATCH, 0, 0));
     }
 
