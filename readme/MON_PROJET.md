@@ -376,7 +376,9 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 - Les noms des boutons de construction utilisaient des clés de traduction inexistantes (`buildings.villagers.reignofnether.…`) : corrigé en `buildings.reignofnether.…` partout (43 endroits).
 
-**Prochaine étape prévue** : faire tester le chantier de route et l'aperçu, puis le reste de la liste « À faire » (limite de distance, terrain plat, remparts, arbre des technologies, formes niveaux 2/3 et camps barbares). Je préfère des réponses courtes, en français, sans jargon.
+**Prochaine étape prévue** (14/10/2026) : faire tester en jeu (nouveau monde) tout ce qui a été ajouté le 14/10 — bots (`/rts-bot ajouter` ×3), noms de villes (affichage corrigé, à revérifier), pêche en bateau, troupeaux, carrières, ruines, camps barbares à 5 niveaux, routes en arc, déplacement du mod activé partout (surveiller les ralentissements), rectangles orange de Distant Horizons. Puis bots étapes 3 (bâtiments, recherches, 2e ville), 4 (armée, attaques, entre bots aussi) et 5 (bouton nombre de bots + difficulté).
+
+**Façon de répondre** : en français, concis et direct, sans jargon ; chiffrer la taille d'une tâche en **briques** (1 = un réglage, 10 = petite fonction, 100 = gros ensemble comme les camps à 5 niveaux), jamais « gros morceau ». Le jeu doit être fermé pour installer le mod : si l'utilisateur dit « ferme et installe », arrêter Minecraft proprement (`kill -TERM` du processus java) puis copier le jar.
 
 **Où est le code de mes ajouts** (`src/main/java/com/solegendary/reignofnether/`) :
 - Niveaux de bâtiments : `building/level/BuildingLevel.java` (fiche d'un niveau : PV, portée et dégâts de la garnison `garrisonDamage`, vitesse de production ; bonus de dégâts appliqué dans `AttackerUnit.getUnitAttackDamage`), `building/level/BuildingLevelUpgrade.java` (bouton d'amélioration, réutilise la file de production) ; `Building.setLevels(...)`, `BuildingPlacement.applyLevel(...)`, action réseau `BuildingAction.CHANGE_LEVEL`. Boutons déclarés dans `building/production/ProductionItems.java` (`BARRACKS_LEVEL_2`…).
@@ -417,6 +419,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Noms de villes : affichage corrigé (lettres brouillées par l'ombre et les shaders) |
 | 14/10/2026 | Bots : arrivée et économie (`/rts-bot ajouter`) |
 | 14/10/2026 | Unités qui préfèrent les routes sur toutes les cartes (déplacement du mod activé partout) |
 | 14/10/2026 | Routes en arc de cercle (au lieu de droites) |
