@@ -111,7 +111,7 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et Wor
 - Étoiles dorées au-dessus de l'unité (cachées dans le brouillard). Réglages dans `unit/UnitRankEvents.java` (`XP_FOR_RANK`, `BONUS_PER_RANK`, `KILL_XP`) ; dessin `unit/UnitRankClientEvents.java`. Le rang est un bonus de vie de l'unité (sauvegardé avec elle) ; l'expérience est dans ses données (`rtsXp`).
 
 ### Scierie
-- **Scierie** (menu des ouvriers, 250 bois + 75 minerai, 60 s) : débloquée par la recherche **Sylviculture** (100 nourriture, 200 bois, 100 minerai, 4 min, après Sacs à dos). 9 emplacements de podzol : une jeune pousse (azalée) apparaît 15 s après qu'un emplacement est vide, devient un petit arbre (2 bûches + feuilles) 100 s plus tard. Clic droit avec des villageois : ils y coupent le bois comme dans une ferme. Réglages dans `SawmillPlacement` (`PLANT_SECONDS`, `GROW_SECONDS`, `TREE_LOGS`). Modèle `sawmill` provisoire.
+- **Scierie** (menu des ouvriers, 250 bois + 75 minerai, 60 s) : débloquée par la recherche **Sylviculture** (100 nourriture, 200 bois, 100 minerai, 4 min, après Sacs à dos). Pas d'arbres : on y envoie des villageois (clic droit, **3 au plus**) qui travaillent dedans, et elle **produit du bois** directement (15 bois toutes les 12 s de travail d'un villageois : 3 villageois = 15 bois toutes les 4 s). Quand elle tourne : fumée qui monte de l'abri et sciure autour de la scie. Réglages dans `SawmillPlacement` (`MAX_WORKERS`, `WORK_SECONDS`, `WOOD_PER_LOAD`) ; les villageois y restent grâce à `GatherResourcesGoal.tick`. Modèle `sawmill` provisoire (tas de bûches écorcées, abri avec scie et cheminée).
 
 ### Éclaireurs et nuages
 - **Éclaireur** (Hôtel de ville, 2e bouton, 75 nourriture, 20 s) : un villageois cartographe monté sur un gros chien. Plus rapide qu'un ouvrier (0,34 contre 0,25), voit à 40 blocs (16 pour les autres), ne se bat pas. Il remplace le chien et le chat éclaireurs. Le chien n'est qu'un dessin (pas une vraie bête), dessiné sous le villageois (taille `DOG_SCALE`, hauteur de selle `SEAT_HEIGHT` dans `ExplorerUnitRenderer`).
@@ -437,6 +437,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Scierie revue : plus d'arbres, les villageois y travaillent et elle produit du bois, fumée et sciure quand elle tourne |
 | 14/10/2026 | Expérience des unités d'armée : 3 rangs (★ Aguerri, ★★ Vétéran, ★★★ Élite), +10 % vie et dégâts par rang, étoiles au-dessus |
 | 14/10/2026 | Brouillard et nuages activables séparément (`/rts-brouillard`, `/rts-nuages`) |
 | 14/10/2026 | Brouillard de guerre du jeu d'origine sur toutes les cartes (exploré hors de vue = sombre et figé), avec les nuages sur l'inexploré |

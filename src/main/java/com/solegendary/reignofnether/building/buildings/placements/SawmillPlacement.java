@@ -2,93 +2,75 @@ package com.solegendary.reignofnether.building.buildings.placements;
 
 import com.solegendary.reignofnether.building.Building;
 import com.solegendary.reignofnether.building.BuildingBlock;
+import com.solegendary.reignofnether.resources.Resources;
+import com.solegendary.reignofnether.resources.ResourcesServerEvents;
+import com.solegendary.reignofnether.unit.UnitServerEvents;
+import com.solegendary.reignofnether.unit.interfaces.WorkerUnit;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.ArrayList;
-import java.util.List;
 
-// Young trees on the sawmill's podzol spots: an empty spot gets a sapling (an azalea bush, which never grows on its
-// own), which becomes a small tree (2 logs and a leafy top) after a while. Workers cut the logs like any tree.
+// The sawmill turns its workers' time into wood: each villager working inside (sent with a right click, like to a
+// farm, up to MAX_WORKERS) adds to the progress; every WORK_SECONDS of work gives WOOD_PER_LOAD wood straight to the
+// owner. No trees: while it works, smoke rises from the shed and sawdust flies around the saw.
 public class SawmillPlacement extends FarmPlacement {
 
-    public static final int PLANT_SECONDS = 15;  // empty spot -> sapling
-    public static final int GROW_SECONDS = 100;  // sapling -> tree
-    public static final int TREE_LOGS = 2;
+    public static final int MAX_WORKERS = 3;
+    public static final int WORK_SECONDS = 12;   // of one worker's time for one load
+    public static final int WOOD_PER_LOAD = 15;  // like cutting one log
     private static final int TICK_INTERVAL = 20;
 
-    private final List<BlockPos> spots = new ArrayList<>(); // where a tree's bottom log stands
-    private final int[] spotTicks;
+    private int progress = 0; // ticks of work done towards the next load
+    private int workers = 0;
+    private BlockPos saw = null;
 
     public SawmillPlacement(Building building, Level level, BlockPos originPos, Rotation rotation, String ownerName, ArrayList<BuildingBlock> blocks) {
         super(building, level, originPos, rotation, ownerName, blocks, false);
         for (BuildingBlock bb : blocks)
-            if (bb.getBlockState().is(Blocks.PODZOL))
-                spots.add(bb.getBlockPos().above());
-        spotTicks = new int[spots.size()];
+            if (bb.getBlockState().is(Blocks.STONECUTTER))
+                saw = bb.getBlockPos();
+    }
+
+    public int getWorkers() {
+        return workers;
+    }
+
+    private int countWorkers() {
+        int n = 0;
+        for (LivingEntity le : UnitServerEvents.getAllUnits())
+            if (le instanceof WorkerUnit w && w.getGatherResourceGoal() != null && w.getGatherResourceGoal().getTargetFarm() == this
+                    && isPosInsideBuilding(le.getOnPos(), 1))
+                n++;
+        return Math.min(n, MAX_WORKERS);
     }
 
     @Override
     public void tick(Level tickLevel) {
         super.tick(tickLevel);
-        if (tickLevel.isClientSide() || !isBuilt || tickAge % TICK_INTERVAL != 0)
+        if (!(tickLevel instanceof ServerLevel level) || !isBuilt || tickAge % TICK_INTERVAL != 0)
             return;
-        for (int i = 0; i < spots.size(); i++) {
-            BlockPos bp = spots.get(i);
-            BlockState bs = tickLevel.getBlockState(bp);
-            if (bs.isAir()) {
-                clearLeftovers(tickLevel, bp);
-                spotTicks[i] += TICK_INTERVAL;
-                if (spotTicks[i] >= PLANT_SECONDS * 20) {
-                    tickLevel.setBlockAndUpdate(bp, Blocks.AZALEA.defaultBlockState());
-                    spotTicks[i] = 0;
-                }
-            } else if (bs.is(Blocks.AZALEA)) {
-                spotTicks[i] += TICK_INTERVAL;
-                if (spotTicks[i] >= GROW_SECONDS * 20 && tickLevel.getBlockState(bp.above()).isAir()) {
-                    growTree(tickLevel, bp);
-                    spotTicks[i] = 0;
-                }
-            } else {
-                spotTicks[i] = 0;
-            }
+        workers = countWorkers();
+        if (workers == 0)
+            return;
+        progress += workers * TICK_INTERVAL;
+        if (progress >= WORK_SECONDS * 20) {
+            progress -= WORK_SECONDS * 20;
+            ResourcesServerEvents.addSubtractResources(new Resources(ownerName, 0, WOOD_PER_LOAD, 0));
         }
-    }
-
-    private static void growTree(Level level, BlockPos bp) {
-        for (int y = 0; y < TREE_LOGS; y++)
-            level.setBlockAndUpdate(bp.above(y), Blocks.OAK_LOG.defaultBlockState());
-        BlockState leaves = Blocks.OAK_LEAVES.defaultBlockState().setValue(LeavesBlock.PERSISTENT, true);
-        BlockPos top = bp.above(TREE_LOGS);
-        for (BlockPos p : List.of(top, top.above(), top.north(), top.south(), top.east(), top.west(),
-                top.below().north(), top.below().south(), top.below().east(), top.below().west()))
-            if (level.getBlockState(p).isAir())
-                level.setBlockAndUpdate(p, leaves);
-    }
-
-    // leaves (and fallen bits) left floating once the logs have been cut
-    private static void clearLeftovers(Level level, BlockPos bp) {
-        BlockPos top = bp.above(TREE_LOGS);
-        for (BlockPos p : List.of(top, top.above(), top.north(), top.south(), top.east(), top.west(),
-                top.below(), top.below().north(), top.below().south(), top.below().east(), top.below().west()))
-            if (level.getBlockState(p).is(Blocks.OAK_LEAVES) && level.getBlockState(p).getValue(BlockStateProperties.PERSISTENT))
-                level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
-    }
-
-    @Override
-    public void destroy(ServerLevel serverLevel) {
-        super.destroy(serverLevel);
-        for (BlockPos bp : spots) {
-            for (int y = 0; y < TREE_LOGS; y++)
-                if (serverLevel.getBlockState(bp.above(y)).is(Blocks.OAK_LOG) || serverLevel.getBlockState(bp.above(y)).is(Blocks.AZALEA))
-                    serverLevel.setBlock(bp.above(y), Blocks.AIR.defaultBlockState(), 3);
-            clearLeftovers(serverLevel, bp);
+        BlockPos at = saw != null ? saw : centrePos;
+        for (ServerPlayer p : level.players()) {
+            level.sendParticles(p, ParticleTypes.CAMPFIRE_COSY_SMOKE, true, at.getX() + 0.5, maxCorner.getY() + 1.0, at.getZ() + 0.5,
+                1, 0.2, 0.1, 0.2, 0.01);
+            level.sendParticles(p, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.defaultBlockState()), true,
+                at.getX() + 0.5, at.getY() + 1.1, at.getZ() + 0.5, 4 + 2 * workers, 0.3, 0.1, 0.3, 0.1);
         }
     }
 }

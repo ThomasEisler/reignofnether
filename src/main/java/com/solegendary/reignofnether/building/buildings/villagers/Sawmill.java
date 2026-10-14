@@ -25,10 +25,10 @@ import java.util.List;
 
 import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBlockData;
 
-// Scierie: a wood farm. Young trees grow by themselves on its podzol spots (SawmillPlacement); villagers sent to it
-// (right click, like a farm) cut them and bring the wood back, so a town keeps getting wood once the forests are gone.
+// Scierie: villagers sent to it (right click, like a farm) work inside and it makes wood by itself (SawmillPlacement),
+// so a town keeps getting wood once the forests are gone.
 // Needs the Sylviculture technology.
-// PLACEHOLDER structure: sawmill.nbt is a simple yard with a shed made by a script until a real one is made
+// PLACEHOLDER structure: sawmill.nbt is a simple yard with a shed and log piles made by a script until a real one is made
 public class Sawmill extends AbstractFarm {
 
     public final static String buildingName = "Sawmill";

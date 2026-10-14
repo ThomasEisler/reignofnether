@@ -186,6 +186,17 @@ public class GatherResourcesGoal extends MoveToTargetBlockGoal {
         else
             return;
 
+        // at a sawmill there's nothing to cut: the worker goes inside and works there (the sawmill makes the wood)
+        if (data.targetFarm instanceof com.solegendary.reignofnether.building.buildings.placements.SawmillPlacement mill) {
+            if (mill.isPosInsideBuilding(mob.getOnPos(), 1)) {
+                ticksIdle = 0;
+                mob.getLookControl().setLookAt(mill.centrePos.getX(), mill.centrePos.getY(), mill.centrePos.getZ());
+            } else {
+                setMoveTarget(mill.centrePos);
+            }
+            return;
+        }
+
         if (data.gatherTarget == null && data.targetResourceName != ResourceName.NONE) {
             searchCdTicksLeft -= (TICK_CD / 2); // for some this is run twice as fast as we expect
 
