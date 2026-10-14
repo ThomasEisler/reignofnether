@@ -413,6 +413,15 @@ public class CommandsServerEvents {
 				.then(Commands.literal("normal").executes(ctx -> setBarbarianDifficulty(ctx, com.solegendary.reignofnether.barbarian.BarbarianDifficulty.NORMAL)))
 				.then(Commands.literal("difficile").executes(ctx -> setBarbarianDifficulty(ctx, com.solegendary.reignofnether.barbarian.BarbarianDifficulty.HARD)))
 		);
+		// computer-run civilisations
+		dispatcher.register(Commands.literal("rts-bot")
+				.requires(source -> source.hasPermission(2))
+				.then(Commands.literal("ajouter").executes(ctx -> {
+					String msg = com.solegendary.reignofnether.bot.BotServerEvents.addBot();
+					ctx.getSource().sendSuccess(() -> Component.literal(msg), true);
+					return 1;
+				}))
+		);
 		dispatcher.register(Commands.literal("rts-barbarian-camp")
 				.requires(source -> source.hasPermission(2))
 				.then(Commands.argument("pos", BlockPosArgument.blockPos())

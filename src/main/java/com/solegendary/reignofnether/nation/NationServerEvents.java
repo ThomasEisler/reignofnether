@@ -24,6 +24,10 @@ public class NationServerEvents {
         return nations.get(playerName);
     }
 
+    public static boolean isTaken(Nation nation) {
+        return nations.containsValue(nation);
+    }
+
     public static void chooseNation(String playerName, Nation nation) {
         for (Map.Entry<String, Nation> entry : nations.entrySet()) {
             if (entry.getValue() == nation && !entry.getKey().equals(playerName)) {

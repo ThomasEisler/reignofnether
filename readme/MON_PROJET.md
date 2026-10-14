@@ -216,6 +216,13 @@ Hauteurs (depuis le 14/10/2026) : palissade 2 ou 3 blocs, pierre 4 (créneaux co
 | Russie | Pierre le Grand | Récolte 15 % plus rapide |
 | Suède | Gustave II Adolphe | Unités 10 % plus rapides |
 
+### Civilisations dirigées par l'ordinateur (bots) — étapes 1 et 2 faites
+- But : jouer seul ou à deux avec **4 civilisations** ; les bots s'attaquent aussi **entre eux** (étape 4).
+- **`/rts-bot ajouter`** (triches) : ajoute un bot. Il prend une **nation libre au hasard** (son nom = celui de la nation, ex. « Espagne »), s'installe dans une **zone libre** à 220-320 blocs des autres villes (et à 100 blocs au moins des camps barbares), reçoit 3 villageois et les ressources de départ, et pose son **Hôtel de ville** (construit par ses villageois).
+- **Économie** (le bot réfléchit toutes les 2 s) : fait des villageois jusqu'à **18** ; répartit ceux qui ne font rien : **35 % nourriture** (dans ses fermes, 2 par ferme), **20 % minerai**, le reste **bois** (ressource la plus proche à moins de 48 blocs) ; construit une **maison** quand il lui reste 2 places de population ou moins, des **fermes** au fil de la croissance (jusqu'à 4), un **entrepôt** près de la forêt la plus proche ; tout bâtiment en chantier reçoit un constructeur.
+- Reste à faire : **étape 3** (caserne, forge, bibliothèque, recherches, améliorations, 2e ville), **étape 4** (armée, défense, attaques, y compris entre bots et contre les barbares), **étape 5** (bouton dans le menu de départ : nombre de bots et difficulté).
+- Code : dossier `bot/` (`BotServerEvents` : arrivée `addBot`/`findStart`, cerveau `think` ; `BotSaveData`).
+
 ### Villes
 - On peut construire **plusieurs Hôtels de ville** (menu des ouvriers) : chacun est une **ville**, nommée d'après la **prochaine ville de sa nation** (France : Paris, Lyon, Marseille, Bordeaux… ; 12 noms par nation, puis « Paris 2 »… ; « Ville 1 », « Ville 2 »… sans nation). Le nom flotte au-dessus de l'Hôtel de ville, dans la couleur de la nation. Les noms ne resservent pas (même si une ville est détruite) ; ils repartent du début avec `/rts-reset`.
 - **Distances entre villes** (centre à centre) : **100 blocs** de ses propres villes (et de celles des alliés), **180 blocs** d'une ville ennemie. Zone rouge pendant la pose d'un Hôtel de ville là où c'est trop près.
@@ -344,6 +351,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Mes remparts : boutons du menu des ouvriers, tracé et aperçu, Maj pour continuer, construction par les ouvriers, portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
+- [ ] Bots (`/rts-bot ajouter`, 3 fois pour 4 civilisations) : arrivée loin des villes, Hôtel de ville, villageois produits et répartis, maisons, fermes, entrepôt.
 - [ ] Villes : 2e Hôtel de ville loin du premier, nom au-dessus, refus trop près (100 / 180 blocs) et zone rouge.
 - [ ] Carrières (minage, minerai qui repousse) et ruines (deviennent attaquables quand on approche, trésor) ; icônes.
 - [ ] Pêche et troupeaux : bulles sur l'eau près des rives, port posé contre l'eau, pêcheurs en bateau (clic droit sur le port) qui vont aux bulles et rapportent, troupeaux qui tournent en rond, s'éloignent des villes, repoussent ; plus de bêtes seules (nouveau monde conseillé).
@@ -409,6 +417,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Bots : arrivée et économie (`/rts-bot ajouter`) |
 | 14/10/2026 | Unités qui préfèrent les routes sur toutes les cartes (déplacement du mod activé partout) |
 | 14/10/2026 | Routes en arc de cercle (au lieu de droites) |
 | 14/10/2026 | Plusieurs Hôtels de ville = villes nommées selon la nation, distances minimales entre villes |
