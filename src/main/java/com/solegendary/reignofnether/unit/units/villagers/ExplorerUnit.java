@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Éclaireur: a fast, unarmed villager (cartographer clothes) that sees far and uncovers the clouds over
-// unexplored land. Its dog is drawn by ExplorerDogClientEvents, it is not an entity of its own.
+// unexplored land. It rides a big dog drawn by ExplorerUnitRenderer, not an entity of its own.
 public class ExplorerUnit extends Vindicator implements Unit, VillagerDataHolder {
     public static final Abilities ABILITIES = new Abilities();
 
