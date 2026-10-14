@@ -106,6 +106,10 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et Wor
 - Les unités **préfèrent passer par les routes** : une case de route « coûte » moitié moins qu'une case de terre (`ROAD_COST = 0.5` dans `PathfinderConfig`), donc elles font un détour pour les prendre. Le déplacement propre au mod est maintenant **activé sur toutes les cartes** (avant : seulement avec une bordure de 1280 blocs ou moins ; sans bordure, pas de pré-calcul de la carte, à surveiller si ça rame). Les routes sont reconnues par leur position : le gravier ou la pierre naturels ne comptent pas.
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
 
+### Expérience des unités
+- Les **unités d'armée** (pas les ouvriers, qui ont leurs métiers) gagnent de l'expérience : 1 par point de dégâts infligé, +15 par unité tuée. Rangs : **★ Aguerri** (40), **★★ Vétéran** (120), **★★★ Élite** (300) ; chaque rang donne **+10 % de vie et de dégâts** (Élite : +30 %), soigne de ce qui est gagné, avec étincelles, son et message.
+- Étoiles dorées au-dessus de l'unité (cachées dans le brouillard). Réglages dans `unit/UnitRankEvents.java` (`XP_FOR_RANK`, `BONUS_PER_RANK`, `KILL_XP`) ; dessin `unit/UnitRankClientEvents.java`. Le rang est un bonus de vie de l'unité (sauvegardé avec elle) ; l'expérience est dans ses données (`rtsXp`).
+
 ### Scierie
 - **Scierie** (menu des ouvriers, 250 bois + 75 minerai, 60 s) : débloquée par la recherche **Sylviculture** (100 nourriture, 200 bois, 100 minerai, 4 min, après Sacs à dos). 9 emplacements de podzol : une jeune pousse (azalée) apparaît 15 s après qu'un emplacement est vide, devient un petit arbre (2 bûches + feuilles) 100 s plus tard. Clic droit avec des villageois : ils y coupent le bois comme dans une ferme. Réglages dans `SawmillPlacement` (`PLANT_SECONDS`, `GROW_SECONDS`, `TREE_LOGS`). Modèle `sawmill` provisoire.
 
@@ -433,6 +437,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Expérience des unités d'armée : 3 rangs (★ Aguerri, ★★ Vétéran, ★★★ Élite), +10 % vie et dégâts par rang, étoiles au-dessus |
 | 14/10/2026 | Brouillard et nuages activables séparément (`/rts-brouillard`, `/rts-nuages`) |
 | 14/10/2026 | Brouillard de guerre du jeu d'origine sur toutes les cartes (exploré hors de vue = sombre et figé), avec les nuages sur l'inexploré |
 | 14/10/2026 | Bouton maison (en haut à droite, à gauche de la discussion) et touche Origine : la caméra revient à l'Hôtel de ville (puis à la ville suivante) ; ruines fouillées : poussière, éclats de pierre, spirale dorée qui monte, gerbe d'étincelles à la fin |
