@@ -427,6 +427,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Correction crash au lancement direct dans un monde (minimap) ; bots qui restaient bloqués (villageois coincés jamais réaffectés) ; nuages au-dessus de chaque arbre ; éclaireur monté sur son chien |
 | 14/10/2026 | Ouvriers : chantiers en cours, ferme attribuée et ressources transportées gardés quand on quitte la partie |
 | 14/10/2026 | Éclaireurs (villageois + chien) ; nuages sur la carte inexplorée ; noms de villes toujours visibles (shaders) ; unités terrestres interdites dans l'eau |
 | 14/10/2026 | Noms de villes : affichage corrigé (lettres brouillées par l'ombre et les shaders) |

@@ -105,12 +105,22 @@ public class MinimapClientEvents {
     private static BlockPos minimapDragStartBp = null;
 	public static boolean minimapRightClickDown = false;
 
-    private static DynamicTexture mapTexture = new DynamicTexture(worldRadius * 2, worldRadius * 2, true);
-    private static ResourceLocation mapTexLoc = Minecraft.getInstance().textureManager.register(
-        ReignOfNether.MOD_ID + "_" + "minimap",
-        mapTexture
-    );
-    private static RenderType mapRenderType = RenderType.textSeeThrough(mapTexLoc);
+    // created on first use from the render thread: this class can be loaded from the server thread in singleplayer
+    // (eg. a unit joining the world while the game is opened straight into a world), where creating it crashes
+    private static DynamicTexture mapTexture = null;
+    private static ResourceLocation mapTexLoc = null;
+    private static RenderType mapRenderType = null;
+
+    private static boolean ensureMapTexture() {
+        if (mapTexture != null)
+            return true;
+        if (!com.mojang.blaze3d.systems.RenderSystem.isOnRenderThread())
+            return false;
+        mapTexture = new DynamicTexture(worldRadius * 2, worldRadius * 2, true);
+        mapTexLoc = Minecraft.getInstance().textureManager.register(ReignOfNether.MOD_ID + "_" + "minimap", mapTexture);
+        mapRenderType = RenderType.textSeeThrough(mapTexLoc);
+        return true;
+    }
     private static int[][] mapColoursTerrain = new int[worldRadius * 2][worldRadius * 2];
     private static int[][] mapColoursOverlays = new int[worldRadius * 2][worldRadius * 2]; // view quad, units, buildings
 
@@ -262,7 +272,7 @@ public class MinimapClientEvents {
     }
 
     public static void renderMapInto(GuiGraphics g, int x, int y, int w, int h) {
-        if (mapTexture == null || mapTexLoc == null) return;
+        if (!ensureMapTexture()) return;
         int tex = worldRadius * 2;
         g.blit(mapTexLoc, x, y, w, h, 0, 0, tex, tex, tex, tex);
     }
@@ -550,6 +560,8 @@ public class MinimapClientEvents {
             }
         }
 
+        if (!ensureMapTexture())
+            return;
         NativeImage pixels = mapTexture.getPixels();
         if (pixels != null) {
             int i = 0;
@@ -1098,6 +1110,8 @@ public class MinimapClientEvents {
         BufferUploader.drawWithShader(bufferbuilder.end());
 
         // render map itself
+        if (!ensureMapTexture())
+            return;
         MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         VertexConsumer consumer = buffer.getBuffer(mapRenderType);
         consumer.vertex(matrix4f, xc, yb, 0.0F).color(255, 255, 255, 255).uv(0.0F, 1.0F).uv2(255).endVertex();
@@ -1155,6 +1169,8 @@ public class MinimapClientEvents {
         // render the texture as a rotated quad that fully circumscribes the visible square
         // (d = 2*half makes the diamond's edges meet the square's corners — no black borders)
         float d = 2 * half;
+        if (!ensureMapTexture())
+            return;
         MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         VertexConsumer consumer = buffer.getBuffer(mapRenderType);
         consumer.vertex(matrix4f, xc, yc + d, 0.0F).color(255, 255, 255, 255).uv(0.0F, 1.0F).uv2(255).endVertex();

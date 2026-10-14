@@ -155,8 +155,8 @@ public class ExplorationClientEvents {
             return Integer.MIN_VALUE;
         LevelChunk chunk = MC.level.getChunk(cx, cz);
         int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-        for (int x = 0; x < 16; x += 3)
-            for (int z = 0; z < 16; z += 3) {
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
                 int y = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
                 min = Math.min(min, y);
                 max = Math.max(max, y);
@@ -209,7 +209,7 @@ public class ExplorationClientEvents {
                     y1 = fallback + TOP_ABOVE_GROUND;
                 } else {
                     y0 = (hp >>> 16) - 1024 - 2;
-                    y1 = Math.max((hp & 0xFFFF) - 1024 + 1, y0 + TOP_ABOVE_GROUND);
+                    y1 = Math.max((hp & 0xFFFF) - 1024 + 2, y0 + TOP_ABOVE_GROUND);
                 }
                 float x0 = (cx << 4) - originX, z0 = (cz << 4) - originZ, x1 = x0 + 16, z1 = z0 + 16;
                 box(solid, x0, y0, z0, x1, y1, z1, true, true, true, true);

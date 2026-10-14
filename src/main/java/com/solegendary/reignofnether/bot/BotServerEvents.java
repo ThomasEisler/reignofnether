@@ -181,8 +181,16 @@ public class BotServerEvents {
         return r != null ? r : ResourceName.NONE;
     }
 
+    // idle = not building and either not gathering or gathering with nothing found for a while (eg. the resource
+    // it was sent to is out of reach). Walking doesn't count: a villager stuck on a path it can't finish was
+    // never handed a new job before, which left the whole bot standing still.
     private static boolean isIdle(LivingEntity le) {
-        return !isBuilding(le) && gatherType(le) == ResourceName.NONE && ((Mob) le).getNavigation().isDone();
+        if (isBuilding(le))
+            return false;
+        if (gatherType(le) == ResourceName.NONE)
+            return true;
+        return le instanceof WorkerUnit w && w.getGatherResourceGoal() != null
+            && !w.getGatherResourceGoal().isFarming() && w.getGatherResourceGoal().isIdle();
     }
 
     private static int[] size(Building building, Level level) {
@@ -319,9 +327,12 @@ public class BotServerEvents {
                 }
             }
             ResourceName type = ore < Math.round(n * ORE_SHARE) ? ResourceName.ORE : ResourceName.WOOD;
-            Optional<BlockPos> target = ResourceIndex.get(level).findClosest(level, v.blockPosition(), RESOURCE_RANGE, type, bp -> true);
+            // searched from a random spot around the Town Centre, so a villager that couldn't reach its last
+            // resource isn't sent straight back to the same one
+            BlockPos from = capital.centrePos.offset(random.nextInt(33) - 16, 0, random.nextInt(33) - 16);
+            Optional<BlockPos> target = ResourceIndex.get(level).findClosest(level, from, RESOURCE_RANGE, type, bp -> true);
             if (target.isEmpty() && type == ResourceName.ORE)
-                target = ResourceIndex.get(level).findClosest(level, v.blockPosition(), RESOURCE_RANGE, type = ResourceName.WOOD, bp -> true);
+                target = ResourceIndex.get(level).findClosest(level, from, RESOURCE_RANGE, type = ResourceName.WOOD, bp -> true);
             if (target.isPresent()) {
                 order(bot.name, UnitAction.MOVE, List.of(v), target.get());
                 if (type == ResourceName.ORE)

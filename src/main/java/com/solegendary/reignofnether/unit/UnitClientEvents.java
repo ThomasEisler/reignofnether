@@ -692,6 +692,8 @@ public class UnitClientEvents {
             if (entity instanceof HeroUnit)
                 HeroServerboundPacket.requestHeroSync(entity.getId());
         }
+        if (!evt.getLevel().isClientSide)
+            return; // server thread (singleplayer): the minimap must not be touched from here
         markSelectedUnitsChanged();
         MinimapClientEvents.removeVirtualUnit(entity.getId());
     }
