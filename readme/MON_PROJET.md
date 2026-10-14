@@ -397,6 +397,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - Nations : dossier `nation/` (`Nation` = liste, dirigeants, couleurs, bonus ; `NationServerEvents` = qui joue quoi, sauvegarde ; `NationClientEvents` = fenêtre de choix et nom en haut de l'écran). Bonus branchés dans `BuildingPlacement` (construction), `RoadServerEvents`/`RoadClientEvents` (routes), `BarbarianServerEvents` (butin), `ProductionItem` (production), `GatherResourcesGoal` (récolte), `ResourcesServerEvents.resetResources` (départ), `Unit.tick` (vitesse). Factions cachées dans `hud/buttons/StartButtons.java`, Survie retirée dans `ClientGameModeHelper.cycleGameMode`.
 - Technologies : dossier `tech/` (`Tech` = liste, prix, durées, déblocages, position dans l'écran ; `TechServerEvents` = recherches des joueurs, sauvegarde `TechSaveData` ; `TechClientEvents` = écran et bouton à gauche). Bâtiments cachés dans `BuildingPlaceButton`, vérifié dans `BuildingValidators` ; niveaux dans `BuildingLevelUpgrade`. Bouton Bibliothèque : `OpenTechTree`.
 - Éclaireur : `unit/units/villagers/ExplorerUnit.java` / `ExplorerProd.java` (icône `mobheads/explorer.png`) ; chien : `exploration/ExplorerDogClientEvents.java`. Nuages : dossier `exploration/` (`ExplorationServerEvents` = morceaux vus par joueur toutes les secondes, `ExplorationSaveData`, paquet, `ExplorationClientEvents` = dessin des nuages, réglages `CLEARANCE`, `SLAB_THICKNESS`, `CURTAIN_DEPTH`). Cachés sous les nuages via `FogOfWarClientEvents.isInBrightChunk` ; minimap dans `MinimapClientEvents.updateMapTerrain` ; construction dans `BuildingValidators`.
+- Travail des ouvriers après rechargement : `VillagerUnit` (sauvegarde `buildTargets`, `carriedItems`, puis `restoreWorkAfterLoad` 2 s après le chargement) ; la ferme est relue via `TargetResourcesSave.farmPos` (avant, elle était cherchée avant que les bâtiments existent, donc perdue).
 - Eau : `MobilityClass.costFor` (eau infranchissable sauf unités aquatiques) ; une unité terrestre dans l'eau est remise sur la rive après 2 s (`Unit.tick`).
 - Commandes : `commands/CommandsServerEvents.java` (`rts-rebuild-buildings`, `rts-road`).
 - Terrain : `src/main/resources/data/minecraft/worldgen/world_preset/normal.json` (`settings` = `minecraft:overworld`).
@@ -426,6 +427,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Ouvriers : chantiers en cours, ferme attribuée et ressources transportées gardés quand on quitte la partie |
 | 14/10/2026 | Éclaireurs (villageois + chien) ; nuages sur la carte inexplorée ; noms de villes toujours visibles (shaders) ; unités terrestres interdites dans l'eau |
 | 14/10/2026 | Noms de villes : affichage corrigé (lettres brouillées par l'ombre et les shaders) |
 | 14/10/2026 | Bots : arrivée et économie (`/rts-bot ajouter`) |

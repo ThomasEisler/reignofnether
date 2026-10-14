@@ -75,6 +75,8 @@ public class TargetResourcesSaveData extends SavedData {
                 //if (gatherTarget != null)
                 //    resData.targetResourceSource = ResourceSources.getFromBlockPos(gatherTarget, level);
                 resData.targetFarm = targetFarm;
+                if (tdTag.contains("farmX"))
+                    resData.farmPos = new BlockPos(tdTag.getInt("farmX"), tdTag.getInt("farmY"), tdTag.getInt("farmZ"));
 
                 data.targetData.add(resData);
             }

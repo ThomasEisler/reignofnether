@@ -380,6 +380,8 @@ public class VillagerUnit extends Vindicator implements Unit, WorkerUnit, Attack
             this.setCanPickUpLoot(true);
             super.tick();
             Unit.tick(this);
+            if (!level().isClientSide() && tickCount == 40)
+                restoreWorkAfterLoad();
             AttackerUnit.tick(this);
             WorkerUnit.tick(this);
             this.callToArmsGoal.tick();
@@ -441,6 +443,50 @@ public class VillagerUnit extends Vindicator implements Unit, WorkerUnit, Attack
         pCompound.putBoolean("swordEnchanted", swordEnchanted);
         pCompound.putBoolean("bowEnchanted", bowEnchanted);
         this.addUnitSaveData(pCompound);
+        // work in progress, so it carries on after the world is reloaded
+        if (buildRepairGoal != null && buildRepairGoal.getBuildingTarget() != null) {
+            java.util.List<Long> origins = new ArrayList<>();
+            origins.add(buildRepairGoal.getBuildingTarget().originPos.asLong());
+            for (var b : buildRepairGoal.queuedBuildings)
+                if (b != buildRepairGoal.getBuildingTarget())
+                    origins.add(b.originPos.asLong());
+            pCompound.putLongArray("buildTargets", origins);
+        }
+        net.minecraft.nbt.ListTag carried = new net.minecraft.nbt.ListTag();
+        for (ItemStack stack : items)
+            if (!stack.isEmpty())
+                carried.add(stack.save(new CompoundTag()));
+        pCompound.put("carriedItems", carried);
+    }
+
+    private long[] pendingBuildTargets = null;
+
+    // buildings and farms don't exist yet when units are read from the save: link them back a moment later
+    private void restoreWorkAfterLoad() {
+        if (pendingBuildTargets != null && buildRepairGoal != null) {
+            boolean first = true;
+            for (long origin : pendingBuildTargets) {
+                var building = com.solegendary.reignofnether.building.BuildingUtils.findBuilding(false, BlockPos.of(origin));
+                if (building == null || !com.solegendary.reignofnether.building.BuildingUtils.isBuildingBuildable(false, building))
+                    continue;
+                if (first) {
+                    buildRepairGoal.setBuildingTarget(building);
+                    first = false;
+                }
+                if (!buildRepairGoal.queuedBuildings.contains(building))
+                    buildRepairGoal.queuedBuildings.add(building);
+            }
+            pendingBuildTargets = null;
+        }
+        if (gatherResourcesGoal != null) {
+            for (var data : java.util.List.of(gatherResourcesGoal.data, gatherResourcesGoal.saveData, gatherResourcesGoal.permSaveData)) {
+                if (data.targetFarm == null && data.farmPos != null)
+                    data.targetFarm = com.solegendary.reignofnether.building.BuildingUtils.findBuilding(false, data.farmPos);
+                data.farmPos = null;
+            }
+            if (gatherResourcesGoal.getTargetFarm() != null)
+                gatherResourcesGoal.setTargetFarm(gatherResourcesGoal.getTargetFarm());
+        }
     }
 
     public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
@@ -466,6 +512,13 @@ public class VillagerUnit extends Vindicator implements Unit, WorkerUnit, Attack
         if (!level().isClientSide() && pCompound.getBoolean("isVeteran"))
             makeVeteran();
         this.readUnitSaveData(pCompound);
+        if (pCompound.contains("buildTargets"))
+            pendingBuildTargets = pCompound.getLongArray("buildTargets");
+        if (pCompound.contains("carriedItems")) {
+            items.clear();
+            for (net.minecraft.nbt.Tag t : pCompound.getList("carriedItems", 10))
+                items.add(ItemStack.of((CompoundTag) t));
+        }
     }
 
     public void convertToMilitia() {

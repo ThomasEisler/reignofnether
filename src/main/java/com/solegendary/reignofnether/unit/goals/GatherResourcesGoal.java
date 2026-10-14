@@ -436,6 +436,7 @@ public class GatherResourcesGoal extends MoveToTargetBlockGoal {
         data.targetResourceName = saveData.targetResourceName;
         data.targetResourceSource = saveData.targetResourceSource;
         data.targetFarm = saveData.targetFarm;
+        data.farmPos = saveData.farmPos;
     }
 
 

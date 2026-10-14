@@ -18,6 +18,8 @@ public class TargetResourcesSave {
     public ResourceName targetResourceName = ResourceName.NONE;
     @Nullable public ResourceSource targetResourceSource = null;
     @Nullable public BuildingPlacement targetFarm = null;
+    // farm origin read from the save, resolved into targetFarm once buildings are loaded (VillagerUnit.tick)
+    @Nullable public BlockPos farmPos = null;
 
     public boolean hasData() {
         return this.todoGatherTargets.size() > 0 ||
