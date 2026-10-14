@@ -31,9 +31,7 @@ public class ExplorationClientEvents {
     private static int version = 0; // bumped whenever the explored set changes
 
     // cloud look
-    private static final int SLAB_THICKNESS = 5;
-    private static final int CLEARANCE = 4;       // blocks between the highest ground of a chunk and its cloud
-    private static final int CURTAIN_DEPTH = 16;  // misty veil hanging down along the explored border
+    private static final int TOP_ABOVE_GROUND = 3; // a cloud is at least this tall above the lowest ground
     private static final int EXTRA_RADIUS = 4;    // puffy clouds up to this many chunks beyond the render distance
     private static final int FAR_RADIUS = 64;     // flat clouds up to here (1024 blocks), over far terrain
 
@@ -78,7 +76,7 @@ public class ExplorationClientEvents {
 
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent evt) {
-        if (evt.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || !isActive())
+        if (evt.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || !isActive() || isShadowPass())
             return;
         Vec3 cam = evt.getCamera().getPosition();
         int camCx = (int) Math.floor(cam.x) >> 4, camCz = (int) Math.floor(cam.z) >> 4;
@@ -123,6 +121,32 @@ public class ExplorationClientEvents {
         pose.popPose();
     }
 
+    // lowest and highest ground of a chunk (trees included), packed as min << 16 | max; MIN_VALUE if unknown
+    // Oculus (shaders) also runs this event while drawing its shadow map: skip it there, clouds cast no shadow.
+    // Looked up by name so the mod still works without Oculus.
+    private static java.lang.reflect.Method irisInstance = null, irisShadowPass = null;
+    private static boolean irisChecked = false;
+
+    private static boolean isShadowPass() {
+        if (!irisChecked) {
+            irisChecked = true;
+            try {
+                Class<?> api = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+                irisInstance = api.getMethod("getInstance");
+                irisShadowPass = api.getMethod("isRenderingShadowPass");
+            } catch (Throwable ignored) {
+                irisInstance = null;
+            }
+        }
+        if (irisInstance == null)
+            return false;
+        try {
+            return (Boolean) irisShadowPass.invoke(irisInstance.invoke(null));
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
     private static int height(int cx, int cz) {
         long key = ChunkPos.asLong(cx, cz);
         if (heights.containsKey(key))
@@ -130,14 +154,18 @@ public class ExplorationClientEvents {
         if (MC.level == null || !MC.level.getChunkSource().hasChunk(cx, cz))
             return Integer.MIN_VALUE;
         LevelChunk chunk = MC.level.getChunk(cx, cz);
-        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
         for (int x = 0; x < 16; x += 3)
-            for (int z = 0; z < 16; z += 3)
-                max = Math.max(max, chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, z));
+            for (int z = 0; z < 16; z += 3) {
+                int y = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                min = Math.min(min, y);
+                max = Math.max(max, y);
+            }
         if (max <= MC.level.getMinBuildHeight())
             return Integer.MIN_VALUE; // empty chunk data: try again later
-        heights.put(key, max);
-        return max;
+        int packed = ((min + 1024) << 16) | (max + 1024);
+        heights.put(key, packed);
+        return packed;
     }
 
     private static boolean isUnexplored(int cx, int cz) {
@@ -152,35 +180,19 @@ public class ExplorationClientEvents {
         originX = camCx << 4;
         originZ = camCz << 4;
 
-        // cloud base per chunk: highest ground of the chunk and its neighbours, so the sea of clouds stays smooth
-        int size = radius * 2 + 3;
-        int[][] h = new int[size][size];
+        // average ground for chunks whose terrain the client doesn't have
         long sum = 0;
         int known = 0;
-        for (int i = 0; i < size; i++)
-            for (int j = 0; j < size; j++) {
-                h[i][j] = height(camCx - radius - 1 + i, camCz - radius - 1 + j);
-                if (h[i][j] != Integer.MIN_VALUE) { sum += h[i][j]; known++; }
+        for (int dx = -nearRadius; dx <= nearRadius; dx++)
+            for (int dz = -nearRadius; dz <= nearRadius; dz++) {
+                int hp = height(camCx + dx, camCz + dz);
+                if (hp != Integer.MIN_VALUE) { sum += (hp & 0xFFFF) - 1024; known++; }
             }
-        int fallback = known > 0 ? (int) (sum / known) + 6 : 80;
-        int[][] base = new int[size][size];
-        for (int i = 0; i < size; i++)
-            for (int j = 0; j < size; j++) {
-                int m = Integer.MIN_VALUE;
-                for (int di = -1; di <= 1; di++)
-                    for (int dj = -1; dj <= 1; dj++) {
-                        int a = i + di, b = j + dj;
-                        if (a >= 0 && b >= 0 && a < size && b < size)
-                            m = Math.max(m, h[a][b]);
-                    }
-                base[i][j] = (m == Integer.MIN_VALUE ? fallback : m) + CLEARANCE;
-            }
+        int fallback = known > 0 ? (int) (sum / known) : 70;
 
         BufferBuilder solid = new BufferBuilder(1 << 20);
-        BufferBuilder curtain = new BufferBuilder(1 << 14);
         solid.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        curtain.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        int solidCount = 0, curtainCount = 0;
+        int solidCount = 0;
 
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
@@ -189,46 +201,37 @@ public class ExplorationClientEvents {
                 int cx = camCx + dx, cz = camCz + dz;
                 if (!isUnexplored(cx, cz))
                     continue;
-                int i = dx + radius + 1, j = dz + radius + 1;
-                int y0 = base[i][j], y1 = y0 + SLAB_THICKNESS;
+                // the cloud sits on the ground: from just under the lowest ground to just above the trees
+                int hp = height(cx, cz);
+                int y0, y1;
+                if (hp == Integer.MIN_VALUE) {
+                    y0 = fallback - 4;
+                    y1 = fallback + TOP_ABOVE_GROUND;
+                } else {
+                    y0 = (hp >>> 16) - 1024 - 2;
+                    y1 = Math.max((hp & 0xFFFF) - 1024 + 1, y0 + TOP_ABOVE_GROUND);
+                }
                 float x0 = (cx << 4) - originX, z0 = (cz << 4) - originZ, x1 = x0 + 16, z1 = z0 + 16;
-
-                // main slab (sides only where the neighbour isn't an identical cloud)
-                boolean n = isUnexplored(cx, cz - 1), s = isUnexplored(cx, cz + 1);
-                boolean w = isUnexplored(cx - 1, cz), e = isUnexplored(cx + 1, cz);
-                box(solid, x0, y0, z0, x1, y1, z1,
-                    !(n && base[i][j - 1] == y0), !(s && base[i][j + 1] == y0),
-                    !(w && base[i - 1][j] == y0), !(e && base[i + 1][j] == y0));
+                box(solid, x0, y0, z0, x1, y1, z1, true, true, true, true);
                 solidCount++;
 
-                // puffs on top (near the camera only), a few may hang over the border a little
-                if (dx * dx + dz * dz > nearRadius * nearRadius) {
-                    if (!n) { veil(curtain, x0, z0, x1, z0, y0); curtainCount++; }
-                    if (!s) { veil(curtain, x0, z1, x1, z1, y0); curtainCount++; }
-                    if (!w) { veil(curtain, x0, z0, x0, z1, y0); curtainCount++; }
-                    if (!e) { veil(curtain, x1, z0, x1, z1, y0); curtainCount++; }
+                if (dx * dx + dz * dz > nearRadius * nearRadius)
                     continue;
-                }
+                // a few puffs on top, kept inside the chunk
                 Random rand = new Random(cx * 341873128712L + cz * 132897987541L);
-                int puffs = 2 + rand.nextInt(3);
+                int puffs = 1 + rand.nextInt(3);
                 for (int p = 0; p < puffs; p++) {
                     int pw = 4 + rand.nextInt(8), pd = 4 + rand.nextInt(8);
-                    float px = x0 + Math.max(-2, Math.min(16 - pw + 2, rand.nextInt(16) - pw / 2));
-                    float pz = z0 + Math.max(-2, Math.min(16 - pd + 2, rand.nextInt(16) - pd / 2));
-                    int py = y1 - 1, ph = 2 + rand.nextInt(4);
+                    float px = x0 + rand.nextInt(17 - pw);
+                    float pz = z0 + rand.nextInt(17 - pd);
+                    int py = y1 - 1, ph = 1 + rand.nextInt(3);
                     box(solid, px, py, pz, px + pw, py + ph, pz + pd, true, true, true, true);
                 }
-
-                // misty veil hanging along the explored border
-                if (!n) { veil(curtain, x0, z0, x1, z0, y0); curtainCount++; }
-                if (!s) { veil(curtain, x0, z1, x1, z1, y0); curtainCount++; }
-                if (!w) { veil(curtain, x0, z0, x0, z1, y0); curtainCount++; }
-                if (!e) { veil(curtain, x1, z0, x1, z1, y0); curtainCount++; }
             }
         }
 
         hasSolid = upload(solid, solidCount > 0, true);
-        hasCurtain = upload(curtain, curtainCount > 0, false);
+        hasCurtain = false;
     }
 
     private static boolean upload(BufferBuilder builder, boolean any, boolean isSolid) {
@@ -266,13 +269,4 @@ public class ExplorationClientEvents {
         if (east)  quad(b, 0.83f, 255, new float[]{x1, y0, z0}, new float[]{x1, y1, z0}, new float[]{x1, y1, z1}, new float[]{x1, y0, z1});
     }
 
-    // vertical quad from the cloud's underside down, fading out
-    private static void veil(BufferBuilder b, float xa, float za, float xb, float zb, int top) {
-        int bottom = top - CURTAIN_DEPTH;
-        int r = (int) (R * 0.88f), g = (int) (G * 0.88f), bl = (int) (B * 0.9f);
-        b.vertex(xa, top, za).color(r, g, bl, 210).endVertex();
-        b.vertex(xb, top, zb).color(r, g, bl, 210).endVertex();
-        b.vertex(xb, bottom, zb).color(r, g, bl, 0).endVertex();
-        b.vertex(xa, bottom, za).color(r, g, bl, 0).endVertex();
-    }
 }
