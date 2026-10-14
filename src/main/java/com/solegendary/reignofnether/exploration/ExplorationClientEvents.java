@@ -268,12 +268,13 @@ public class ExplorationClientEvents {
 
     private static void box(BufferBuilder b, float x0, float y0, float z0, float x1, float y1, float z1,
                             boolean north, boolean south, boolean west, boolean east) {
+        // walls as white as the top (a darker side showed as a grey band seen from above)
         quad(b, 1.0f, 255, new float[]{x0, y1, z0}, new float[]{x0, y1, z1}, new float[]{x1, y1, z1}, new float[]{x1, y1, z0});
         quad(b, 0.74f, 255, new float[]{x0, y0, z0}, new float[]{x1, y0, z0}, new float[]{x1, y0, z1}, new float[]{x0, y0, z1});
-        if (north) quad(b, 0.9f, 255, new float[]{x0, y0, z0}, new float[]{x0, y1, z0}, new float[]{x1, y1, z0}, new float[]{x1, y0, z0});
-        if (south) quad(b, 0.9f, 255, new float[]{x0, y0, z1}, new float[]{x1, y0, z1}, new float[]{x1, y1, z1}, new float[]{x0, y1, z1});
-        if (west)  quad(b, 0.83f, 255, new float[]{x0, y0, z0}, new float[]{x0, y0, z1}, new float[]{x0, y1, z1}, new float[]{x0, y1, z0});
-        if (east)  quad(b, 0.83f, 255, new float[]{x1, y0, z0}, new float[]{x1, y1, z0}, new float[]{x1, y1, z1}, new float[]{x1, y0, z1});
+        if (north) quad(b, 1.0f, 255, new float[]{x0, y0, z0}, new float[]{x0, y1, z0}, new float[]{x1, y1, z0}, new float[]{x1, y0, z0});
+        if (south) quad(b, 1.0f, 255, new float[]{x0, y0, z1}, new float[]{x1, y0, z1}, new float[]{x1, y1, z1}, new float[]{x0, y1, z1});
+        if (west)  quad(b, 1.0f, 255, new float[]{x0, y0, z0}, new float[]{x0, y0, z1}, new float[]{x0, y1, z1}, new float[]{x0, y1, z0});
+        if (east)  quad(b, 1.0f, 255, new float[]{x1, y0, z0}, new float[]{x1, y1, z0}, new float[]{x1, y1, z1}, new float[]{x1, y0, z1});
     }
 
 }
