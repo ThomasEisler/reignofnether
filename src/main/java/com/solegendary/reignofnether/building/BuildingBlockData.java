@@ -29,6 +29,7 @@ public class BuildingBlockData {
     public static final java.util.Set<String> GROUND_ROW_STRUCTURES = java.util.Set.of(
         "wheat_farm",
         "sawmill",
+        "tavern",
         "mine",
         "mill",
         "hospice",

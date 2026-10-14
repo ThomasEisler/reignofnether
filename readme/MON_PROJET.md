@@ -112,6 +112,7 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et Wor
 - **Moulin** (150 PV ; 150 bois, 50 minerai ; 60 s ; sans recherche) : mes fermes à moins de 24 blocs font pousser leurs cultures **30 % plus vite** (un moulin suffit). Réglages `Mill.RANGE`, `Mill.GROWTH_BONUS` ; appliqué dans `FarmPlacement.tickCrops`. Modèle `mill` provisoire.
 - **Mine** (150 PV ; 250 bois, 50 minerai ; 75 s ; recherche **Métallurgie**) : se pose à moins de 24 blocs d'une **carrière** ; comme la scierie, les villageois envoyés dedans (3 au plus) y travaillent et elle produit du **minerai sans fin** (15 toutes les 12 s de travail), avec de la poussière de pierre. Code `Mine` + `SawmillPlacement` (ressource ORE). Modèle `mine` provisoire.
 - **Arbalétrier** (caserne, 5e bouton, après **Tir à l'arc** ; 75 nourriture, 75 bois, 75 minerai, 30 s, 2 de population) : arbalète lourde, casque de fer ; 11 dégâts (pillard 7), tire plus lentement, portée 22 (pillard 16), 50 PV ; **dégâts × 1,75 contre les cavaliers et leurs montures**. Code `CrossbowmanUnit`/`CrossbowmanProd`.
+- **Taverne** (200 PV ; 200 bois, 100 minerai ; 90 s ; recherche **Commerce**) : loue des **mercenaires**, prêts en **5 s** mais chers : **Mercenaire** (épéiste, comme le vindicateur ; 175 nourriture, 125 minerai, 2 pop.) et **Tirailleur mercenaire** (arbalète, comme le pillard ; 150 nourriture, 50 bois, 100 minerai, 2 pop.). Tenue **rouge et noire avec un bandeau rouge** (textures `entities/mercenary.png`, `mercenary_archer.png`). Code `Tavern`, `MercenaryUnit`, `MercenaryArcherUnit`, `MercenaryRenderer`. Modèle `tavern` provisoire.
 
 ### Expérience des unités
 - Les **unités d'armée** (pas les ouvriers, qui ont leurs métiers) gagnent de l'expérience : 1 par point de dégâts infligé, +15 par unité tuée. Rangs : **★ Aguerri** (40), **★★ Vétéran** (120), **★★★ Élite** (300) ; chaque rang donne **+10 % de vie et de dégâts** (Élite : +30 %), soigne de ce qui est gagné, avec étincelles, son et message.
@@ -444,6 +445,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Taverne et mercenaires (épéiste, tirailleur) en rouge et noir |
 | 14/10/2026 | Arbalétrier (caserne, après Tir à l'arc), fort contre les cavaliers |
 | 14/10/2026 | Mine près des carrières : minerai sans fin avec des villageois |
 | 14/10/2026 | Moulin : fermes proches 30 % plus rapides |

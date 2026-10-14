@@ -2457,5 +2457,11 @@
     "building.reignofnether.mine_needs_quarry": "A mine must be near a quarry",
     "entity.reignofnether.crossbowman_unit": "Crossbowman",
     "entity.reignofnether.crossbowman_unit.tooltip1": "Heavy crossbow: shoots slowly, but hard and far.",
-    "entity.reignofnether.crossbowman_unit.tooltip2": "x1.75 damage against riders and their mounts."
+    "entity.reignofnether.crossbowman_unit.tooltip2": "x1.75 damage against riders and their mounts.",
+    "entity.reignofnether.mercenary_unit": "Mercenary",
+    "entity.reignofnether.mercenary_unit.tooltip1": "Hired swordsman: ready almost at once, but expensive.",
+    "entity.reignofnether.mercenary_archer_unit": "Mercenary Crossbowman",
+    "entity.reignofnether.mercenary_archer_unit.tooltip1": "Hired crossbowman: ready almost at once, but expensive.",
+    "buildings.reignofnether.tavern": "Tavern",
+    "buildings.reignofnether.tavern.tooltip1": "Hires mercenaries (red and black clothes), ready in a few seconds."
 }

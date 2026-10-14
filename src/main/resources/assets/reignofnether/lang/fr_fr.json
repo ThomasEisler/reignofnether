@@ -2424,5 +2424,11 @@
     "building.reignofnether.mine_needs_quarry": "Une mine doit être près d'une carrière",
     "entity.reignofnether.crossbowman_unit": "Arbalétrier",
     "entity.reignofnether.crossbowman_unit.tooltip1": "Arbalète lourde : tire lentement, mais fort et loin.",
-    "entity.reignofnether.crossbowman_unit.tooltip2": "Dégâts x1,75 contre les cavaliers et leurs montures."
+    "entity.reignofnether.crossbowman_unit.tooltip2": "Dégâts x1,75 contre les cavaliers et leurs montures.",
+    "entity.reignofnether.mercenary_unit": "Mercenaire",
+    "entity.reignofnether.mercenary_unit.tooltip1": "Épéiste à louer : prêt presque tout de suite, mais cher.",
+    "entity.reignofnether.mercenary_archer_unit": "Tirailleur mercenaire",
+    "entity.reignofnether.mercenary_archer_unit.tooltip1": "Arbalétrier à louer : prêt presque tout de suite, mais cher.",
+    "buildings.reignofnether.tavern": "Taverne",
+    "buildings.reignofnether.tavern.tooltip1": "Loue des mercenaires (tenue rouge et noire), prêts en quelques secondes."
 }

@@ -12,7 +12,7 @@ import java.util.List;
 public enum Tech {
     //              name              food wood ore  seconds  column row  prerequisites   unlocked buildings (Building.name)              unlocked levels ("Building name:level index")
     MASONRY        ("Maçonnerie",     0,   200, 100, 300,     0,     0,   List.of(),       List.of("Watchtower", "Blacksmith", "Stone Rampart", "Rampart Tower"),             List.of()),
-    COMMERCE       ("Commerce",       150, 150, 0,   300,     0,     2,   List.of(),       List.of("Town Market"),                          List.of()),
+    COMMERCE       ("Commerce",       150, 150, 0,   300,     0,     2,   List.of(),       List.of("Town Market", "Tavern"),                          List.of()),
     METALLURGY     ("Métallurgie",    0,   150, 250, 360,     1,     0,   List.of("MASONRY"), List.of("Iron Golem", "Portcullis", "Mine"),                      List.of(),
                     List.of("golem_smithing"), List.of("superior_blacksmith")),
     ARCHITECTURE   ("Architecture",   0,   300, 200, 360,     1,     1,   List.of("MASONRY"), List.of(),                                  List.of("Barracks:1", "Town Centre:1")),
