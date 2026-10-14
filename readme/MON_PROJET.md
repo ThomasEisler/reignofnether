@@ -108,7 +108,7 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et Wor
 
 ### Éclaireurs et nuages
 - **Éclaireur** (Hôtel de ville, 2e bouton, 75 nourriture, 20 s) : un villageois cartographe suivi d'un chien. Plus rapide qu'un ouvrier (0,34 contre 0,25), voit à 40 blocs (16 pour les autres), ne se bat pas. Il remplace le chien et le chat éclaireurs. Le chien n'est qu'un dessin (pas une vraie bête) : il suit le chemin de l'éclaireur et s'assoit quand il s'arrête.
-- **Nuages** sur tout ce que le joueur n'a pas encore exploré : chaque morceau de carte (16 × 16) vu une fois par ses unités ou bâtiments est découvert pour toujours (sauvegardé). Sous les nuages : unités, icônes et bâtiments ennemis cachés, minimap blanche, construction interdite (« Zone inexplorée »). Rien n'est caché tant que le joueur ne possède rien (pour choisir où poser son premier Hôtel de ville). Bots et barbares : pas de nuages.
+- **Nuages** sur tout ce que le joueur n'a pas encore exploré : chaque morceau de carte (16 × 16) vu une fois par ses unités ou bâtiments est découvert pour toujours (sauvegardé). Sous les nuages : unités, icônes et bâtiments ennemis cachés, minimap blanche, construction interdite (« Zone inexplorée »). Tout est sous les nuages dès que le joueur a commencé la partie (avant, pendant le choix de l'emplacement de départ, la carte est visible). Les nuages vont jusqu'à 1024 blocs autour de la caméra (nuages plats au-delà de la distance d'affichage) pour cacher aussi le terrain lointain de Distant Horizons ; plus loin encore, Distant Horizons peut encore montrer le relief. Bots et barbares : pas de nuages.
 - Commandes : `/rts-nuages off` / `on` (sauvegardé avec le monde), `/rts-nuages reset` (tout redevient inexploré).
 
 ### Barbares

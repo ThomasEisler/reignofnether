@@ -18,8 +18,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.Random;
 
-// Clouds over every chunk this player has not explored yet (see ExplorationServerEvents). They are only shown once
-// the player owns something (before that, nothing is explored and the whole map is free to look at).
+// Clouds over every chunk this player has not explored yet (see ExplorationServerEvents). They cover everything as
+// soon as the player has started (is an RTS player); only the spot choice before starting shows the whole map.
+// They reach far beyond the render distance so that far terrain (Distant Horizons) stays hidden too.
 // Things inside unexplored chunks (units, icons, minimap) are hidden through FogOfWarClientEvents.isInBrightChunk.
 public class ExplorationClientEvents {
 
@@ -33,7 +34,8 @@ public class ExplorationClientEvents {
     private static final int SLAB_THICKNESS = 5;
     private static final int CLEARANCE = 4;       // blocks between the highest ground of a chunk and its cloud
     private static final int CURTAIN_DEPTH = 16;  // misty veil hanging down along the explored border
-    private static final int EXTRA_RADIUS = 4;    // chunks drawn beyond the render distance
+    private static final int EXTRA_RADIUS = 4;    // puffy clouds up to this many chunks beyond the render distance
+    private static final int FAR_RADIUS = 64;     // flat clouds up to here (1024 blocks), over far terrain
 
     public static void receive(boolean isEnabled, boolean replace, long[] chunks) {
         enabled = isEnabled;
@@ -45,7 +47,7 @@ public class ExplorationClientEvents {
     }
 
     public static boolean isActive() {
-        return enabled && !explored.isEmpty() && MC.level != null && PlayerClientEvents.isRTSPlayer();
+        return enabled && MC.level != null && PlayerClientEvents.isRTSPlayer();
     }
 
     public static boolean isExplored(int blockX, int blockZ) {
@@ -145,7 +147,8 @@ public class ExplorationClientEvents {
     private static void rebuild(int camCx, int camCz) {
         if (MC.level == null)
             return;
-        int radius = MC.options.getEffectiveRenderDistance() + EXTRA_RADIUS;
+        int nearRadius = MC.options.getEffectiveRenderDistance() + EXTRA_RADIUS;
+        int radius = Math.max(nearRadius, FAR_RADIUS);
         originX = camCx << 4;
         originZ = camCz << 4;
 
@@ -173,7 +176,7 @@ public class ExplorationClientEvents {
                 base[i][j] = (m == Integer.MIN_VALUE ? fallback : m) + CLEARANCE;
             }
 
-        BufferBuilder solid = new BufferBuilder(1 << 16);
+        BufferBuilder solid = new BufferBuilder(1 << 20);
         BufferBuilder curtain = new BufferBuilder(1 << 14);
         solid.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         curtain.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -198,7 +201,14 @@ public class ExplorationClientEvents {
                     !(w && base[i - 1][j] == y0), !(e && base[i + 1][j] == y0));
                 solidCount++;
 
-                // puffs on top, a few may hang over the border a little
+                // puffs on top (near the camera only), a few may hang over the border a little
+                if (dx * dx + dz * dz > nearRadius * nearRadius) {
+                    if (!n) { veil(curtain, x0, z0, x1, z0, y0); curtainCount++; }
+                    if (!s) { veil(curtain, x0, z1, x1, z1, y0); curtainCount++; }
+                    if (!w) { veil(curtain, x0, z0, x0, z1, y0); curtainCount++; }
+                    if (!e) { veil(curtain, x1, z0, x1, z1, y0); curtainCount++; }
+                    continue;
+                }
                 Random rand = new Random(cx * 341873128712L + cz * 132897987541L);
                 int puffs = 2 + rand.nextInt(3);
                 for (int p = 0; p < puffs; p++) {
