@@ -13,8 +13,8 @@ import java.util.Map;
 // one can't be too close to the player's (or an ally's) other cities, and must be even further from enemy cities.
 public class Cities {
 
-    public static final int OWN_SPACING = 80; // blocks between the centres of two cities of the same player (or allies)
-    public static final int ENEMY_SPACING = 150; // blocks to the centre of an enemy city
+    public static final int OWN_SPACING = 100; // blocks between the centres of two cities of the same player (or allies)
+    public static final int ENEMY_SPACING = 180; // blocks to the centre of an enemy city
 
     public static final Map<Nation, List<String>> NAMES = Map.of(
         Nation.FRANCE, List.of("Paris", "Lyon", "Marseille", "Bordeaux", "Toulouse", "Rouen", "Reims", "Orléans", "Tours", "Nantes", "Strasbourg", "Grenoble"),
