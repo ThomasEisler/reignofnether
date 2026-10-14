@@ -9,6 +9,7 @@ import java.util.List;
 
 // Players can only build near their own buildings (so not in the middle of an enemy base), except for stockpiles
 // and bridges. A player who has no building yet can build anywhere (their first Town Centre).
+// Stockpiles, built far away by the forests, don't let other buildings be put up around them.
 public class BuildRange {
 
     public static final int RANGE = 24; // max gap in blocks between the new building and one of the player's buildings
@@ -42,11 +43,16 @@ public class BuildRange {
         return !getOwnBuildings(level, ownerName).isEmpty();
     }
 
+    // buildings that other buildings may be put up next to (not stockpiles)
+    private static List<BuildingPlacement> getAnchors(Level level, String ownerName) {
+        return getOwnBuildings(level, ownerName).stream()
+            .filter(b -> !(b.getBuilding() instanceof OakStockpile) && !(b.getBuilding() instanceof SpruceStockpile)).toList();
+    }
+
     public static boolean isFootprintInRange(Level level, String ownerName, int minX, int minZ, int maxX, int maxZ) {
-        List<BuildingPlacement> own = getOwnBuildings(level, ownerName);
-        if (own.isEmpty())
+        if (getOwnBuildings(level, ownerName).isEmpty())
             return true;
-        for (BuildingPlacement b : own)
+        for (BuildingPlacement b : getAnchors(level, ownerName))
             if (distanceTo(b, minX, minZ, maxX, maxZ) <= RANGE)
                 return true;
         return false;
@@ -61,6 +67,6 @@ public class BuildRange {
     }
 
     public static List<BuildingPlacement> getOwnBuildingsForPreview(Level level, String ownerName) {
-        return getOwnBuildings(level, ownerName);
+        return getAnchors(level, ownerName);
     }
 }
