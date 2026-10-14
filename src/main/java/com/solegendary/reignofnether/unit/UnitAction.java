@@ -152,6 +152,7 @@ public enum UnitAction {
 
     SET_ATTACK_COUNT, // for marauders
     BUILD_ROAD, // building ability: click another owned building to connect them with a road
+    FISH, // a worker right-clicks a Port: it becomes a fisherman (boat trips to a fishing spot)
 
     DEBUG1,
     DEBUG2

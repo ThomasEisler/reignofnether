@@ -83,20 +83,18 @@ public class BuildingValidators {
         return null;
     }
 
-    // a port goes on the shore right next to a fishing spot, one per spot
+    // a port goes on the shore: at least one side touches the water
     private static String getPortError(Level level, List<BuildingBlock> blocks) {
         BlockPos min = BuildingUtils.getMinCorner(blocks), max = BuildingUtils.getMaxCorner(blocks);
-        double cx = (min.getX() + max.getX() + 1) / 2.0, cz = (min.getZ() + max.getZ() + 1) / 2.0;
-        BlockPos spot = com.solegendary.reignofnether.mapfeatures.MapFeaturesServerEvents.getNearestFishingSpot(level.isClientSide(), cx, cz,
-            com.solegendary.reignofnether.building.buildings.villagers.Port.FISHING_SPOT_RANGE);
-        if (spot == null)
-            return "building.reignofnether.port_needs_fishing_spot";
-        List<BuildingPlacement> buildings = level.isClientSide() ? BuildingClientEvents.getBuildings() : BuildingServerEvents.getBuildings();
-        for (BuildingPlacement b : buildings)
-            if (b.getBuilding() == Buildings.PORT && b.centrePos.distToCenterSqr(spot.getX(), b.centrePos.getY(), spot.getZ()) <
-                (double) com.solegendary.reignofnether.building.buildings.villagers.Port.PORT_SPACING * com.solegendary.reignofnether.building.buildings.villagers.Port.PORT_SPACING)
-                return "building.reignofnether.port_spot_taken";
-        return null;
+        for (int y = min.getY() - 2; y <= min.getY(); y++)
+            for (int x = min.getX() - 1; x <= max.getX() + 1; x++)
+                for (int z = min.getZ() - 1; z <= max.getZ() + 1; z++) {
+                    boolean edge = x == min.getX() - 1 || x == max.getX() + 1 || z == min.getZ() - 1 || z == max.getZ() + 1;
+                    BlockPos pos = new BlockPos(x, y, z);
+                    if (edge && level.getFluidState(pos).is(net.minecraft.tags.FluidTags.WATER) && level.getBlockState(pos.above()).isAir())
+                        return null;
+                }
+        return "building.reignofnether.port_needs_water";
     }
 
     // disallow any building block from clipping into any other existing blocks

@@ -754,6 +754,8 @@ public interface Unit {
     }
 
     static void fullResetBehaviours(Unit unit) {
+        if (!((Entity) unit).level().isClientSide()) // a fisherman given another order comes back to land
+            com.solegendary.reignofnether.mapfeatures.PortFishingServerEvents.stop((Entity) unit);
         if (((Entity) unit).level().isClientSide() && !Keybindings.shiftMod.isDown()) {
             unit.getCheckpoints().clear();
             RtsDebugPathPreview.removeUnitPath(((Entity) unit).getId());

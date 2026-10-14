@@ -69,6 +69,7 @@ public class UnitActionItem {
         UnitAction.FOLLOW,
         UnitAction.BUILD_REPAIR,
         UnitAction.FARM,
+        UnitAction.FISH,
         UnitAction.RETURN_RESOURCES,
         UnitAction.RETURN_RESOURCES_TO_CLOSEST,
         UnitAction.DELETE,
@@ -394,6 +395,11 @@ public class UnitActionItem {
                             }
                         }
                     }
+                }
+                case FISH -> {
+                    BuildingPlacement port = BuildingUtils.findBuilding(level.isClientSide(), preselectedBlockPos);
+                    if (unit instanceof WorkerUnit && port != null && !level.isClientSide())
+                        com.solegendary.reignofnether.mapfeatures.PortFishingServerEvents.assign((Entity) unit, port);
                 }
                 case RETURN_RESOURCES -> {
                     if (unit instanceof WorkerUnit workerUnit) { // if we manually did this, ignore automated return

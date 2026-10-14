@@ -891,6 +891,9 @@ public class UnitClientEvents {
 
                     if (preSelBuilding.getBuilding() instanceof AbstractFarm && preSelBuilding.isBuilt)
                         sendUnitCommand(UnitAction.FARM);
+                    else if (preSelBuilding.getBuilding() == com.solegendary.reignofnether.building.Buildings.PORT && preSelBuilding.isBuilt &&
+                            !BuildingUtils.isBuildingBuildable(true, preSelBuilding))
+                        sendUnitCommand(UnitAction.FISH);
                     else if (BuildingUtils.isBuildingBuildable(true, preSelBuilding))
                         sendUnitCommand(UnitAction.BUILD_REPAIR);
                     else
