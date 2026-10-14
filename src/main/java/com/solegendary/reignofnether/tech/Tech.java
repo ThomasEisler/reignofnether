@@ -33,7 +33,9 @@ public enum Tech {
     ALCHEMY        ("Alchimie",              0,   400, 400, 300,    2,  3,   List.of("MYSTICISM"),   List.of(), List.of(), List.of("water_potions", "lingering_potions"),    List.of()),
     HEALING        ("Potions de soin",       0,   350, 350, 300,    3,  3,   List.of("ALCHEMY"),     List.of(), List.of(), List.of("healing_potions"),                       List.of()),
     CARRY_BAGS     ("Sacs de récolte",       200, 200, 0,   180,    0,  4,   List.of(),              List.of(), List.of(), List.of("resource_capacity"),                     List.of()),
-    BACKPACKS      ("Sacs à dos",            0,   100, 100, 180,    1,  4,   List.of("CARRY_BAGS"),  List.of(), List.of(), List.of("item_backpacks"),                        List.of());
+    BACKPACKS      ("Sacs à dos",            0,   100, 100, 180,    1,  4,   List.of("CARRY_BAGS"),  List.of(), List.of(), List.of("item_backpacks"),                        List.of()),
+    // my additions
+    SYLVICULTURE   ("Sylviculture",          100, 200, 100, 240,    2,  4,   List.of("BACKPACKS"),   List.of("Sawmill"), List.of());
 
     public final String displayName;
     public final int food, wood, ore;

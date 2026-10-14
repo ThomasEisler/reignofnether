@@ -2406,5 +2406,8 @@
     "buildings.reignofnether.rampart_tower": "Tour de rempart",
     "entity.reignofnether.explorer_unit": "Éclaireur",
     "entity.reignofnether.explorer_unit.tooltip1": "Un villageois et son chien, plus rapides que les ouvriers. Voient très loin.",
-    "entity.reignofnether.explorer_unit.tooltip2": "Envoyez-les sous les nuages pour découvrir la carte."
+    "entity.reignofnether.explorer_unit.tooltip2": "Envoyez-les sous les nuages pour découvrir la carte.",
+    "buildings.reignofnether.sawmill": "Scierie",
+    "buildings.reignofnether.sawmill.tooltip1": "Des arbres y repoussent tout seuls : du bois même quand les forêts ont disparu.",
+    "buildings.reignofnether.sawmill.tooltip2": "Clic droit avec des villageois pour qu'ils y coupent du bois."
 }

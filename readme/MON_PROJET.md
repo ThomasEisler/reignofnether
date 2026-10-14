@@ -106,6 +106,9 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et Wor
 - Les unités **préfèrent passer par les routes** : une case de route « coûte » moitié moins qu'une case de terre (`ROAD_COST = 0.5` dans `PathfinderConfig`), donc elles font un détour pour les prendre. Le déplacement propre au mod est maintenant **activé sur toutes les cartes** (avant : seulement avec une bordure de 1280 blocs ou moins ; sans bordure, pas de pré-calcul de la carte, à surveiller si ça rame). Les routes sont reconnues par leur position : le gravier ou la pierre naturels ne comptent pas.
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
 
+### Scierie
+- **Scierie** (menu des ouvriers, 250 bois + 75 minerai, 60 s) : débloquée par la recherche **Sylviculture** (100 nourriture, 200 bois, 100 minerai, 4 min, après Sacs à dos). 9 emplacements de podzol : une jeune pousse (azalée) apparaît 15 s après qu'un emplacement est vide, devient un petit arbre (2 bûches + feuilles) 100 s plus tard. Clic droit avec des villageois : ils y coupent le bois comme dans une ferme. Réglages dans `SawmillPlacement` (`PLANT_SECONDS`, `GROW_SECONDS`, `TREE_LOGS`). Modèle `sawmill` provisoire.
+
 ### Éclaireurs et nuages
 - **Éclaireur** (Hôtel de ville, 2e bouton, 75 nourriture, 20 s) : un villageois cartographe monté sur un gros chien. Plus rapide qu'un ouvrier (0,34 contre 0,25), voit à 40 blocs (16 pour les autres), ne se bat pas. Il remplace le chien et le chat éclaireurs. Le chien n'est qu'un dessin (pas une vraie bête), dessiné sous le villageois (taille `DOG_SCALE`, hauteur de selle `SEAT_HEIGHT` dans `ExplorerUnitRenderer`).
 - **Nuages** sur tout ce que le joueur n'a pas encore exploré : chaque morceau de carte (16 × 16) vu une fois par ses unités ou bâtiments est découvert pour toujours (sauvegardé). Sous les nuages : unités, icônes et bâtiments ennemis cachés, minimap blanche, construction interdite (« Zone inexplorée »). Tout est sous les nuages dès que le joueur a commencé la partie (avant, pendant le choix de l'emplacement de départ, la carte est visible). Les nuages vont jusqu'à 1024 blocs autour de la caméra (nuages plats au-delà de la distance d'affichage) pour cacher aussi le terrain lointain de Distant Horizons ; plus loin encore, Distant Horizons peut encore montrer le relief. Bots et barbares : pas de nuages.
@@ -428,6 +431,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Scierie (recherche Sylviculture) : arbres qui repoussent, coupés par les villageois comme une ferme ; utilisée aussi par les bots |
 | 14/10/2026 | Bots étape 3 : bâtiments dans l'ordre (caserne, bibliothèque, forge, tours, marché…), recherches à la suite, niveaux de l'Hôtel de ville et de la caserne, jusqu'à 3 villes |
 | 14/10/2026 | Ruines : on les fouille avec une unité (8 s), trésor puis disparition ; nuages sombres la nuit |
 | 14/10/2026 | Correction crash au lancement direct dans un monde (minimap) ; bots qui restaient bloqués (villageois coincés jamais réaffectés) ; nuages au-dessus de chaque arbre ; éclaireur monté sur son chien |

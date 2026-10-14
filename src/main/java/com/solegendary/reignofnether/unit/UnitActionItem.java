@@ -380,9 +380,11 @@ public class UnitActionItem {
                     if (unit instanceof WorkerUnit workerUnit) {
                         GatherResourcesGoal goal = workerUnit.getGatherResourceGoal();
                         if (goal != null) {
-                            goal.setTargetResourceName(ResourceName.FOOD);
-                            goal.setMoveTarget(preselectedBlockPos);
                             BuildingPlacement building = BuildingUtils.findBuilding(level.isClientSide(), preselectedBlockPos);
+                            // a sawmill is farmed for wood
+                            goal.setTargetResourceName(building instanceof com.solegendary.reignofnether.building.buildings.placements.SawmillPlacement
+                                ? ResourceName.WOOD : ResourceName.FOOD);
+                            goal.setMoveTarget(preselectedBlockPos);
                             if (building instanceof FarmPlacement) {
                                 goal.setTargetFarm(building);
                                 if (Unit.atMaxResources((Unit) workerUnit)) {

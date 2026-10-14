@@ -28,6 +28,7 @@ public class BuildingBlockData {
     // layer instead of sitting on top of it. Add a structure here when its model has been remade with its floor.
     public static final java.util.Set<String> GROUND_ROW_STRUCTURES = java.util.Set.of(
         "wheat_farm",
+        "sawmill",
         "town_centre",
         "stockpile_oak",
         "villager_house"

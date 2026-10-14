@@ -212,6 +212,7 @@ public class Factions {
 		registerBuildings(VILLAGERS, Buildings.RAMPART_TOWER, Keybindings.hotkey1);
 		registerBuildings(VILLAGERS, Buildings.VILLAGER_MARKET, Keybindings.hotkey10);
 		registerBuildings(VILLAGERS, Buildings.PORT);
+		registerBuildings(VILLAGERS, Buildings.SAWMILL);
 		registerBuildings(VILLAGERS, Buildings.BEACON);
 		
 		//Neutral

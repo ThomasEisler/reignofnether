@@ -13,6 +13,7 @@ public class BuildTimes {
     public static final Map<String, Integer> SECONDS_WITH_ONE_WORKER = Map.ofEntries(
         // Villagers
         Map.entry("Wheat Farm", 30),
+        Map.entry("Sawmill", 60),
         Map.entry("Stockpile", 40),
         Map.entry("Villager House", 40),
         Map.entry("Barracks", 60),

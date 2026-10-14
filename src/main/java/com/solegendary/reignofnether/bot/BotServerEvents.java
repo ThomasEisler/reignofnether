@@ -71,6 +71,7 @@ public class BotServerEvents {
         new Wish(Buildings.BLACKSMITH, 1, 12),
         new Wish(Buildings.WATCHTOWER, 2, 12),
         new Wish(Buildings.VILLAGER_MARKET, 1, 14),
+        new Wish(Buildings.SAWMILL, 1, 18),
         new Wish(Buildings.BARRACKS, 2, 20),
         new Wish(Buildings.WATCHTOWER, 4, 22)
     );
@@ -79,7 +80,8 @@ public class BotServerEvents {
         com.solegendary.reignofnether.tech.Tech.MASONRY, com.solegendary.reignofnether.tech.Tech.CARRY_BAGS,
         com.solegendary.reignofnether.tech.Tech.COMMERCE, com.solegendary.reignofnether.tech.Tech.ARCHITECTURE,
         com.solegendary.reignofnether.tech.Tech.ARCHERY, com.solegendary.reignofnether.tech.Tech.METALLURGY,
-        com.solegendary.reignofnether.tech.Tech.BACKPACKS, com.solegendary.reignofnether.tech.Tech.TRADE,
+        com.solegendary.reignofnether.tech.Tech.BACKPACKS, com.solegendary.reignofnether.tech.Tech.SYLVICULTURE,
+        com.solegendary.reignofnether.tech.Tech.TRADE,
         com.solegendary.reignofnether.tech.Tech.MYSTICISM, com.solegendary.reignofnether.tech.Tech.ENGINEERING,
         com.solegendary.reignofnether.tech.Tech.FORTIFICATIONS, com.solegendary.reignofnether.tech.Tech.COMMAND);
 
@@ -204,7 +206,8 @@ public class BotServerEvents {
             return ResourceName.NONE;
         GatherResourcesGoal g = w.getGatherResourceGoal();
         if (g.isFarming())
-            return ResourceName.FOOD;
+            return g.getTargetFarm() instanceof com.solegendary.reignofnether.building.buildings.placements.SawmillPlacement
+                ? ResourceName.WOOD : ResourceName.FOOD;
         ResourceName r = g.getTargetResourceName();
         return r != null ? r : ResourceName.NONE;
     }
@@ -367,6 +370,16 @@ public class BotServerEvents {
                 }
             }
             ResourceName type = ore < Math.round(n * ORE_SHARE) ? ResourceName.ORE : ResourceName.WOOD;
+            // wood: the sawmills first (2 villagers each)
+            if (type == ResourceName.WOOD) {
+                BuildingPlacement mill = buildings.stream().filter(b -> b.getBuilding() == Buildings.SAWMILL && b.isBuilt)
+                    .filter(b -> villagers.stream().filter(w -> w instanceof WorkerUnit wu && wu.getGatherResourceGoal() != null &&
+                        wu.getGatherResourceGoal().getTargetFarm() == b).count() < WORKERS_PER_FARM).findFirst().orElse(null);
+                if (mill != null) {
+                    order(bot.name, UnitAction.FARM, List.of(v), mill.centrePos);
+                    continue;
+                }
+            }
             // searched from a random spot around the Town Centre, so a villager that couldn't reach its last
             // resource isn't sent straight back to the same one
             BlockPos home = nearestCity(cities, v.blockPosition(), capital).centrePos;

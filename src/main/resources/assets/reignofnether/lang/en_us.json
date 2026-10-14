@@ -2439,5 +2439,8 @@
     "buildings.reignofnether.rampart_tower": "Rampart Tower",
     "entity.reignofnether.explorer_unit": "Explorer",
     "entity.reignofnether.explorer_unit.tooltip1": "A villager and his dog, faster than workers. They see very far.",
-    "entity.reignofnether.explorer_unit.tooltip2": "Send them under the clouds to uncover the map."
+    "entity.reignofnether.explorer_unit.tooltip2": "Send them under the clouds to uncover the map.",
+    "buildings.reignofnether.sawmill": "Sawmill",
+    "buildings.reignofnether.sawmill.tooltip1": "Trees grow back here by themselves: wood even once the forests are gone.",
+    "buildings.reignofnether.sawmill.tooltip2": "Right click with villagers to make them cut wood here."
 }

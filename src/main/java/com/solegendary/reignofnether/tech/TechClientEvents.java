@@ -134,6 +134,7 @@ public class TechClientEvents {
             case HEALING -> net.minecraft.world.item.Items.GLISTERING_MELON_SLICE;
             case CARRY_BAGS -> net.minecraft.world.item.Items.CHEST;
             case BACKPACKS -> net.minecraft.world.item.Items.BUNDLE;
+            case SYLVICULTURE -> net.minecraft.world.item.Items.OAK_SAPLING;
         });
     }
 
