@@ -49,8 +49,35 @@ public class ExplorationServerEvents {
         data.enabled = enabled;
         data.setDirty();
         syncAll();
-        // the fog of war (dark, frozen land out of sight) goes with the clouds
-        com.solegendary.reignofnether.fogofwar.FogOfWarServerEvents.setEnabled(enabled);
+    }
+
+    // the fog of war is switched on its own (/rts-brouillard on|off), saved with the world
+    public static boolean isFogWanted() {
+        return data == null || data.fogEnabled;
+    }
+
+    public static void setFogWanted(boolean value) {
+        if (data == null)
+            return;
+        data.fogEnabled = value;
+        data.setDirty();
+        com.solegendary.reignofnether.fogofwar.FogOfWarServerEvents.setEnabled(value);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterCommands(net.minecraftforge.event.RegisterCommandsEvent evt) {
+        evt.getDispatcher().register(net.minecraft.commands.Commands.literal("rts-brouillard")
+            .requires(source -> source.hasPermission(2))
+            .then(net.minecraft.commands.Commands.literal("on").executes(ctx -> {
+                setFogWanted(true);
+                ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal("Brouillard de guerre activé"), true);
+                return 1;
+            }))
+            .then(net.minecraft.commands.Commands.literal("off").executes(ctx -> {
+                setFogWanted(false);
+                ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal("Brouillard de guerre désactivé"), true);
+                return 1;
+            })));
     }
 
     // everyone's map goes back under the clouds

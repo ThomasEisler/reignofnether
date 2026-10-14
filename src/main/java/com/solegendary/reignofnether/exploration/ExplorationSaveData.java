@@ -16,6 +16,7 @@ public class ExplorationSaveData extends SavedData {
 
     public final Map<String, LongOpenHashSet> explored = new HashMap<>();
     public boolean enabled = true;
+    public boolean fogEnabled = true; // the fog of war (dark, frozen land out of sight), switched on its own
 
     @Nonnull
     public static ExplorationSaveData getInstance(LevelAccessor level) {
@@ -29,6 +30,7 @@ public class ExplorationSaveData extends SavedData {
     public static ExplorationSaveData load(CompoundTag tag) {
         ExplorationSaveData data = new ExplorationSaveData();
         data.enabled = !tag.contains("enabled") || tag.getBoolean("enabled");
+        data.fogEnabled = !tag.contains("fogEnabled") || tag.getBoolean("fogEnabled");
         CompoundTag players = tag.getCompound("players");
         for (String name : players.getAllKeys())
             data.explored.put(name, new LongOpenHashSet(players.getLongArray(name)));
@@ -38,6 +40,7 @@ public class ExplorationSaveData extends SavedData {
     @Override
     public CompoundTag save(CompoundTag tag) {
         tag.putBoolean("enabled", enabled);
+        tag.putBoolean("fogEnabled", fogEnabled);
         CompoundTag players = new CompoundTag();
         explored.forEach((name, chunks) -> players.put(name, new LongArrayTag(chunks.toLongArray())));
         tag.put("players", players);

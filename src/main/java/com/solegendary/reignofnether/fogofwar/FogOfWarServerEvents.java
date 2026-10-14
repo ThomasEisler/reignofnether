@@ -326,8 +326,8 @@ public class FogOfWarServerEvents {
 
         // Only attempt the forced auto-enable on an RTS-optimised map; otherwise setEnabled would refuse
         // and spam the log/chat every tick. On a vanilla-sized map force-fog simply stays inert.
-        // on whenever the clouds are on (/rts-nuages on|off switches both), or forced by the gamerule
-        if (!enabled && (isForceFog() || com.solegendary.reignofnether.exploration.ExplorationServerEvents.isEnabled()))
+        // on unless switched off with /rts-brouillard off (independent of the clouds), or forced by the gamerule
+        if (!enabled && (isForceFog() || com.solegendary.reignofnether.exploration.ExplorationServerEvents.isFogWanted()))
             setEnabled(true);
 
         if (!enabled) return;
