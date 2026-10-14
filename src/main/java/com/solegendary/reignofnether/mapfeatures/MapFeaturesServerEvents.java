@@ -317,6 +317,7 @@ public class MapFeaturesServerEvents {
             net.minecraft.world.entity.LivingEntity searcher = getNearestPlayerUnit(shape.centrePos, RUIN_SEARCH_RANGE);
             if (searcher == null) {
                 searchTicks.remove(site.origin);
+                searchCentres.remove(site.origin);
                 continue;
             }
             String owner = ((Unit) searcher).getOwnerName();
@@ -324,14 +325,42 @@ public class MapFeaturesServerEvents {
             if (t == 0)
                 com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(owner, "Fouille des ruines...");
             t += TICK_INTERVAL;
-            level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, shape.centrePos.getX() + 0.5,
-                site.origin.getY() + 1, shape.centrePos.getZ() + 0.5, 6, 2, 0.5, 2, 0.02);
+            searchCentres.put(site.origin, new net.minecraft.world.phys.Vec3(shape.centrePos.getX() + 0.5, site.origin.getY() + 0.5, shape.centrePos.getZ() + 0.5));
             if (t < RUIN_SEARCH_TICKS) {
                 searchTicks.put(site.origin, t);
                 continue;
             }
             searchTicks.remove(site.origin);
+            searchCentres.remove(site.origin);
             lootRuin(level, site, shape, owner);
+        }
+    }
+
+    // ruins being searched: dust and stone bits thrown up from the rubble, a golden spiral rising faster as the search
+    // nears its end; a burst of sparkles when the treasure is found (in lootRuin)
+    private static final java.util.Map<BlockPos, net.minecraft.world.phys.Vec3> searchCentres = new java.util.HashMap<>();
+
+    // seen from far away too (the RTS camera is often more than 32 blocks above)
+    private static <T extends net.minecraft.core.particles.ParticleOptions> void particles(ServerLevel level, T type, double x, double y, double z,
+                                                                                       int count, double dx, double dy, double dz, double speed) {
+        for (net.minecraft.server.level.ServerPlayer p : level.players())
+            level.sendParticles(p, type, true, x, y, z, count, dx, dy, dz, speed);
+    }
+
+    private static void searchParticles(ServerLevel level) {
+        for (var e : searchCentres.entrySet()) {
+            net.minecraft.world.phys.Vec3 c = e.getValue();
+            float progress = searchTicks.getOrDefault(e.getKey(), 0) / (float) RUIN_SEARCH_TICKS;
+            particles(level, new net.minecraft.core.particles.BlockParticleOption(net.minecraft.core.particles.ParticleTypes.BLOCK,
+                net.minecraft.world.level.block.Blocks.MOSSY_COBBLESTONE.defaultBlockState()), c.x, c.y + 0.5, c.z, 4, 2.5, 0.3, 2.5, 0.15);
+            particles(level, net.minecraft.core.particles.ParticleTypes.CLOUD, c.x, c.y + 0.3, c.z, 1, 2.5, 0.1, 2.5, 0.01);
+            double angle = level.getGameTime() * 0.35;
+            for (int k = 0; k < 2; k++) {
+                double a = angle + k * Math.PI;
+                double r = 2.2 - 1.2 * progress;
+                particles(level, net.minecraft.core.particles.ParticleTypes.WAX_ON, c.x + Math.cos(a) * r,
+                    c.y + 0.5 + progress * 2.5, c.z + Math.sin(a) * r, 1, 0, 0, 0, 0);
+            }
         }
     }
 
@@ -344,6 +373,9 @@ public class MapFeaturesServerEvents {
             if (!bb.getBlockState().isAir() && !level.getBlockState(bb.getBlockPos()).isAir())
                 level.setBlock(bb.getBlockPos(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
         level.playSound(null, shape.centrePos, net.minecraft.sounds.SoundEvents.CHEST_OPEN, net.minecraft.sounds.SoundSource.BLOCKS, 1f, 1f);
+        level.playSound(null, shape.centrePos, net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, net.minecraft.sounds.SoundSource.BLOCKS, 0.8f, 1.2f);
+        particles(level, net.minecraft.core.particles.ParticleTypes.TOTEM_OF_UNDYING, shape.centrePos.getX() + 0.5,
+            site.origin.getY() + 1.5, shape.centrePos.getZ() + 0.5, 60, 1.5, 1, 1.5, 0.4);
         int food = random.nextInt(RUIN_LOOT_MIN, RUIN_LOOT_MAX + 1);
         int wood = random.nextInt(RUIN_LOOT_MIN, RUIN_LOOT_MAX + 1);
         int ore = random.nextInt(RUIN_LOOT_MIN, RUIN_LOOT_MAX + 1);
@@ -599,7 +631,11 @@ public class MapFeaturesServerEvents {
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent evt) {
-        if (evt.phase != TickEvent.Phase.END || serverLevel == null || ++ticks < TICK_INTERVAL)
+        if (evt.phase != TickEvent.Phase.END || serverLevel == null)
+            return;
+        if (serverLevel.getGameTime() % 3 == 0)
+            searchParticles(serverLevel);
+        if (++ticks < TICK_INTERVAL)
             return;
         ticks = 0;
         MapFeaturesSaveData data = data();

@@ -1863,6 +1863,12 @@ public class HudClientEvents {
             chatButton.render(evt.getGuiGraphics(), xi, yi, mouseX, mouseY);
             renderedButtons.add(chatButton);
         }
+        // back to the Town Centre (house), left of the chat button
+        Button homeButton = HomeButtonClientEvents.BUTTON;
+        if (!homeButton.isHidden.get()) {
+            homeButton.render(evt.getGuiGraphics(), screenWidth - (homeButton.iconSize * 4), 70, mouseX, mouseY);
+            renderedButtons.add(homeButton);
+        }
         // -------------------------
         // Select all military units
         // -------------------------
