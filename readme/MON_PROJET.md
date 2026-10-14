@@ -221,11 +221,12 @@ Hauteurs (depuis le 14/10/2026) : palissade 2 ou 3 blocs, pierre 4 (créneaux co
 | Russie | Pierre le Grand | Récolte 15 % plus rapide |
 | Suède | Gustave II Adolphe | Unités 10 % plus rapides |
 
-### Civilisations dirigées par l'ordinateur (bots) — étapes 1 et 2 faites
+### Civilisations dirigées par l'ordinateur (bots) — étapes 1, 2 et 3 faites
 - But : jouer seul ou à deux avec **4 civilisations** ; les bots s'attaquent aussi **entre eux** (étape 4).
 - **`/rts-bot ajouter`** (triches) : ajoute un bot. Il prend une **nation libre au hasard** (son nom = celui de la nation, ex. « Espagne »), s'installe dans une **zone libre** à 220-320 blocs des autres villes (et à 100 blocs au moins des camps barbares), reçoit 3 villageois et les ressources de départ, et pose son **Hôtel de ville** (construit par ses villageois).
 - **Économie** (le bot réfléchit toutes les 2 s) : fait des villageois jusqu'à **18** ; répartit ceux qui ne font rien : **35 % nourriture** (dans ses fermes, 2 par ferme), **20 % minerai**, le reste **bois** (ressource la plus proche à moins de 48 blocs) ; construit une **maison** quand il lui reste 2 places de population ou moins, des **fermes** au fil de la croissance (jusqu'à 4), un **entrepôt** près de la forêt la plus proche ; tout bâtiment en chantier reçoit un constructeur.
-- Reste à faire : **étape 3** (caserne, forge, bibliothèque, recherches, améliorations, 2e ville), **étape 4** (armée, défense, attaques, y compris entre bots et contre les barbares), **étape 5** (bouton dans le menu de départ : nombre de bots et difficulté).
+- **Développement** (étape 3) : construit dans l'ordre caserne (8 villageois), bibliothèque (10), forge et 2 tours de guet (12, après Maçonnerie), marché (14, après Commerce), 2e caserne (20), 4 tours (22) ; recherche les technologies à la suite (Maçonnerie, Sacs de récolte, Commerce, Architecture, Tir à l'arc, Métallurgie… en gardant 100 de nourriture) ; améliore Hôtel de ville (dès 14 villageois) et casernes ; fonde une **nouvelle ville** à 110-150 blocs dès 16 villageois (3 villes au plus, 8 villageois de plus par ville, chaque ville en forme). Réglages en tête de `BotServerEvents` (`WISHES`, `RESEARCH`).
+- Reste à faire : **étape 4** (armée, défense, attaques, y compris entre bots et contre les barbares), **étape 5** (bouton dans le menu de départ : nombre de bots et difficulté).
 - Code : dossier `bot/` (`BotServerEvents` : arrivée `addBot`/`findStart`, cerveau `think` ; `BotSaveData`).
 
 ### Villes
@@ -381,7 +382,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 - Les noms des boutons de construction utilisaient des clés de traduction inexistantes (`buildings.villagers.reignofnether.…`) : corrigé en `buildings.reignofnether.…` partout (43 endroits).
 
-**Prochaine étape prévue** (14/10/2026) : faire tester en jeu les éclaireurs, les nuages (allure, ralentissements, avec et sans shaders), les noms de villes (maintenant toujours visibles, même à travers le relief) et les unités qui n'entrent plus dans l'eau ; puis tout ce qui a été ajouté le 14/10 — bots (`/rts-bot ajouter` ×3), noms de villes (affichage corrigé, à revérifier), pêche en bateau, troupeaux, carrières, ruines, camps barbares à 5 niveaux, routes en arc, déplacement du mod activé partout (surveiller les ralentissements), rectangles orange de Distant Horizons. Puis bots étapes 3 (bâtiments, recherches, 2e ville), 4 (armée, attaques, entre bots aussi) et 5 (bouton nombre de bots + difficulté).
+**Prochaine étape prévue** (14/10/2026) : faire tester en jeu les éclaireurs, les nuages (allure, ralentissements, avec et sans shaders), les noms de villes (maintenant toujours visibles, même à travers le relief) et les unités qui n'entrent plus dans l'eau ; puis tout ce qui a été ajouté le 14/10 — bots (`/rts-bot ajouter` ×3), noms de villes (affichage corrigé, à revérifier), pêche en bateau, troupeaux, carrières, ruines, camps barbares à 5 niveaux, routes en arc, déplacement du mod activé partout (surveiller les ralentissements), rectangles orange de Distant Horizons. Puis bots étapes 4 (armée, attaques, entre bots aussi) et 5 (bouton nombre de bots + difficulté).
 
 **Façon de répondre** : en français, concis et direct, sans jargon ; chiffrer la taille d'une tâche en **briques** (1 = un réglage, 10 = petite fonction, 100 = gros ensemble comme les camps à 5 niveaux), jamais « gros morceau ». Le jeu doit être fermé pour installer le mod : si l'utilisateur dit « ferme et installe », arrêter Minecraft proprement (`kill -TERM` du processus java) puis copier le jar.
 
@@ -427,6 +428,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Bots étape 3 : bâtiments dans l'ordre (caserne, bibliothèque, forge, tours, marché…), recherches à la suite, niveaux de l'Hôtel de ville et de la caserne, jusqu'à 3 villes |
 | 14/10/2026 | Ruines : on les fouille avec une unité (8 s), trésor puis disparition ; nuages sombres la nuit |
 | 14/10/2026 | Correction crash au lancement direct dans un monde (minimap) ; bots qui restaient bloqués (villageois coincés jamais réaffectés) ; nuages au-dessus de chaque arbre ; éclaireur monté sur son chien |
 | 14/10/2026 | Ouvriers : chantiers en cours, ferme attribuée et ressources transportées gardés quand on quitte la partie |

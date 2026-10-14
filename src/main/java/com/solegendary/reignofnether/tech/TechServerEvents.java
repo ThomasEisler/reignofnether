@@ -73,6 +73,11 @@ public class TechServerEvents {
         return state != null && state.done.contains(tech);
     }
 
+    public static boolean isResearching(String player) {
+        PlayerTech state = players.get(player);
+        return state != null && state.current != null;
+    }
+
     public static boolean hasLibrary(String player) {
         for (BuildingPlacement b : BuildingServerEvents.getBuildings())
             if (b.ownerName.equals(player) && b.isBuilt && b.getBuilding() == Buildings.LIBRARY)
