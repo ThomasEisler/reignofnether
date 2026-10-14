@@ -42,9 +42,14 @@ public class WorldBorderServerEvents {
             return;
 
         WorldBorder border = level.getWorldBorder();
-        // A small world border marks an RTS-optimised map; a vanilla-sized border is left fully untouched.
-        if (!isRtsOptimisedMap(level))
+        // A small world border marks an RTS-optimised map; on other maps the mod's own pathfinding is still used
+        // (units prefer roads), only without the navmesh precompute.
+        if (!isRtsOptimisedMap(level)) {
+            server.getGameRules().getRule(GameRuleRegistrar.RTS_PATHFINDING).set(true, server);
+            UnitServerEvents.rtsPathfinding = true;
+            GameruleClientboundPacket.setRtsPathfinding(true);
             return;
+        }
 
         ReignOfNether.LOGGER.info(
                 "RTS-optimised map detected (world border = {} blocks) - enabling improved pathfinding + navmesh precompute",
