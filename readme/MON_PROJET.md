@@ -25,6 +25,20 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 
 ---
 
+## Mon serveur (projet)
+
+Un **serveur unique** avec ce mod : je ne partage pas le mod, on joue seulement sur mon serveur.
+
+1. **Première connexion** : le joueur choisit sa **nation**.
+2. La **vue RTS (F12) est forcée** : les joueurs ne peuvent pas jouer autrement.
+3. Le serveur **l'envoie dans une zone encore libre**, que personne d'autre n'occupe.
+4. **Distance de sécurité** : impossible de poser son Hôtel de ville trop près de celui d'un autre joueur.
+5. Ensuite, on joue tous ensemble sur la même carte.
+
+Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et WorldEdit du serveur et du pack des joueurs.
+
+---
+
 ## Ce qui est fait
 
 ### Terrain
@@ -297,6 +311,11 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Construire les modèles des 8 nouveaux bâtiments barbares (feu de camp, réserve de butin, forge, cor d'alarme, cages, écurie, enclos à ravageurs, tente du chef) : `barbarian_campfire`, `barbarian_loot`, `barbarian_forge`, `barbarian_alarm`, `barbarian_cages`, `barbarian_stable`, `barbarian_ravager_pen`, `barbarian_chief_tent` (7 × 7 au plus).
 - [x] Apparence propre, cavaliers au niveau 3, réglages de difficulté.
 - [x] Camps à 5 niveaux et 8 nouveaux bâtiments (feu de camp, réserve de butin, forge, cor d'alarme, cages, écurie, enclos à ravageurs, tente du chef).
+
+### Serveur
+- [ ] Vue RTS (F12) forcée pour tous les joueurs.
+- [ ] Choix de la nation à la première connexion, puis envoi dans une zone libre.
+- [ ] Distance de sécurité entre les Hôtels de ville de joueurs différents.
 
 ### Terrain
 - [ ] Vérifier en jeu (nouveau monde) si le relief est assez plat ; sinon baisser encore `vertical_scale`.
