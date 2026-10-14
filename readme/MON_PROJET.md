@@ -271,6 +271,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 ## À faire
 
 - **Avant la version finale** : retirer WorldEdit du dossier mods du profil RTS (outil de construction seulement).
+- **Pour le serveur** : ne pas mettre **Distant Horizons** (ni dans le serveur, ni dans le pack des joueurs) ; je le garde seulement dans mon profil à moi.
 
 ### Routes
 - [ ] Bâtiments qui **exigent une route** : aucun pour l'instant (décidé le 13/10), à revoir plus tard.
