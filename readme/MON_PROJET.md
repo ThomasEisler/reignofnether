@@ -215,6 +215,12 @@ Hauteurs (depuis le 14/10/2026) : palissade 2 ou 3 blocs, pierre 4 (créneaux co
 | Russie | Pierre le Grand | Récolte 15 % plus rapide |
 | Suède | Gustave II Adolphe | Unités 10 % plus rapides |
 
+### Villes
+- On peut construire **plusieurs Hôtels de ville** (menu des ouvriers) : chacun est une **ville**, nommée d'après la **prochaine ville de sa nation** (France : Paris, Lyon, Marseille, Bordeaux… ; 12 noms par nation, puis « Paris 2 »… ; « Ville 1 », « Ville 2 »… sans nation). Le nom flotte au-dessus de l'Hôtel de ville, dans la couleur de la nation. Les noms ne resservent pas (même si une ville est détruite) ; ils repartent du début avec `/rts-reset`.
+- **Distances entre villes** (centre à centre) : **80 blocs** de ses propres villes (et de celles des alliés), **150 blocs** d'une ville ennemie. Zone rouge pendant la pose d'un Hôtel de ville là où c'est trop près.
+- Un Hôtel de ville n'a pas besoin d'être à 24 blocs de ses bâtiments (il fonde une nouvelle zone de construction autour de lui).
+- Code : `nation/Cities.java` (noms, distances `OWN_SPACING`, `ENEMY_SPACING`), `CityServerEvents` (nom donné à la pose, `CitySaveData`), `CityClientEvents` (nom au-dessus).
+
 ### Arbre des technologies
 - Pendant une recherche, un **bandeau au-dessus de la fenêtre de l'arbre** (pas sur l'écran principal) montre son icône, son nom en grand, une grande barre de progression (pourcentage) et le temps restant (« en pause » sans Bibliothèque).
 - Bouton **« Technologies x/18 »** à gauche de l'écran RTS (une barre bleue montre la recherche en cours), ou bouton **« Technologies »** de la **Bibliothèque** (touche **P**) : ouvre l'arbre presque plein écran (Échap pour fermer).
@@ -337,6 +343,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Mes remparts : boutons du menu des ouvriers, tracé et aperçu, Maj pour continuer, construction par les ouvriers, portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
+- [ ] Villes : 2e Hôtel de ville loin du premier, nom au-dessus, refus trop près (80 / 150 blocs) et zone rouge.
 - [ ] Carrières (minage, minerai qui repousse) et ruines (deviennent attaquables quand on approche, trésor) ; icônes.
 - [ ] Pêche et troupeaux : bulles sur l'eau près des rives, port posé contre l'eau, pêcheurs en bateau (clic droit sur le port) qui vont aux bulles et rapportent, troupeaux qui tournent en rond, s'éloignent des villes, repoussent ; plus de bêtes seules (nouveau monde conseillé).
 - [ ] Camps à 5 niveaux (`/rts-barbarian-camp ~ ~ ~ 5` pour voir le plus grand) : bâtiments qui apparaissent, remparts qui s'agrandissent, feu qui soigne, vol en raid et réserve qui rend, forge, cor d'alarme, prisonniers libérés, chef et sa défaite ; camps plus loin (130-170 blocs).
@@ -401,6 +408,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Plusieurs Hôtels de ville = villes nommées selon la nation, distances minimales entre villes |
 | 14/10/2026 | Port au bord de l'eau ; pêcheurs en bateau vers les bulles |
 | 14/10/2026 | Carrières, troupeaux et coins de pêche épuisables |
 | 14/10/2026 | Carrières (minerai qui repousse) et ruines à trésor sur toute la carte, avec leurs icônes |

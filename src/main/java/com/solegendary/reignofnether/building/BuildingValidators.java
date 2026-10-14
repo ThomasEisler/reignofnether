@@ -72,6 +72,8 @@ public class BuildingValidators {
             return "building.reignofnether.build_centre_here";
         } else if (!isSandbox && !com.solegendary.reignofnether.tech.Tech.canBuild(level.isClientSide(), ownerName, building)) {
             return "building.reignofnether.needs_tech";
+        } else if (!isSandbox && building.isCapitol && getCityError(level, ownerName, absoluteBlocks) != null) {
+            return getCityError(level, ownerName, absoluteBlocks);
         } else if (building == Buildings.PORT && getPortError(level, absoluteBlocks) != null) {
             return getPortError(level, absoluteBlocks);
         } else if (!isSandbox && !BuildRange.isExempt(building)) {
@@ -81,6 +83,13 @@ public class BuildingValidators {
                 return "building.reignofnether.too_far_from_base";
         }
         return null;
+    }
+
+    // a new city keeps its distance from the other cities (nation/Cities)
+    private static String getCityError(Level level, String ownerName, List<BuildingBlock> blocks) {
+        BlockPos min = BuildingUtils.getMinCorner(blocks), max = BuildingUtils.getMaxCorner(blocks);
+        return com.solegendary.reignofnether.nation.Cities.getPlacementError(level, ownerName,
+            (min.getX() + max.getX() + 1) / 2.0, (min.getZ() + max.getZ() + 1) / 2.0);
     }
 
     // a port goes on the shore: at least one side touches the water

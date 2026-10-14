@@ -80,5 +80,6 @@ public class ServerEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.rampart.RampartServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.mapfeatures.MapFeaturesServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.mapfeatures.PortFishingServerEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.nation.CityServerEvents.class);
     }
 }

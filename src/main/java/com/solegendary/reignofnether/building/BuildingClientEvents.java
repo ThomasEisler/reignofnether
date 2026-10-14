@@ -235,21 +235,27 @@ public class BuildingClientEvents {
     private static List<BlockPos> rangeZoneBlocks = new ArrayList<>();
 
     private static void drawBuildRangeZone(PoseStack matrix) {
-        if (buildingToPlace == null || MC.player == null || MC.level == null || BuildRange.isExempt(buildingToPlace) ||
-            SandboxClientEvents.isSandboxPlayer())
+        if (buildingToPlace == null || MC.player == null || MC.level == null ||
+            (BuildRange.isExempt(buildingToPlace) && !buildingToPlace.isCapitol) || SandboxClientEvents.isSandboxPlayer())
             return;
+        boolean city = buildingToPlace.isCapitol; // red where cities are too close (nation/Cities), not the build range
         BlockPos cursor = CursorClientEvents.getPreselectedBlockPos();
         long tick = MC.level.getGameTime();
         if (rangeZoneCentre == null || rangeZoneCentre.distManhattan(cursor) > 4 || tick - rangeZoneTick > 20) {
             rangeZoneCentre = cursor;
             rangeZoneTick = tick;
             rangeZoneBlocks = new ArrayList<>();
-            List<BuildingPlacement> own = BuildRange.getOwnBuildingsForPreview(MC.level, MC.player.getName().getString());
+            String me = MC.player.getName().getString();
+            List<BuildingPlacement> own = city ? com.solegendary.reignofnether.nation.Cities.getCities(MC.level)
+                : BuildRange.getOwnBuildingsForPreview(MC.level, me);
             if (!own.isEmpty()) {
                 for (int x = cursor.getX() - RANGE_ZONE_RADIUS; x <= cursor.getX() + RANGE_ZONE_RADIUS; x++) {
                     for (int z = cursor.getZ() - RANGE_ZONE_RADIUS; z <= cursor.getZ() + RANGE_ZONE_RADIUS; z++) {
                         int dx = x - cursor.getX(), dz = z - cursor.getZ();
-                        if (dx * dx + dz * dz > RANGE_ZONE_RADIUS * RANGE_ZONE_RADIUS || BuildRange.isColumnInRange(own, x, z))
+                        if (dx * dx + dz * dz > RANGE_ZONE_RADIUS * RANGE_ZONE_RADIUS)
+                            continue;
+                        if (city ? com.solegendary.reignofnether.nation.Cities.isColumnAllowed(MC.level, own, me, x, z)
+                                 : BuildRange.isColumnInRange(own, x, z))
                             continue;
                         int y = MC.level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z) - 1;
                         rangeZoneBlocks.add(new BlockPos(x, y, z));

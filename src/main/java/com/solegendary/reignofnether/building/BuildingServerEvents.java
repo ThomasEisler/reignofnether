@@ -475,6 +475,8 @@ public class BuildingServerEvents {
             }
             buildings.add(newBuilding);
             newBuilding.forceChunk(true);
+            if (newBuilding.getBuilding().isCapitol) // a new city gets its name
+                com.solegendary.reignofnether.nation.CityServerEvents.onCityPlaced(newBuilding);
             int minY = BuildingUtils.getMinCorner(newBuilding.blocks).getY();
 
             if (!(newBuilding.getBuilding() instanceof AbstractBridge))

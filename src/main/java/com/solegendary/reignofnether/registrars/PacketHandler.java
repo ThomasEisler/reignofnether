@@ -451,6 +451,12 @@ public final class PacketHandler {
                 .consumerMainThread(RoadClientboundPacket::handle)
                 .add();
 
+        INSTANCE.messageBuilder(com.solegendary.reignofnether.nation.CityNamesClientboundPacket.class, index++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.solegendary.reignofnether.nation.CityNamesClientboundPacket::encode)
+                .decoder(com.solegendary.reignofnether.nation.CityNamesClientboundPacket::new)
+                .consumerMainThread(com.solegendary.reignofnether.nation.CityNamesClientboundPacket::handle)
+                .add();
+
         INSTANCE.messageBuilder(com.solegendary.reignofnether.mapfeatures.SitesClientboundPacket.class, index++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(com.solegendary.reignofnether.mapfeatures.SitesClientboundPacket::encode)
                 .decoder(com.solegendary.reignofnether.mapfeatures.SitesClientboundPacket::new)

@@ -14,7 +14,9 @@ public class BuildRange {
     public static final int RANGE = 24; // max gap in blocks between the new building and one of the player's buildings
 
     public static boolean isExempt(Building building) {
-        return building instanceof OakStockpile || building instanceof SpruceStockpile || building instanceof AbstractBridge;
+        // Town Centres found new cities: they follow the spacing between cities instead (nation/Cities)
+        return building instanceof OakStockpile || building instanceof SpruceStockpile || building instanceof AbstractBridge ||
+            building.isCapitol;
     }
 
     // horizontal gap between a point and a building's footprint (0 if inside)

@@ -2404,6 +2404,8 @@
     "buildings.reignofnether.ruin_1": "Ruins",
     "buildings.reignofnether.ruin_2": "Ruins",
     "buildings.reignofnether.port": "Fishing Port",
+    "building.reignofnether.city_too_close_own": "Too close to one of your cities (80 blocks minimum)",
+    "building.reignofnether.city_too_close_enemy": "Too close to an enemy city (150 blocks minimum)",
     "building.reignofnether.port_needs_water": "A port must touch the water",
     "buildings.reignofnether.port.tooltip1": "On the shore (one side must touch the water).",
     "buildings.reignofnether.port.tooltip2": "Right click with villagers: up to %s fishermen sail to the bubbles and bring back %s food per trip.",

@@ -41,6 +41,7 @@ public class NationServerEvents {
         nations.clear();
         save();
         NationClientboundPacket.sync(nations);
+        CityServerEvents.clear(); // a new game: city names start again from the capital
     }
 
     private static void save() {

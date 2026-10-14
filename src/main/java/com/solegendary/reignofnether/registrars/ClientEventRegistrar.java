@@ -94,6 +94,7 @@ public class ClientEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.rampart.RampartClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.mapfeatures.FishingClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.mapfeatures.MapIconsClientEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.nation.CityClientEvents.class);
         vanillaEventBus.register(MinimapClientEvents.class);
         vanillaEventBus.register(TimeClientEvents.class);
         vanillaEventBus.register(BlockClientEvents.class);
@@ -157,5 +158,6 @@ public class ClientEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.rampart.RampartServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.mapfeatures.MapFeaturesServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.mapfeatures.PortFishingServerEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.nation.CityServerEvents.class);
     }
 }
