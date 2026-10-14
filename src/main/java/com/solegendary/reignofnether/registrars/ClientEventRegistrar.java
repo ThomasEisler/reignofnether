@@ -90,6 +90,7 @@ public class ClientEventRegistrar {
         vanillaEventBus.register(CursorClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.road.RoadClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.exploration.ExplorationClientEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.hud.HomeButtonClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.exploration.ExplorerDogClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.nation.NationClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.tech.TechClientEvents.class);

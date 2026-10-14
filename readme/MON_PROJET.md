@@ -403,6 +403,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - Éclaireur : `unit/units/villagers/ExplorerUnit.java` / `ExplorerProd.java` (icône `mobheads/explorer.png`) ; chien : `exploration/ExplorerDogClientEvents.java` + `unit/modelling/renderers/ExplorerUnitRenderer.java`. Nuages : dossier `exploration/` (`ExplorationServerEvents` = morceaux vus par joueur toutes les secondes, `ExplorationSaveData`, paquet, `ExplorationClientEvents` = dessin des nuages, réglage `TOP_ABOVE_GROUND` ; nuages posés au sol, du point le plus bas au-dessus des arbres ; pas dessinés pendant le calcul des ombres d'Oculus, `isShadowPass`). Cachés sous les nuages via `FogOfWarClientEvents.isInBrightChunk` ; minimap dans `MinimapClientEvents.updateMapTerrain` ; construction dans `BuildingValidators`.
 - Travail des ouvriers après rechargement : `VillagerUnit` (sauvegarde `buildTargets`, `carriedItems`, puis `restoreWorkAfterLoad` 2 s après le chargement) ; la ferme est relue via `TargetResourcesSave.farmPos` (avant, elle était cherchée avant que les bâtiments existent, donc perdue).
 - Eau : `MobilityClass.costFor` (eau infranchissable sauf unités aquatiques) ; une unité terrestre dans l'eau est remise sur la rive après 2 s (`Unit.tick`).
+- Retour à l'Hôtel de ville : `hud/HomeButtonClientEvents.java`.
 - Commandes : `commands/CommandsServerEvents.java` (`rts-rebuild-buildings`, `rts-road`).
 - Terrain : `src/main/resources/data/minecraft/worldgen/world_preset/normal.json` (`settings` = `minecraft:overworld`).
 
@@ -431,6 +432,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Bouton « Hôtel de ville » (à gauche, sous Technologies) et touche Origine : la caméra revient à l'Hôtel de ville (puis à la ville suivante) |
 | 14/10/2026 | Scierie (recherche Sylviculture) : arbres qui repoussent, coupés par les villageois comme une ferme ; utilisée aussi par les bots |
 | 14/10/2026 | Bots étape 3 : bâtiments dans l'ordre (caserne, bibliothèque, forge, tours, marché…), recherches à la suite, niveaux de l'Hôtel de ville et de la caserne, jusqu'à 3 villes |
 | 14/10/2026 | Ruines : on les fouille avec une unité (8 s), trésor puis disparition ; nuages sombres la nuit |
