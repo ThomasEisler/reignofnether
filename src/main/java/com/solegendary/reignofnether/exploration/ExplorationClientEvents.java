@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -70,6 +71,7 @@ public class ExplorationClientEvents {
     private static VertexBuffer curtainBuffer = null;
     private static boolean hasSolid = false, hasCurtain = false;
     private static int builtVersion = -1;
+    private static float bakedLight = 1f;
     private static long builtCentre = Long.MIN_VALUE;
     private static long lastBuildTime = 0;
     private static int originX = 0, originZ = 0;
@@ -82,7 +84,13 @@ public class ExplorationClientEvents {
         int camCx = (int) Math.floor(cam.x) >> 4, camCz = (int) Math.floor(cam.z) >> 4;
         long centre = ChunkPos.asLong(camCx, camCz);
         long now = System.currentTimeMillis();
+        // daylight is baked into the cloud colours (shaders ignore a colour set at draw time): dark at night
+        float light = Mth.clamp((MC.level.getSkyDarken(1f) - 0.2f) / 0.8f, 0f, 1f);
+        light = 0.1f + 0.9f * light * light;
+        if (Math.abs(light - bakedLight) > 0.03f)
+            builtVersion = -1;
         if (builtVersion != version || builtCentre != centre || now - lastBuildTime > 3000) {
+            bakedLight = light;
             rebuild(camCx, camCz);
             builtVersion = version;
             builtCentre = centre;
@@ -91,13 +99,11 @@ public class ExplorationClientEvents {
         if (!hasSolid && !hasCurtain)
             return;
 
-        float light = Math.max(0.35f, MC.level.getSkyDarken(evt.getPartialTick()));
         PoseStack pose = evt.getPoseStack();
         pose.pushPose();
         pose.translate(originX - cam.x, -cam.y, originZ - cam.z);
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.setShaderColor(light, light, light, 1f);
         RenderSystem.enableDepthTest();
         RenderSystem.disableCull();
         if (hasSolid) {
@@ -254,6 +260,7 @@ public class ExplorationClientEvents {
     private static final int R = 246, G = 248, B = 252;
 
     private static void quad(BufferBuilder b, float shade, int alpha, float[]... v) {
+        shade *= bakedLight;
         int r = (int) (R * shade), g = (int) (G * shade), bl = (int) (B * shade);
         for (float[] p : v)
             b.vertex(p[0], p[1], p[2]).color(r, g, bl, alpha).endVertex();

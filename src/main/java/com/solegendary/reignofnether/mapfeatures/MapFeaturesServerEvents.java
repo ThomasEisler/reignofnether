@@ -42,8 +42,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 // Things placed on the map the first time each chunk is loaded:
 // - fishing spots: bubbles on deep water near the shore of rivers, lakes and seas; a Port is built next to one
 // - quarries: outcrops of ore spread over the map at regular intervals; mined ore grows back slowly
-// - ruins with a treasure, spread the same way: plain blocks until a player's unit comes close, then a building to
-//   destroy for a good amount of resources
+// - ruins with a treasure, spread the same way: a player's unit standing by them searches them for a few seconds,
+//   then the treasure goes to its owner and the ruins disappear
 // - wild herds: groups of animals (no more lone ones) that walk small migration circles around their home, move away
 //   from towns, and regrow slowly around the same place when hunted
 public class MapFeaturesServerEvents {
@@ -56,7 +56,8 @@ public class MapFeaturesServerEvents {
     public static final int RUIN_CELL = 176;
     public static final String[] QUARRY_MODELS = { "quarry_1", "quarry_2" }; // structures; add more models here
     public static final int QUARRY_REGROW = 20 * 45; // one mined ore block grows back this often
-    public static final int RUIN_DISCOVER_RANGE = 40; // a player's unit this close turns the ruins into a building
+    public static final int RUIN_SEARCH_RANGE = 8;     // a player's unit this close to the middle searches the ruins
+    public static final int RUIN_SEARCH_TICKS = 20 * 8; // time to search them
     public static final int RUIN_LOOT_MIN = 150, RUIN_LOOT_MAX = 300; // of each resource
     public static final int LOOT_RANGE = 40;
 
@@ -300,34 +301,49 @@ public class MapFeaturesServerEvents {
         return nearest;
     }
 
-    // ruins become a building when a player's unit comes close (only then: every building keeps its chunk loaded)
+    // A player's unit standing by the ruins searches them; once done, its owner gets the treasure and the ruins go.
+    // (Ruins turned into buildings by an older version are handled the same way.)
+    private static final java.util.Map<BlockPos, Integer> searchTicks = new java.util.HashMap<>();
+
     private static void tickRuins(ServerLevel level) {
-        for (MapFeaturesSaveData.RuinSite site : data().ruins) {
-            if (site.converted || !level.hasChunkAt(site.origin) || getNearestPlayerUnit(site.origin, RUIN_DISCOVER_RANGE) == null)
-                continue;
+        for (MapFeaturesSaveData.RuinSite site : new java.util.ArrayList<>(data().ruins)) {
             var building = com.solegendary.reignofnether.api.ReignOfNetherRegistries.BUILDING.get(net.minecraft.resources.ResourceLocation.tryParse(site.building));
-            if (building == null)
+            if (building == null || !level.hasChunkAt(site.origin))
                 continue;
-            BuildingPlacement placement = BuildingServerEvents.placeBuilding(building, site.origin,
-                net.minecraft.world.level.block.Rotation.NONE, RUINS_OWNER, new int[] {}, false, false, true, true);
-            if (placement != null)
-                placement.selfBuilding = true; // fills in any block missing since
-            site.converted = true;
-            data().setDirty();
+            BuildingPlacement shape = com.solegendary.reignofnether.building.BuildingUtils.getNewBuildingPlacement(building, level,
+                site.origin, net.minecraft.world.level.block.Rotation.NONE, RUINS_OWNER, false);
+            if (shape == null)
+                continue;
+            net.minecraft.world.entity.LivingEntity searcher = getNearestPlayerUnit(shape.centrePos, RUIN_SEARCH_RANGE);
+            if (searcher == null) {
+                searchTicks.remove(site.origin);
+                continue;
+            }
+            String owner = ((Unit) searcher).getOwnerName();
+            int t = searchTicks.getOrDefault(site.origin, 0);
+            if (t == 0)
+                com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(owner, "Fouille des ruines...");
+            t += TICK_INTERVAL;
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, shape.centrePos.getX() + 0.5,
+                site.origin.getY() + 1, shape.centrePos.getZ() + 0.5, 6, 2, 0.5, 2, 0.02);
+            if (t < RUIN_SEARCH_TICKS) {
+                searchTicks.put(site.origin, t);
+                continue;
+            }
+            searchTicks.remove(site.origin);
+            lootRuin(level, site, shape, owner);
         }
     }
 
-    // ruins destroyed: their treasure goes to the player whose unit is nearest
-    public static void onRuinDestroyed(ServerLevel level, BuildingPlacement placement) {
-        if (serverLevel == null)
-            return;
-        data().ruins.removeIf(site -> site.origin.equals(placement.originPos));
+    private static void lootRuin(ServerLevel level, MapFeaturesSaveData.RuinSite site, BuildingPlacement shape, String owner) {
+        data().ruins.remove(site);
         data().setDirty();
         sitesChanged = true;
-        net.minecraft.world.entity.LivingEntity looter = getNearestPlayerUnit(placement.centrePos, LOOT_RANGE);
-        if (looter == null)
-            return;
-        String owner = ((Unit) looter).getOwnerName();
+        // the ruins disappear (no drops); a building made from them by an older version goes with its blocks
+        for (var bb : shape.getBlocks())
+            if (!bb.getBlockState().isAir() && !level.getBlockState(bb.getBlockPos()).isAir())
+                level.setBlock(bb.getBlockPos(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+        level.playSound(null, shape.centrePos, net.minecraft.sounds.SoundEvents.CHEST_OPEN, net.minecraft.sounds.SoundSource.BLOCKS, 1f, 1f);
         int food = random.nextInt(RUIN_LOOT_MIN, RUIN_LOOT_MAX + 1);
         int wood = random.nextInt(RUIN_LOOT_MIN, RUIN_LOOT_MAX + 1);
         int ore = random.nextInt(RUIN_LOOT_MIN, RUIN_LOOT_MAX + 1);
@@ -335,6 +351,18 @@ public class MapFeaturesServerEvents {
             new com.solegendary.reignofnether.resources.Resources(owner, food, wood, ore));
         com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(owner,
             "Trésor des ruines : +" + food + " nourriture, +" + wood + " bois, +" + ore + " minerai !");
+    }
+
+    // a ruins building (older version) destroyed by attacks: same treasure, if not searched already
+    public static void onRuinDestroyed(ServerLevel level, BuildingPlacement placement) {
+        if (serverLevel == null)
+            return;
+        MapFeaturesSaveData.RuinSite site = data().ruins.stream()
+            .filter(s -> s.origin.equals(placement.originPos)).findFirst().orElse(null);
+        net.minecraft.world.entity.LivingEntity looter = getNearestPlayerUnit(placement.centrePos, LOOT_RANGE);
+        if (site == null || looter == null)
+            return;
+        lootRuin(level, site, placement, ((Unit) looter).getOwnerName());
     }
 
     // a mined ore block of a quarry grows back now and then (where nothing stands)
