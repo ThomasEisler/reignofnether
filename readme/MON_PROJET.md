@@ -106,6 +106,10 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et Wor
 - Les unités **préfèrent passer par les routes** : une case de route « coûte » moitié moins qu'une case de terre (`ROAD_COST = 0.5` dans `PathfinderConfig`), donc elles font un détour pour les prendre. Le déplacement propre au mod est maintenant **activé sur toutes les cartes** (avant : seulement avec une bordure de 1280 blocs ou moins ; sans bordure, pas de pré-calcul de la carte, à surveiller si ça rame). Les routes sont reconnues par leur position : le gravier ou la pierre naturels ne comptent pas.
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
 
+### Nouveaux bâtiments et unités (14/10 au soir)
+- **Hospice** (250 PV ; 175 bois, 100 minerai ; 90 s ; recherche **Mysticisme**) : soigne de 1 PV toutes les 2 s mes unités (et alliées) à 12 blocs ; forme des **Prêtres**. Modèle `hospice` provisoire.
+- **Prêtre** (Hospice ; 100 nourriture, 50 minerai, 25 s) : villageois en robe de clerc, ne se bat pas ; toutes les 2 s soigne de 3 PV l'unité amie la plus blessée à 8 blocs (cœurs). Code `PriestUnit`/`PriestProd`.
+
 ### Expérience des unités
 - Les **unités d'armée** (pas les ouvriers, qui ont leurs métiers) gagnent de l'expérience : 1 par point de dégâts infligé, +15 par unité tuée. Rangs : **★ Aguerri** (40), **★★ Vétéran** (120), **★★★ Élite** (300) ; chaque rang donne **+10 % de vie et de dégâts** (Élite : +30 %), soigne de ce qui est gagné, avec étincelles, son et message.
 - Étoiles dorées au-dessus de l'unité (cachées dans le brouillard). Réglages dans `unit/UnitRankEvents.java` (`XP_FOR_RANK`, `BONUS_PER_RANK`, `KILL_XP`) ; dessin `unit/UnitRankClientEvents.java`. Le rang est un bonus de vie de l'unité (sauvegardé avec elle) ; l'expérience est dans ses données (`rtsXp`).
@@ -437,6 +441,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Hospice (soins autour) et Prêtre (soigne l'unité la plus blessée) |
 | 14/10/2026 | Correction : les entrepôts (posables loin) ne permettent plus de construire d'autres bâtiments autour d'eux |
 | 14/10/2026 | Scierie revue : plus d'arbres, les villageois y travaillent et elle produit du bois, fumée et sciure quand elle tourne |
 | 14/10/2026 | Expérience des unités d'armée : 3 rangs (★ Aguerri, ★★ Vétéran, ★★★ Élite), +10 % vie et dégâts par rang, étoiles au-dessus |

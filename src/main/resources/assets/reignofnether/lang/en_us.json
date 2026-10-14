@@ -2442,5 +2442,11 @@
     "entity.reignofnether.explorer_unit.tooltip2": "Send them under the clouds to uncover the map.",
     "buildings.reignofnether.sawmill": "Sawmill",
     "buildings.reignofnether.sawmill.tooltip1": "Villagers cut wood here: it makes wood even once the forests are gone.",
-    "buildings.reignofnether.sawmill.tooltip2": "Right click with villagers (3 at most) to make them work here."
+    "buildings.reignofnether.sawmill.tooltip2": "Right click with villagers (3 at most) to make them work here.",
+    "entity.reignofnether.priest_unit": "Priest",
+    "entity.reignofnether.priest_unit.tooltip1": "Heals the most wounded friendly unit near him.",
+    "entity.reignofnether.priest_unit.tooltip2": "Does not fight.",
+    "buildings.reignofnether.hospice": "Hospice",
+    "buildings.reignofnether.hospice.tooltip1": "Slowly heals the units around it.",
+    "buildings.reignofnether.hospice.tooltip2": "Trains priests."
 }

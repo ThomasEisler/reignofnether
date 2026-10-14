@@ -2409,5 +2409,11 @@
     "entity.reignofnether.explorer_unit.tooltip2": "Envoyez-les sous les nuages pour découvrir la carte.",
     "buildings.reignofnether.sawmill": "Scierie",
     "buildings.reignofnether.sawmill.tooltip1": "Les villageois y découpent du bois : elle en produit même quand les forêts ont disparu.",
-    "buildings.reignofnether.sawmill.tooltip2": "Clic droit avec des villageois (3 au plus) pour qu'ils y travaillent."
+    "buildings.reignofnether.sawmill.tooltip2": "Clic droit avec des villageois (3 au plus) pour qu'ils y travaillent.",
+    "entity.reignofnether.priest_unit": "Prêtre",
+    "entity.reignofnether.priest_unit.tooltip1": "Soigne l'unité alliée la plus blessée près de lui.",
+    "entity.reignofnether.priest_unit.tooltip2": "Ne se bat pas.",
+    "buildings.reignofnether.hospice": "Hospice",
+    "buildings.reignofnether.hospice.tooltip1": "Soigne lentement les unités autour de lui.",
+    "buildings.reignofnether.hospice.tooltip2": "Forme des prêtres."
 }

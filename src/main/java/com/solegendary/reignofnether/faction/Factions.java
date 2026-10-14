@@ -93,6 +93,7 @@ public class Factions {
 		registerEntity(VILLAGERS, EntityRegistrar.MILITIA_UNIT.get(), ProductionItems.VILLAGER);
 		registerEntity(VILLAGERS, EntityRegistrar.SCOUT_DOG_UNIT.get(), ProductionItems.SCOUT_DOG);
 		registerScoutEntity(VILLAGERS, EntityRegistrar.EXPLORER_UNIT.get(), ProductionItems.EXPLORER);
+		registerEntity(VILLAGERS, EntityRegistrar.PRIEST_UNIT.get(), ProductionItems.PRIEST);
 		registerEntity(VILLAGERS, EntityRegistrar.SCOUT_CAT_UNIT.get(), ProductionItems.SCOUT_CAT);
 		registerEntity(VILLAGERS, EntityRegistrar.VINDICATOR_UNIT.get(), ProductionItems.VINDICATOR);
 		registerEntity(VILLAGERS, EntityRegistrar.PILLAGER_UNIT.get(), ProductionItems.PILLAGER);
@@ -213,6 +214,7 @@ public class Factions {
 		registerBuildings(VILLAGERS, Buildings.VILLAGER_MARKET, Keybindings.hotkey10);
 		registerBuildings(VILLAGERS, Buildings.PORT);
 		registerBuildings(VILLAGERS, Buildings.SAWMILL);
+		registerBuildings(VILLAGERS, Buildings.HOSPICE);
 		registerBuildings(VILLAGERS, Buildings.BEACON);
 		
 		//Neutral
