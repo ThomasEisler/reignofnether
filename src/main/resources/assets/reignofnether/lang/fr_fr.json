@@ -2417,5 +2417,9 @@
     "buildings.reignofnether.hospice.tooltip1": "Soigne lentement les unités autour de lui.",
     "buildings.reignofnether.hospice.tooltip2": "Forme des prêtres.",
     "buildings.reignofnether.mill": "Moulin",
-    "buildings.reignofnether.mill.tooltip1": "Les fermes à moins de 24 blocs poussent 30 % plus vite."
+    "buildings.reignofnether.mill.tooltip1": "Les fermes à moins de 24 blocs poussent 30 % plus vite.",
+    "buildings.reignofnether.mine": "Mine",
+    "buildings.reignofnether.mine.tooltip1": "À poser près d'une carrière : les villageois y travaillent et elle produit du minerai sans fin.",
+    "buildings.reignofnether.mine.tooltip2": "Clic droit avec des villageois (3 au plus).",
+    "building.reignofnether.mine_needs_quarry": "Une mine doit être près d'une carrière"
 }

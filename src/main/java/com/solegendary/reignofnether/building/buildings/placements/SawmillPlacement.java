@@ -18,9 +18,10 @@ import net.minecraft.world.level.block.Rotation;
 
 import java.util.ArrayList;
 
-// The sawmill turns its workers' time into wood: each villager working inside (sent with a right click, like to a
-// farm, up to MAX_WORKERS) adds to the progress; every WORK_SECONDS of work gives WOOD_PER_LOAD wood straight to the
-// owner. No trees: while it works, smoke rises from the shed and sawdust flies around the saw.
+// The sawmill (and the mine) turns its workers' time into a resource: each villager working inside (sent with a right
+// click, like to a farm, up to MAX_WORKERS) adds to the progress; every WORK_SECONDS of work gives WOOD_PER_LOAD of the
+// resource straight to the owner. No trees: while a sawmill works, smoke rises from the shed and sawdust flies around
+// the saw; a mine throws up stone dust.
 public class SawmillPlacement extends FarmPlacement {
 
     public static final int MAX_WORKERS = 3;
@@ -31,9 +32,16 @@ public class SawmillPlacement extends FarmPlacement {
     private int progress = 0; // ticks of work done towards the next load
     private int workers = 0;
     private BlockPos saw = null;
+    private final com.solegendary.reignofnether.resources.ResourceName resource;
 
     public SawmillPlacement(Building building, Level level, BlockPos originPos, Rotation rotation, String ownerName, ArrayList<BuildingBlock> blocks) {
+        this(building, level, originPos, rotation, ownerName, blocks, com.solegendary.reignofnether.resources.ResourceName.WOOD);
+    }
+
+    public SawmillPlacement(Building building, Level level, BlockPos originPos, Rotation rotation, String ownerName, ArrayList<BuildingBlock> blocks,
+                            com.solegendary.reignofnether.resources.ResourceName resource) {
         super(building, level, originPos, rotation, ownerName, blocks, false);
+        this.resource = resource;
         for (BuildingBlock bb : blocks)
             if (bb.getBlockState().is(Blocks.STONECUTTER))
                 saw = bb.getBlockPos();
@@ -63,9 +71,16 @@ public class SawmillPlacement extends FarmPlacement {
         progress += workers * TICK_INTERVAL;
         if (progress >= WORK_SECONDS * 20) {
             progress -= WORK_SECONDS * 20;
-            ResourcesServerEvents.addSubtractResources(new Resources(ownerName, 0, WOOD_PER_LOAD, 0));
+            boolean ore = resource == com.solegendary.reignofnether.resources.ResourceName.ORE;
+            ResourcesServerEvents.addSubtractResources(new Resources(ownerName, 0, ore ? 0 : WOOD_PER_LOAD, ore ? WOOD_PER_LOAD : 0));
         }
         BlockPos at = saw != null ? saw : centrePos;
+        if (resource == com.solegendary.reignofnether.resources.ResourceName.ORE) {
+            for (ServerPlayer p : level.players())
+                level.sendParticles(p, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.COBBLESTONE.defaultBlockState()), true,
+                    centrePos.getX() + 0.5, centrePos.getY() + 1.0, centrePos.getZ() + 0.5, 4 + 3 * workers, 1.5, 0.3, 1.5, 0.15);
+            return;
+        }
         for (ServerPlayer p : level.players()) {
             level.sendParticles(p, ParticleTypes.CAMPFIRE_COSY_SMOKE, true, at.getX() + 0.5, maxCorner.getY() + 1.0, at.getZ() + 0.5,
                 1, 0.2, 0.1, 0.2, 0.01);

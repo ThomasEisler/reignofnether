@@ -34,6 +34,10 @@ public class MapIconsClientEvents {
     private static List<BlockPos> quarries = new ArrayList<>();
     private static List<BlockPos> ruins = new ArrayList<>();
 
+    public static List<BlockPos> getQuarries() {
+        return quarries;
+    }
+
     public static void setSites(List<BlockPos> newQuarries, List<BlockPos> newRuins) {
         quarries = newQuarries;
         ruins = newRuins;

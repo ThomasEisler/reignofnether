@@ -74,6 +74,9 @@ public class BuildingValidators {
             return "building.reignofnether.outside_map";
         } else if (!isNotTutorialOrNearValidCapitolPosition(level, building, originPos)) {
             return "building.reignofnether.build_centre_here";
+        } else if (building instanceof com.solegendary.reignofnether.building.buildings.villagers.Mine &&
+                !com.solegendary.reignofnether.building.buildings.villagers.Mine.isNearQuarry(level, originPos)) {
+            return "building.reignofnether.mine_needs_quarry";
         } else if (!isSandbox && !com.solegendary.reignofnether.tech.Tech.canBuild(level.isClientSide(), ownerName, building)) {
             return "building.reignofnether.needs_tech";
         } else if (!isSandbox && building.isCapitol && getCityError(level, ownerName, absoluteBlocks) != null) {

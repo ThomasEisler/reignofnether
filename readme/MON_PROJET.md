@@ -110,6 +110,7 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et Wor
 - **Hospice** (200 PV ; 175 bois, 100 minerai ; 90 s ; recherche **Mysticisme**) : soigne de 1 PV toutes les 2 s mes unités (et alliées) à 12 blocs ; forme des **Prêtres**. Modèle `hospice` provisoire.
 - **Prêtre** (Hospice ; 100 nourriture, 50 minerai, 25 s) : villageois en robe de clerc, ne se bat pas ; toutes les 2 s soigne de 3 PV l'unité amie la plus blessée à 8 blocs (cœurs). Code `PriestUnit`/`PriestProd`.
 - **Moulin** (150 PV ; 150 bois, 50 minerai ; 60 s ; sans recherche) : mes fermes à moins de 24 blocs font pousser leurs cultures **30 % plus vite** (un moulin suffit). Réglages `Mill.RANGE`, `Mill.GROWTH_BONUS` ; appliqué dans `FarmPlacement.tickCrops`. Modèle `mill` provisoire.
+- **Mine** (150 PV ; 250 bois, 50 minerai ; 75 s ; recherche **Métallurgie**) : se pose à moins de 24 blocs d'une **carrière** ; comme la scierie, les villageois envoyés dedans (3 au plus) y travaillent et elle produit du **minerai sans fin** (15 toutes les 12 s de travail), avec de la poussière de pierre. Code `Mine` + `SawmillPlacement` (ressource ORE). Modèle `mine` provisoire.
 
 ### Expérience des unités
 - Les **unités d'armée** (pas les ouvriers, qui ont leurs métiers) gagnent de l'expérience : 1 par point de dégâts infligé, +15 par unité tuée. Rangs : **★ Aguerri** (40), **★★ Vétéran** (120), **★★★ Élite** (300) ; chaque rang donne **+10 % de vie et de dégâts** (Élite : +30 %), soigne de ce qui est gagné, avec étincelles, son et message.
@@ -442,6 +443,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Mine près des carrières : minerai sans fin avec des villageois |
 | 14/10/2026 | Moulin : fermes proches 30 % plus rapides |
 | 14/10/2026 | Hospice (soins autour) et Prêtre (soigne l'unité la plus blessée) |
 | 14/10/2026 | Correction : les entrepôts (posables loin) ne permettent plus de construire d'autres bâtiments autour d'eux |

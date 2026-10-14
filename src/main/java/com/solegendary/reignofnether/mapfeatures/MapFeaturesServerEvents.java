@@ -285,6 +285,14 @@ public class MapFeaturesServerEvents {
         sitesChanged = true;
     }
 
+    public static java.util.List<BlockPos> getQuarryCentres() {
+        java.util.List<BlockPos> list = new java.util.ArrayList<>();
+        if (serverLevel != null)
+            for (MapFeaturesSaveData.Quarry q : data().quarries)
+                list.add(q.centre);
+        return list;
+    }
+
     @Nullable
     private static net.minecraft.world.entity.LivingEntity getNearestPlayerUnit(BlockPos pos, int range) {
         net.minecraft.world.entity.LivingEntity nearest = null;
