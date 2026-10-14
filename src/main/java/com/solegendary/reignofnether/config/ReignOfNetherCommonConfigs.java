@@ -39,6 +39,7 @@ public class ReignOfNetherCommonConfigs {
         BUILDER.comment("VillagersFaction");
         UnitCosts.VILLAGER.define(BUILDER);
         UnitCosts.SCOUT_DOG.define(BUILDER);
+        UnitCosts.EXPLORER.define(BUILDER);
         UnitCosts.SCOUT_CAT.define(BUILDER);
         UnitCosts.MILITIA.define(BUILDER);
         UnitCosts.IRON_GOLEM.define(BUILDER);
@@ -222,6 +223,7 @@ public class ReignOfNetherCommonConfigs {
 
         // VillagersFaction
         public static final ResourceCostConfigEntry VILLAGER = ResourceCostConfigEntry.Unit(50,0,0,15,1, ResourceCosts.VILLAGER, "Villager Config");
+        public static final ResourceCostConfigEntry EXPLORER = ResourceCostConfigEntry.Unit(75,0,0,20,1, ResourceCosts.EXPLORER, "Explorer Config");
         public static final ResourceCostConfigEntry SCOUT_DOG = ResourceCostConfigEntry.Unit(50,0,0,15,1, ResourceCosts.SCOUT_DOG, "Scout Dog Config");
         public static final ResourceCostConfigEntry SCOUT_CAT = ResourceCostConfigEntry.Unit(50,0,0,15,1, ResourceCosts.SCOUT_CAT, "Scout Cat Config");
         public static final ResourceCostConfigEntry MILITIA = ResourceCostConfigEntry.Unit(50,0,0,15,1, ResourceCosts.MILITIA, "Militia Config");

@@ -63,8 +63,8 @@ public class TownCentre extends ProductionBuilding implements RangeIndicatorAddo
         this.abilities.add(backToWork, Keybindings.build);
 
         this.productions.add(ProductionItems.VILLAGER, Keybindings.abilitySlot1);
-        this.productions.add(ProductionItems.SCOUT_DOG, Keybindings.abilitySlot2);
-        this.productions.add(ProductionItems.SCOUT_CAT, Keybindings.abilitySlot2);
+        // the Explorer (villager + dog) replaces the scout dog and cat
+        this.productions.add(ProductionItems.EXPLORER, Keybindings.abilitySlot2);
 
         // PLACEHOLDER structures: town_centre_lvl2/town_centre_lvl3 are copies of town_centre.nbt until real ones are made
         setLevels(

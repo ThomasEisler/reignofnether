@@ -413,6 +413,25 @@ public class CommandsServerEvents {
 				.then(Commands.literal("normal").executes(ctx -> setBarbarianDifficulty(ctx, com.solegendary.reignofnether.barbarian.BarbarianDifficulty.NORMAL)))
 				.then(Commands.literal("difficile").executes(ctx -> setBarbarianDifficulty(ctx, com.solegendary.reignofnether.barbarian.BarbarianDifficulty.HARD)))
 		);
+		// clouds over unexplored land
+		dispatcher.register(Commands.literal("rts-nuages")
+				.requires(source -> source.hasPermission(2))
+				.then(Commands.literal("on").executes(ctx -> {
+					com.solegendary.reignofnether.exploration.ExplorationServerEvents.setEnabled(true);
+					ctx.getSource().sendSuccess(() -> Component.literal("Nuages activés"), true);
+					return 1;
+				}))
+				.then(Commands.literal("off").executes(ctx -> {
+					com.solegendary.reignofnether.exploration.ExplorationServerEvents.setEnabled(false);
+					ctx.getSource().sendSuccess(() -> Component.literal("Nuages désactivés"), true);
+					return 1;
+				}))
+				.then(Commands.literal("reset").executes(ctx -> {
+					com.solegendary.reignofnether.exploration.ExplorationServerEvents.reset();
+					ctx.getSource().sendSuccess(() -> Component.literal("Carte de nouveau inexplorée pour tous"), true);
+					return 1;
+				}))
+		);
 		// computer-run civilisations
 		dispatcher.register(Commands.literal("rts-bot")
 				.requires(source -> source.hasPermission(2))

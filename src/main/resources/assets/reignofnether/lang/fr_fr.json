@@ -2403,5 +2403,8 @@
     "entity.reignofnether.cavalier_unit.tooltip1": "Un vindicateur sur un cheval de guerre en armure. Rapide et puissant, il charge l'ennemi.",
     "entity.reignofnether.horse_unit": "Cheval de guerre",
     "research.reignofnether.level_upgrade.garrison_damage": "Dégâts de la garnison : %s%% -> %s%%",
-    "buildings.reignofnether.rampart_tower": "Tour de rempart"
+    "buildings.reignofnether.rampart_tower": "Tour de rempart",
+    "entity.reignofnether.explorer_unit": "Éclaireur",
+    "entity.reignofnether.explorer_unit.tooltip1": "Un villageois et son chien, plus rapides que les ouvriers. Voient très loin.",
+    "entity.reignofnether.explorer_unit.tooltip2": "Envoyez-les sous les nuages pour découvrir la carte."
 }

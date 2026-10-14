@@ -703,7 +703,11 @@ public class MinimapClientEvents {
                 int z0 = z - zc_world + worldRadius;
 
                 borderPos.set(x, 0, z);
-                if (!MC.level.getWorldBorder().isWithinBounds(borderPos)) {
+                if (!com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(x, z)) {
+                    // unexplored: cloud white, with a soft speckle so it doesn't look like snow
+                    int n = (int) ((x * 73856093L ^ z * 19349663L) & 7);
+                    rgb = MiscUtil.shadeHexRGB(0xE4E8EE, 0.94F + n * 0.012F);
+                } else if (!MC.level.getWorldBorder().isWithinBounds(borderPos)) {
                     rgb = MiscUtil.shadeHexRGB(rgb, EXTRA_DARK);
                 } else if (!columnVisible) {
                     rgb = MiscUtil.shadeHexRGB(rgb, DARK);
@@ -787,7 +791,8 @@ public class MinimapClientEvents {
         // draw buildings
         for (BuildingPlacement building : BuildingClientEvents.getBuildings()) {
 
-            if (!building.isExploredClientside || building.getBuilding() instanceof AbstractBridge)
+            if (!building.isExploredClientside || building.getBuilding() instanceof AbstractBridge
+                    || !com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(building.centrePos))
                 continue;
 
             int buildingRadius = getBuildingRadius(building);

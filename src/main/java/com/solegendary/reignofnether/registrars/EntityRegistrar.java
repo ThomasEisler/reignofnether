@@ -117,6 +117,12 @@ public class EntityRegistrar {
                     .clientTrackingRange(UNIT_CLIENT_TRACKING_RANGE)
                     .build(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "villager_unit").toString()));
 
+    public static final RegistryObject<EntityType<com.solegendary.reignofnether.unit.units.villagers.ExplorerUnit>> EXPLORER_UNIT = ENTITIES.register("explorer_unit",
+            () -> EntityType.Builder.of(com.solegendary.reignofnether.unit.units.villagers.ExplorerUnit::new, MobCategory.CREATURE)
+                    .sized(EntityType.VILLAGER.getWidth(), EntityType.VILLAGER.getHeight())
+                    .clientTrackingRange(UNIT_CLIENT_TRACKING_RANGE)
+                    .build(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "explorer_unit").toString()));
+
     public static final RegistryObject<EntityType<ScoutDogUnit>> SCOUT_DOG_UNIT = ENTITIES.register("scout_dog_unit",
             () -> EntityType.Builder.of(ScoutDogUnit::new, MobCategory.CREATURE)
                     .sized(EntityType.WOLF.getWidth(), EntityType.WOLF.getHeight())
@@ -480,6 +486,7 @@ public class EntityRegistrar {
             case WraithProd.itemName -> EntityRegistrar.WRAITH_UNIT.get();
             case VillagerProd.itemName -> EntityRegistrar.VILLAGER_UNIT.get();
             case ScoutDogProd.itemName -> EntityRegistrar.SCOUT_DOG_UNIT.get();
+            case com.solegendary.reignofnether.unit.units.villagers.ExplorerProd.itemName -> EntityRegistrar.EXPLORER_UNIT.get();
             case ScoutCatProd.itemName -> EntityRegistrar.SCOUT_CAT_UNIT.get();
             case ZombieVillagerProd.itemName -> EntityRegistrar.ZOMBIE_VILLAGER_UNIT.get();
             case BatProd.itemName -> EntityRegistrar.BAT_UNIT.get();

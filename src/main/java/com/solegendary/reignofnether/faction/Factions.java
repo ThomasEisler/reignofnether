@@ -91,7 +91,8 @@ public class Factions {
 		// Villagers
 		registerWorkerEntity(VILLAGERS, EntityRegistrar.VILLAGER_UNIT.get(), ProductionItems.VILLAGER);
 		registerEntity(VILLAGERS, EntityRegistrar.MILITIA_UNIT.get(), ProductionItems.VILLAGER);
-		registerScoutEntity(VILLAGERS, EntityRegistrar.SCOUT_DOG_UNIT.get(), ProductionItems.SCOUT_DOG);
+		registerEntity(VILLAGERS, EntityRegistrar.SCOUT_DOG_UNIT.get(), ProductionItems.SCOUT_DOG);
+		registerScoutEntity(VILLAGERS, EntityRegistrar.EXPLORER_UNIT.get(), ProductionItems.EXPLORER);
 		registerEntity(VILLAGERS, EntityRegistrar.SCOUT_CAT_UNIT.get(), ProductionItems.SCOUT_CAT);
 		registerEntity(VILLAGERS, EntityRegistrar.VINDICATOR_UNIT.get(), ProductionItems.VINDICATOR);
 		registerEntity(VILLAGERS, EntityRegistrar.PILLAGER_UNIT.get(), ProductionItems.PILLAGER);

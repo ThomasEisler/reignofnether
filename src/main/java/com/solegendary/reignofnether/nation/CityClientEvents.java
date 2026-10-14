@@ -54,13 +54,19 @@ public class CityClientEvents {
             matrix.mulPose(camera.rotation());
             matrix.scale(-scale, -scale, scale);
             float w = font.width(name) / 2f;
-            // like players' name tags: a faint pass seen through blocks (with the background), then the crisp text
-            font.drawInBatch(name, -w, 0, 0x40FFFFFF, false, matrix.last().pose(), buffers,
+            // drawn in one see-through pass only: with shaders (Oculus) the usual second, depth-tested pass
+            // is lost and only a faint grey name remained. Dark nation colours are lightened to stay readable.
+            font.drawInBatch(name, -w, 0, 0xFF000000 | lighten(colour), false, matrix.last().pose(), buffers,
                 Font.DisplayMode.SEE_THROUGH, 0x90000000, 0xF000F0);
-            font.drawInBatch(name, -w, 0, 0xFF000000 | colour, false, matrix.last().pose(), buffers,
-                Font.DisplayMode.NORMAL, 0, 0xF000F0);
             matrix.popPose();
         }
         buffers.endBatch();
+    }
+
+    // mixes a colour 40% towards white
+    private static int lighten(int rgb) {
+        int r = (rgb >> 16) & 0xFF, g = (rgb >> 8) & 0xFF, b = rgb & 0xFF;
+        r += (255 - r) * 2 / 5; g += (255 - g) * 2 / 5; b += (255 - b) * 2 / 5;
+        return (r << 16) | (g << 8) | b;
     }
 }

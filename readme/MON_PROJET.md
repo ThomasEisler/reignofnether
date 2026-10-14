@@ -106,6 +106,11 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et Wor
 - Les unités **préfèrent passer par les routes** : une case de route « coûte » moitié moins qu'une case de terre (`ROAD_COST = 0.5` dans `PathfinderConfig`), donc elles font un détour pour les prendre. Le déplacement propre au mod est maintenant **activé sur toutes les cartes** (avant : seulement avec une bordure de 1280 blocs ou moins ; sans bordure, pas de pré-calcul de la carte, à surveiller si ça rame). Les routes sont reconnues par leur position : le gravier ou la pierre naturels ne comptent pas.
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
 
+### Éclaireurs et nuages
+- **Éclaireur** (Hôtel de ville, 2e bouton, 75 nourriture, 20 s) : un villageois cartographe suivi d'un chien. Plus rapide qu'un ouvrier (0,34 contre 0,25), voit à 40 blocs (16 pour les autres), ne se bat pas. Il remplace le chien et le chat éclaireurs. Le chien n'est qu'un dessin (pas une vraie bête) : il suit le chemin de l'éclaireur et s'assoit quand il s'arrête.
+- **Nuages** sur tout ce que le joueur n'a pas encore exploré : chaque morceau de carte (16 × 16) vu une fois par ses unités ou bâtiments est découvert pour toujours (sauvegardé). Sous les nuages : unités, icônes et bâtiments ennemis cachés, minimap blanche, construction interdite (« Zone inexplorée »). Rien n'est caché tant que le joueur ne possède rien (pour choisir où poser son premier Hôtel de ville). Bots et barbares : pas de nuages.
+- Commandes : `/rts-nuages off` / `on` (sauvegardé avec le monde), `/rts-nuages reset` (tout redevient inexploré).
+
 ### Barbares
 - Faction contrôlée par l'ordinateur, **ennemie de tous**. **Actifs par défaut** dans tous les mondes ; `/rts-barbarians off` pour les désactiver (`on` pour les remettre), réglage sauvegardé avec le monde.
 - **Camps** : rien tant qu'aucun joueur n'a de caserne terminée. Après un délai (5 min en normal) suivant la première caserne d'un joueur, un camp apparaît **à 130-170 blocs des bâtiments des joueurs** (et à 110 blocs au moins d'un autre camp), puis un autre après le même délai, etc., jusqu'à **n + 1 camps** (n = joueurs ayant une caserne depuis assez longtemps). Un joueur qui perd toutes ses casernes ne compte plus. Un camp détruit est remplacé au plus tôt après ce délai. Le **premier camp commence toujours au niveau 1** ; les camps suivants commencent un niveau plus haut au même rythme que la montée de niveau, compté à partir de l'arrivée possible du premier camp.
@@ -376,7 +381,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 - Les noms des boutons de construction utilisaient des clés de traduction inexistantes (`buildings.villagers.reignofnether.…`) : corrigé en `buildings.reignofnether.…` partout (43 endroits).
 
-**Prochaine étape prévue** (14/10/2026) : faire tester en jeu (nouveau monde) tout ce qui a été ajouté le 14/10 — bots (`/rts-bot ajouter` ×3), noms de villes (affichage corrigé, à revérifier), pêche en bateau, troupeaux, carrières, ruines, camps barbares à 5 niveaux, routes en arc, déplacement du mod activé partout (surveiller les ralentissements), rectangles orange de Distant Horizons. Puis bots étapes 3 (bâtiments, recherches, 2e ville), 4 (armée, attaques, entre bots aussi) et 5 (bouton nombre de bots + difficulté).
+**Prochaine étape prévue** (14/10/2026) : faire tester en jeu les éclaireurs, les nuages (allure, ralentissements, avec et sans shaders), les noms de villes (maintenant toujours visibles, même à travers le relief) et les unités qui n'entrent plus dans l'eau ; puis tout ce qui a été ajouté le 14/10 — bots (`/rts-bot ajouter` ×3), noms de villes (affichage corrigé, à revérifier), pêche en bateau, troupeaux, carrières, ruines, camps barbares à 5 niveaux, routes en arc, déplacement du mod activé partout (surveiller les ralentissements), rectangles orange de Distant Horizons. Puis bots étapes 3 (bâtiments, recherches, 2e ville), 4 (armée, attaques, entre bots aussi) et 5 (bouton nombre de bots + difficulté).
 
 **Façon de répondre** : en français, concis et direct, sans jargon ; chiffrer la taille d'une tâche en **briques** (1 = un réglage, 10 = petite fonction, 100 = gros ensemble comme les camps à 5 niveaux), jamais « gros morceau ». Le jeu doit être fermé pour installer le mod : si l'utilisateur dit « ferme et installe », arrêter Minecraft proprement (`kill -TERM` du processus java) puis copier le jar.
 
@@ -391,6 +396,8 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - Limite de distance : `building/BuildRange.java` (rayon `RANGE`, exceptions), vérifiée dans `BuildingValidators.getPlacementValidityError`, zone rouge dans `BuildingClientEvents.drawBuildRangeZone`. Villages : tags vides `data/minecraft/tags/worldgen/biome/has_structure/village_*.json`.
 - Nations : dossier `nation/` (`Nation` = liste, dirigeants, couleurs, bonus ; `NationServerEvents` = qui joue quoi, sauvegarde ; `NationClientEvents` = fenêtre de choix et nom en haut de l'écran). Bonus branchés dans `BuildingPlacement` (construction), `RoadServerEvents`/`RoadClientEvents` (routes), `BarbarianServerEvents` (butin), `ProductionItem` (production), `GatherResourcesGoal` (récolte), `ResourcesServerEvents.resetResources` (départ), `Unit.tick` (vitesse). Factions cachées dans `hud/buttons/StartButtons.java`, Survie retirée dans `ClientGameModeHelper.cycleGameMode`.
 - Technologies : dossier `tech/` (`Tech` = liste, prix, durées, déblocages, position dans l'écran ; `TechServerEvents` = recherches des joueurs, sauvegarde `TechSaveData` ; `TechClientEvents` = écran et bouton à gauche). Bâtiments cachés dans `BuildingPlaceButton`, vérifié dans `BuildingValidators` ; niveaux dans `BuildingLevelUpgrade`. Bouton Bibliothèque : `OpenTechTree`.
+- Éclaireur : `unit/units/villagers/ExplorerUnit.java` / `ExplorerProd.java` (icône `mobheads/explorer.png`) ; chien : `exploration/ExplorerDogClientEvents.java`. Nuages : dossier `exploration/` (`ExplorationServerEvents` = morceaux vus par joueur toutes les secondes, `ExplorationSaveData`, paquet, `ExplorationClientEvents` = dessin des nuages, réglages `CLEARANCE`, `SLAB_THICKNESS`, `CURTAIN_DEPTH`). Cachés sous les nuages via `FogOfWarClientEvents.isInBrightChunk` ; minimap dans `MinimapClientEvents.updateMapTerrain` ; construction dans `BuildingValidators`.
+- Eau : `MobilityClass.costFor` (eau infranchissable sauf unités aquatiques) ; une unité terrestre dans l'eau est remise sur la rive après 2 s (`Unit.tick`).
 - Commandes : `commands/CommandsServerEvents.java` (`rts-rebuild-buildings`, `rts-road`).
 - Terrain : `src/main/resources/data/minecraft/worldgen/world_preset/normal.json` (`settings` = `minecraft:overworld`).
 
@@ -419,6 +426,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Routes construites par les ouvriers, aperçu du tracé et du prix |
 | 13/10/2026 | Routes qui contournent les obstacles |
 | 13/10/2026 | Chantiers : durées par bâtiment, tours d'échafaudage qui montent, barre de progression |
+| 14/10/2026 | Éclaireurs (villageois + chien) ; nuages sur la carte inexplorée ; noms de villes toujours visibles (shaders) ; unités terrestres interdites dans l'eau |
 | 14/10/2026 | Noms de villes : affichage corrigé (lettres brouillées par l'ombre et les shaders) |
 | 14/10/2026 | Bots : arrivée et économie (`/rts-bot ajouter`) |
 | 14/10/2026 | Unités qui préfèrent les routes sur toutes les cartes (déplacement du mod activé partout) |

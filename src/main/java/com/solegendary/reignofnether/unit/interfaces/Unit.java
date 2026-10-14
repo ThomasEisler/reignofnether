@@ -295,6 +295,17 @@ public interface Unit {
                     chunkProvider.addRegionTicket(TicketType.FORCED, chunkPos, 2, chunkPos);
                 }
             }
+            // a land unit that ends up in water anyway (pushed, spawned, knocked back) is put back on the
+            // nearest dry ground after 2 seconds, since paths no longer go through water
+            if (unitMob.isInWater() && !unitMob.isPassenger() && unitMob.tickCount % 40 == 0
+                    && com.solegendary.reignofnether.unit.pathfinding.MobilityClass.of(unit)
+                       != com.solegendary.reignofnether.unit.pathfinding.MobilityClass.AQUATIC) {
+                BlockPos land = com.solegendary.reignofnether.unit.pathfinding.RtsPathfinder.findStandable(
+                    serverLevel, unitPos, com.solegendary.reignofnether.unit.pathfinding.MobilityClass.of(unit),
+                    0, 2, 1f, 8);
+                if (land != null && !land.equals(unitPos))
+                    unitMob.teleportTo(land.getX() + 0.5, land.getY(), land.getZ() + 0.5);
+            }
         }
         boolean clientSide = ((Entity) unit).level().isClientSide();
         double ticksPerSec = clientSide ? RtsDebugClientEvents.getCappedTPS() : 20d;
@@ -1053,7 +1064,7 @@ public interface Unit {
     }
 
     public default boolean isScout() {
-        return this instanceof ScoutDogUnit || this instanceof ScoutCatUnit || this instanceof BatUnit || this instanceof StriderUnit;
+        return this instanceof com.solegendary.reignofnether.unit.units.villagers.ExplorerUnit || this instanceof ScoutDogUnit || this instanceof ScoutCatUnit || this instanceof BatUnit || this instanceof StriderUnit;
     }
 
     public default boolean isGarrisoned() {

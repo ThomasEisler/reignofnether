@@ -118,6 +118,7 @@ public class ClientModEvents {
         evt.registerEntityRenderer(EntityRegistrar.SCOUT_DOG_UNIT.get(), DogUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.SCOUT_CAT_UNIT.get(), CatUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.MILITIA_UNIT.get(), VillagerUnitRenderer::new);
+        evt.registerEntityRenderer(EntityRegistrar.EXPLORER_UNIT.get(), (net.minecraft.client.renderer.entity.EntityRendererProvider) VillagerUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.TEMPORARY_MILITIA_UNIT.get(), VillagerUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.ZOMBIE_VILLAGER_UNIT.get(), ZombieVillagerUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.BAT_UNIT.get(), BatUnitRenderer::new);

@@ -64,6 +64,10 @@ public class BuildingValidators {
             return "building.reignofnether.must_be_nether";
         } else if (!isNonBridgeOrValidBridge(level, building, originPos, absoluteBlocks)) {
             return "building.reignofnether.must_be_liquid";
+        } else if (!isSandbox && !(level.isClientSide()
+                ? com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(originPos)
+                : com.solegendary.reignofnether.exploration.ExplorationServerEvents.isExploredBy(ownerName, originPos.getX(), originPos.getZ()))) {
+            return "building.reignofnether.unexplored";
         } else if (!isInBrightChunk(level, absoluteBlocks, ownerName) && !isSandbox && !ignoreFog) {
             return "building.reignofnether.unexplored";
         } else if (!isBuildingPlacementWithinWorldBorder(level, building, absoluteBlocks)) {

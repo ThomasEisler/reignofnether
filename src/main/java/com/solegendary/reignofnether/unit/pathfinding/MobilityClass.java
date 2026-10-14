@@ -32,7 +32,8 @@ public enum MobilityClass {
             case WalkabilityBuilder.KIND_ROAD: return PathfinderConfig.ROAD_COST;
             case WalkabilityBuilder.KIND_WATER:
                 if (this == AQUATIC) return 3.0f;
-                return 25.0f;
+                // land units never path through water (they got stuck in it); boats from the Port don't use this
+                return Float.POSITIVE_INFINITY;
             case WalkabilityBuilder.KIND_FIRE: return mob == FIRE_IMMUNE ? 1.0f : PathfinderConfig.FIRE_AVOID_COST;
             case WalkabilityBuilder.KIND_SLIME: return PathfinderConfig.SLIME_AVOID_COST;
             default: return Float.POSITIVE_INFINITY;

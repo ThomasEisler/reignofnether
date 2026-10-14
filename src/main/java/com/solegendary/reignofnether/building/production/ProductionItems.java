@@ -31,6 +31,7 @@ public class ProductionItems {
     public static final PoisonSpiderProd POISON_SPIDER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "poison_spider"), new PoisonSpiderProd());
     public static final VillagerProd VILLAGER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "villager"), new VillagerProd());
     public static final MilitiaProd MILITIA = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "militia"), new MilitiaProd());
+    public static final com.solegendary.reignofnether.unit.units.villagers.ExplorerProd EXPLORER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "explorer"), new com.solegendary.reignofnether.unit.units.villagers.ExplorerProd());
     public static final ScoutDogProd SCOUT_DOG = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "scout_dog"), new ScoutDogProd());
     public static final ScoutCatProd SCOUT_CAT = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "scout_cat"), new ScoutCatProd());
     public static final ZombieVillagerProd ZOMBIE_VILLAGER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "zombie_villager"), new ZombieVillagerProd());
@@ -160,6 +161,7 @@ public class ProductionItems {
         VILLAGER,
         MILITIA,
         SCOUT_DOG,
+        EXPLORER,
         SCOUT_CAT,
         ZOMBIE_VILLAGER,
         BAT,

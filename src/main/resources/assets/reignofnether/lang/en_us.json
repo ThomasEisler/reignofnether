@@ -2436,5 +2436,8 @@
     "entity.reignofnether.cavalier_unit.tooltip1": "A Vindicator on an armoured war horse. Fast and powerful, it charges the enemy.",
     "entity.reignofnether.horse_unit": "War Horse",
     "research.reignofnether.level_upgrade.garrison_damage": "Garrison damage: %s%% -> %s%%",
-    "buildings.reignofnether.rampart_tower": "Rampart Tower"
+    "buildings.reignofnether.rampart_tower": "Rampart Tower",
+    "entity.reignofnether.explorer_unit": "Explorer",
+    "entity.reignofnether.explorer_unit.tooltip1": "A villager and his dog, faster than workers. They see very far.",
+    "entity.reignofnether.explorer_unit.tooltip2": "Send them under the clouds to uncover the map."
 }

@@ -250,6 +250,8 @@ public class FogOfWarClientEvents {
     }
 
     public static boolean isBuildingInBrightChunk(BuildingPlacement building) {
+        if (!com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(building.centrePos))
+            return false;
         if (!isEnabled())
             return true;
 
@@ -264,12 +266,17 @@ public class FogOfWarClientEvents {
     // if visible at block level, so entities/items/particles hide inside the fogged part of an edge chunk
     // (own + allied units are viewers, always inside their own circle, so they never self-hide).
     public static boolean isInBrightChunk(BlockPos bp) {
+        if (!com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(bp))
+            return false; // under the clouds of unexplored land
         if (!isEnabled() || MC.level == null)
             return true;
         return isBlockVisible(bp);
     }
 
     public static boolean isInBrightChunk(Entity entity) {
+        if (!com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(entity.getBlockX(), entity.getBlockZ())
+                && !(entity instanceof Unit u && MC.player != null && u.getOwnerName().equals(MC.player.getName().getString())))
+            return false;
         if (!isEnabled() || MC.level == null)
             return true;
 
