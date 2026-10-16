@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "": [
+      { "model": "reignofnether:block/reinforced_rampart", "weight": 6 },
+      { "model": "reignofnether:block/reinforced_rampart_cracked", "weight": 2 },
+      { "model": "reignofnether:block/reinforced_rampart_polished", "weight": 1 }
+    ]
+  }
+}

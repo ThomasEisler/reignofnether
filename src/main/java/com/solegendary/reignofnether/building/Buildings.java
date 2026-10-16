@@ -103,7 +103,16 @@ public class Buildings {
         new com.solegendary.reignofnether.rampart.RampartBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.IRON_GATE, "Portcullis", 450d, net.minecraft.world.level.block.Blocks.IRON_BARS, "textures/block/iron_bars.png"));
 
     public static final com.solegendary.reignofnether.rampart.RampartTowerBuilding RAMPART_TOWER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "rampart_tower"),
-        new com.solegendary.reignofnether.rampart.RampartTowerBuilding("Rampart Tower", 500d, net.minecraft.world.level.block.Blocks.CHISELED_STONE_BRICKS, "textures/block/chiseled_stone_bricks.png"));
+        new com.solegendary.reignofnether.rampart.RampartTowerBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.TOWER, "Rampart Tower", 500d, net.minecraft.world.level.block.Blocks.CHISELED_STONE_BRICKS, "textures/block/chiseled_stone_bricks.png"));
+    // level 1 and 3 of each family (level 2 above): reached by clicking a built wall (see rampart/RampartUpgrades)
+    public static final com.solegendary.reignofnether.rampart.RampartBuilding REINFORCED_RAMPART = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "reinforced_rampart"),
+        new com.solegendary.reignofnether.rampart.RampartBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.REINFORCED, "Reinforced Rampart", 500d, net.minecraft.world.level.block.Blocks.DEEPSLATE_BRICKS, "textures/block/deepslate_bricks.png"));
+    public static final com.solegendary.reignofnether.rampart.RampartBuilding REINFORCED_GATE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "reinforced_gate"),
+        new com.solegendary.reignofnether.rampart.RampartBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.REINFORCED_GATE, "Reinforced Portcullis", 650d, net.minecraft.world.level.block.Blocks.IRON_BARS, "textures/block/iron_bars.png"));
+    public static final com.solegendary.reignofnether.rampart.RampartTowerBuilding WOODEN_RAMPART_TOWER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "wooden_rampart_tower"),
+        new com.solegendary.reignofnether.rampart.RampartTowerBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.WOODEN_TOWER, "Palisade Tower", 300d, net.minecraft.world.level.block.Blocks.SPRUCE_LOG, "textures/block/spruce_log.png"));
+    public static final com.solegendary.reignofnether.rampart.RampartTowerBuilding REINFORCED_RAMPART_TOWER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "reinforced_rampart_tower"),
+        new com.solegendary.reignofnether.rampart.RampartTowerBuilding(com.solegendary.reignofnether.rampart.RampartBuilding.Kind.REINFORCED_TOWER, "Reinforced Tower", 800d, net.minecraft.world.level.block.Blocks.POLISHED_DEEPSLATE, "textures/block/polished_deepslate.png"));
 
     private static <T extends Building> T register(ResourceLocation id, T building) {
         return Registry.register(ReignOfNetherRegistries.BUILDING, id, building);

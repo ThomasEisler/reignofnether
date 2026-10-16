@@ -152,6 +152,9 @@ public enum UnitAction {
 
     SET_ATTACK_COUNT, // for marauders
     BUILD_ROAD, // building ability: click another owned building to connect them with a road
+    RAMPART_TOWER, // rampart ability: turn this segment into a tower
+    RAMPART_GATE, // rampart ability: turn this segment into a gate
+    RAMPART_UPGRADE, // rampart ability: the whole wall goes up a level
     FISH, // a worker right-clicks a Port: it becomes a fisherman (boat trips to a fishing spot)
 
     DEBUG1,

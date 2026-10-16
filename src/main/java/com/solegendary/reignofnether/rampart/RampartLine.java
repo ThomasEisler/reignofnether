@@ -31,18 +31,23 @@ public class RampartLine {
         return switch (b.kind) {
             case PALISADE -> 4 * columns;
             case STONE -> 3 * columns;
+            case REINFORCED -> 2 * columns;
             case WOODEN_GATE -> 80;
-            case IRON_GATE -> 60;
-            case TOWER -> 100;
+            case IRON_GATE, REINFORCED_GATE -> 60;
+            case WOODEN_TOWER -> 120;
+            case TOWER, REINFORCED_TOWER -> 100;
         };
     }
 
     public static int oreCost(RampartBuilding b, int columns) {
         return switch (b.kind) {
-            case PALISADE, WOODEN_GATE -> 0;
+            case PALISADE, WOODEN_GATE, WOODEN_TOWER -> 0;
             case STONE -> 4 * columns;
+            case REINFORCED -> 7 * columns;
             case IRON_GATE -> 100;
+            case REINFORCED_GATE -> 180;
             case TOWER -> 150;
+            case REINFORCED_TOWER -> 250;
         };
     }
 
@@ -164,6 +169,6 @@ public class RampartLine {
 
     public static boolean isRampartBlock(BlockState bs) {
         return bs.is(BlockRegistrar.PALISADE.get()) || bs.is(BlockRegistrar.PALISADE_TOP.get()) ||
-            bs.is(BlockRegistrar.STONE_RAMPART.get()) || bs.getBlock() instanceof RampartGateBlock;
+            bs.is(BlockRegistrar.STONE_RAMPART.get()) || bs.is(BlockRegistrar.REINFORCED_RAMPART.get()) || bs.getBlock() instanceof RampartGateBlock;
     }
 }

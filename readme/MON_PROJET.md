@@ -195,23 +195,26 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer WorldEdit du serveur (D
 - **Un peu plus d'arbres dans les plaines** (et les prairies) : environ un arbre isolé tous les deux chunks en plus, pour avoir assez de bois (`data/reignofnether/forge/biome_modifier/extra_plains_trees.json` ; densité réglée par `chance` dans `worldgen/placed_feature/extra_plains_trees.json`). Seulement dans les nouvelles zones.
 - **Plus de villages Minecraft** générés (seulement dans les nouvelles zones / nouveaux mondes).
 
-### Mes remparts
-- Dans le **menu de construction des ouvriers** : **Palissade** (touche **D**), **Rempart de pierre** (**J**, après la recherche Maçonnerie), **Porte en bois** (**K**), **Herse** (**Z**, après Métallurgie).
+### Mes remparts (revus le 16/10 : un seul bouton, puis on clique sur le mur)
+- Dans le **menu de construction des ouvriers** : un seul bouton **« Rempart »** (touche **D**) qui pose une **palissade**. Les anciens boutons (rempart de pierre, portes, herse, tour) ont disparu du menu.
 - **Mur** : cliquer où il commence, puis où il finit ; le mur (jusqu'à 48 blocs de long) et son prix suivent le curseur, en vert si c'est possible, en rouge sinon (avec la raison). **Maj + clic** : continuer le mur depuis ce point. Clic droit ou Échap : arrêter.
-- **Tour de rempart** (touche **V**, après Maçonnerie) : tour de pierre 3 × 3, 8 blocs de haut, posée d'un clic, **aussi sur un de mes murs** (le mur est coupé autour d'elle, les morceaux restants restent debout). **2 unités** peuvent s'y installer en garnison et tirer d'en haut (portée 22) ; le haut ne s'effondre pas tant que la tour tient.
-- **Porte** : 5 blocs de large, cliquer où elle commence puis dans sa direction. Elle **coulisse pour mes unités** (et mes alliés) et reste fermée pour les autres, qui doivent la casser.
 - Construits par les **ouvriers sélectionnés**, morceau par morceau (5 blocs). Chaque morceau a de la vie : les barbares (et les ennemis) peuvent les attaquer et faire une brèche.
 - Le mur suit le terrain sans le creuser, s'arrête à l'eau, et s'accroche aux murs et bâtiments existants. Il faut rester à portée de ses bâtiments (24 blocs).
+- **Cliquer sur un morceau construit** le sélectionne ; 3 boutons :
+  - **Tour** (morceau de mur seulement) : tour 3 × 3 au milieu du morceau, du niveau du mur ; le mur est coupé autour d'elle. **2 unités** peuvent s'y installer en garnison et tirer d'en haut (portée 22).
+  - **Porte** (morceau de mur **droit**, 3 blocs ou plus) : le morceau devient une porte du niveau du mur, qui **coulisse pour mes unités** (et mes alliés) et reste fermée pour les autres, qui doivent la casser.
+  - **Améliorer tout le mur** (depuis n'importe quel morceau, tour ou porte) : tous les morceaux reliés montent d'un niveau, tours et portes comprises. **Prix = celui du nouveau niveau, morceau par morceau** : un mur long, ou avec des tours et des portes, coûte plus cher (le prix exact s'affiche au survol du bouton). Il faut que tout le mur soit fini.
+- Une tour, une porte ou une amélioration remet le morceau **en chantier** : les **3 ouvriers les plus proches** (à 80 blocs, ceux qui ne construisent pas d'abord) viennent le reconstruire ; l'ancien mur reste debout jusqu'à ce qu'il soit remplacé (mais le chantier est fragile).
 
-Hauteurs (depuis le 14/10/2026) : palissade 2 ou 3 blocs, pierre 4 (créneaux compris), porte en bois 3, herse 4, tour 6. Les remparts déjà posés gardent leur ancienne hauteur. Quand un morceau est fini, environ 1 emplacement sur 7 au pied du mur reçoit un buisson ou un caillou (`RampartBuilding.onBuilt`, pas sur les portes).
+| Niveau | Mur | Porte | Tour | Recherche |
+|---|---|---|---|---|
+| 1 | Palissade : 4 bois / bloc, 150 PV, 2-3 de haut | Porte en bois : 80 bois, 220 PV | Tour de palissade : 120 bois, 300 PV, 5 de haut | — |
+| 2 | Pierre : 3 bois + 4 minerai / bloc, 300 PV, 4 de haut | Herse : 60 bois + 100 minerai, 450 PV | Tour de pierre : 100 bois + 150 minerai, 500 PV, 6 de haut | Maçonnerie (la herse n'a plus besoin de Métallurgie) |
+| 3 | Pierre renforcée (ardoise) : 2 bois + 7 minerai / bloc, 500 PV, 5 de haut | Herse renforcée : 60 bois + 180 minerai, 650 PV | Tour renforcée : 100 bois + 250 minerai, 800 PV, 7 de haut | Fortifications |
 
-| Sorte | Prix | PV par morceau |
-|---|---|---|
-| Palissade | 4 bois par bloc de long | 150 |
-| Rempart de pierre | 3 bois + 4 minerai par bloc | 300 |
-| Porte en bois | 80 bois | 220 |
-| Herse | 60 bois + 100 minerai | 450 |
-| Tour de rempart | 100 bois + 150 minerai | 500 |
+Quand un morceau est fini, environ 1 emplacement sur 7 au pied du mur reçoit un buisson ou un caillou (`RampartBuilding.onBuilt`, pas sur les portes). Les remparts déjà posés gardent leur forme.
+
+Code : `rampart/RampartUpgrades.java` (mur entier, prix, remplacement des morceaux), `rampart/RampartAbility.java` (les 3 boutons), sortes et niveaux dans `RampartBuilding.Kind`, prix dans `RampartLine.woodCost/oreCost`, nouveau bloc `reinforced_rampart` (textures d'ardoise du jeu).
 
 ### Cavalier (nouvelle unité)
 - Produit dans la **caserne** (touche **R**) : un **vindicateur sur un cheval de guerre** (brun, sellé, armure de fer). Plus fort que le vindicateur et le pillard : 250 nourriture, 100 bois, 75 minerai, 50 s, 5 de population.
@@ -401,7 +404,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
 - [ ] Tours de guet : amélioration niveaux 2 et 3, portée et dégâts de la garnison qui augmentent.
 - [ ] Tour de rempart : pose sur un mur (mur coupé autour), garnison de 2 qui tire d'en haut, sortie à côté de la tour.
-- [ ] Mes remparts : boutons du menu des ouvriers, tracé et aperçu, Maj pour continuer, construction par les ouvriers, portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
+- [ ] Mes remparts (revus le 16/10) : bouton unique « Rempart », clic sur un morceau construit → Tour / Porte / Améliorer tout le mur (prix au survol, ouvriers proches qui viennent), 3 niveaux (palissade, pierre, pierre renforcée), portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
 - [ ] Bots (`/rts-bot ajouter`, 3 fois pour 4 civilisations) : arrivée loin des villes, Hôtel de ville, villageois produits et répartis, maisons, fermes, entrepôt.
@@ -542,3 +545,4 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | 13/10/2026 | Détails rares au bord des routes (feuillage, barrières, lanternes) |
 | 14/10/2026 | Messages d'avertissement (ressources insuffisantes, etc.) en grand au milieu de l'écran |
 | 16/10/2026 | Diplomatie : guerre / paix / alliance (paix au départ), opinion des bots, propositions, cadeaux et échanges, bots qui se font la guerre et s'allient entre eux ; alliances enfin sauvegardées |
+| 16/10/2026 | Remparts : un seul bouton « Rempart » ; tour, porte et amélioration de tout le mur en cliquant sur un morceau ; 3 niveaux (palissade, pierre, pierre renforcée) ; herse avec Maçonnerie |

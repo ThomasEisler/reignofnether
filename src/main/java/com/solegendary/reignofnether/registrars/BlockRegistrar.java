@@ -309,6 +309,8 @@ public class BlockRegistrar {
             new Block(BlockBehaviour.Properties.copy(Blocks.SPRUCE_LOG).mapColor(MapColor.PODZOL).noOcclusion()), CreativeModeTabs.BUILDING_BLOCKS);
     public static final RegistryObject<Block> STONE_RAMPART = registerBlock("stone_rampart", () ->
             new Block(BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), CreativeModeTabs.BUILDING_BLOCKS);
+    public static final RegistryObject<Block> REINFORCED_RAMPART = registerBlock("reinforced_rampart", () ->
+            new Block(BlockBehaviour.Properties.copy(Blocks.DEEPSLATE_BRICKS)), CreativeModeTabs.BUILDING_BLOCKS);
     public static final RegistryObject<Block> WOODEN_GATE = registerBlock("wooden_gate", () ->
             new com.solegendary.reignofnether.rampart.RampartGateBlock(BlockBehaviour.Properties.copy(Blocks.SPRUCE_PLANKS).noOcclusion()), CreativeModeTabs.BUILDING_BLOCKS);
     public static final RegistryObject<Block> IRON_GATE = registerBlock("iron_gate", () ->

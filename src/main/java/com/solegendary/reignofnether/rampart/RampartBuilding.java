@@ -28,7 +28,21 @@ import java.util.List;
 // follow any line and the terrain.
 public class RampartBuilding extends Building {
 
-    public enum Kind { PALISADE, STONE, WOODEN_GATE, IRON_GATE, TOWER }
+    // 3 families (wall, gate, tower), each with 3 levels: wood, stone (Masonry), reinforced stone (Fortifications)
+    public enum Family { WALL, GATE, TOWER }
+    public enum Kind {
+        PALISADE(Family.WALL, 1), STONE(Family.WALL, 2), REINFORCED(Family.WALL, 3),
+        WOODEN_GATE(Family.GATE, 1), IRON_GATE(Family.GATE, 2), REINFORCED_GATE(Family.GATE, 3),
+        WOODEN_TOWER(Family.TOWER, 1), TOWER(Family.TOWER, 2), REINFORCED_TOWER(Family.TOWER, 3);
+
+        public final Family family;
+        public final int level;
+
+        Kind(Family family, int level) {
+            this.family = family;
+            this.level = level;
+        }
+    }
 
     public final Kind kind;
 
@@ -42,11 +56,14 @@ public class RampartBuilding extends Building {
         this.capturable = false;
         this.invulnerable = false;
         this.explodeChance = 0.1f;
-        this.abilities.clear(); // no "build a road" button on walls
+        this.abilities.clear(); // no "build a road" button on walls, but: make a tower, make a gate, upgrade the wall
+        this.abilities.add(new RampartAbility(com.solegendary.reignofnether.unit.UnitAction.RAMPART_TOWER), com.solegendary.reignofnether.keybinds.Keybindings.abilitySlot1);
+        this.abilities.add(new RampartAbility(com.solegendary.reignofnether.unit.UnitAction.RAMPART_GATE), com.solegendary.reignofnether.keybinds.Keybindings.abilitySlot2);
+        this.abilities.add(new RampartAbility(com.solegendary.reignofnether.unit.UnitAction.RAMPART_UPGRADE), com.solegendary.reignofnether.keybinds.Keybindings.abilitySlot3);
     }
 
     public boolean isGate() {
-        return kind == Kind.WOODEN_GATE || kind == Kind.IRON_GATE;
+        return kind.family == Family.GATE;
     }
 
     // default height of a column of this kind (stone walls have a row of crenels on top)
@@ -54,14 +71,18 @@ public class RampartBuilding extends Building {
         return switch (kind) {
             case PALISADE -> 2 + (int) Math.floorMod(Mth.getSeed(x, 21, z) >> 16, 2L);
             case STONE -> 4;
+            case REINFORCED -> 5;
             case WOODEN_GATE -> 3;
             case IRON_GATE -> 4;
+            case REINFORCED_GATE -> 5;
+            case WOODEN_TOWER -> 5;
             case TOWER -> 6;
+            case REINFORCED_TOWER -> 7;
         };
     }
 
     public boolean isTower() {
-        return kind == Kind.TOWER;
+        return kind.family == Family.TOWER;
     }
 
     public Faction getFaction() {
@@ -70,7 +91,7 @@ public class RampartBuilding extends Building {
 
     // in the workers' build menu: starts drawing a rampart instead of placing a building
     public BuildingPlaceButton getBuildButton(Keybinding hotkey) {
-        String name = net.minecraft.network.chat.Component.translatable("buildings.reignofnether." +
+        String name = kind == Kind.PALISADE ? "Rempart" : net.minecraft.network.chat.Component.translatable("buildings.reignofnether." +
             com.solegendary.reignofnether.api.ReignOfNetherRegistries.BUILDING.getKey(this).getPath()).getString();
         String cost = isGate()
             ? RampartLine.woodCost(this, 1) + " bois" + (RampartLine.oreCost(this, 1) > 0 ? ", " + RampartLine.oreCost(this, 1) + " minerai" : "")
@@ -83,7 +104,10 @@ public class RampartBuilding extends Building {
                 ? "Tour de 3 x 3 : un clic la pose, aussi sur un mur. 2 unités peuvent s'y installer et tirer d'en haut."
                 : isGate()
                 ? "Porte de 5 blocs : cliquez où elle commence, puis dans sa direction. S'ouvre pour vos unités."
-                : "Cliquez où il commence, puis où il finit (Maj : continuer). Clic droit pour arrêter.", net.minecraft.network.chat.Style.EMPTY));
+                : "Cliquez où il commence, puis où il finit (Maj : continuer). Clic droit pour arrêter.", net.minecraft.network.chat.Style.EMPTY),
+            net.minecraft.util.FormattedCharSequence.forward(kind == Kind.PALISADE
+                ? "Une fois construit, cliquez sur un morceau : tour, porte, ou améliorer tout le mur (pierre, puis pierre renforcée)." : "",
+                net.minecraft.network.chat.Style.EMPTY));
         BuildingPlaceButton button = new BuildingPlaceButton(name, icon, hotkey,
             () -> RampartClientEvents.isPlacing(this), () -> false, () -> true, tooltip, this);
         button.onLeftClick = () -> RampartClientEvents.startPlacing(this);
@@ -175,11 +199,17 @@ public class RampartBuilding extends Building {
                 BlockState state = switch (kind) {
                     case PALISADE -> h < c.height() ? BlockRegistrar.PALISADE.get().defaultBlockState() : BlockRegistrar.PALISADE_TOP.get().defaultBlockState();
                     case STONE -> h < c.height() || Math.floorMod(c.x() + c.z(), 2) == 0 ? BlockRegistrar.STONE_RAMPART.get().defaultBlockState() : null;
+                    case REINFORCED -> h < c.height() || Math.floorMod(c.x() + c.z(), 2) == 0 ? BlockRegistrar.REINFORCED_RAMPART.get().defaultBlockState() : null;
                     case WOODEN_GATE -> BlockRegistrar.WOODEN_GATE.get().defaultBlockState().setValue(RampartGateBlock.AXIS, axis);
-                    case IRON_GATE -> BlockRegistrar.IRON_GATE.get().defaultBlockState().setValue(RampartGateBlock.AXIS, axis);
-                    // a 3 x 3 stone tower, crenels round the top and a spot for the garrison in the middle
+                    case IRON_GATE, REINFORCED_GATE -> BlockRegistrar.IRON_GATE.get().defaultBlockState().setValue(RampartGateBlock.AXIS, axis);
+                    // a 3 x 3 tower, crenels (or stakes) round the top and a spot for the garrison in the middle
+                    case WOODEN_TOWER -> h < c.height() ? BlockRegistrar.PALISADE.get().defaultBlockState()
+                        : !isTowerCentre(c, columns) && Math.floorMod(c.x() + c.z(), 2) == 0
+                        ? BlockRegistrar.PALISADE_TOP.get().defaultBlockState() : null;
                     case TOWER -> h < c.height() || (!isTowerCentre(c, columns) && Math.floorMod(c.x() + c.z(), 2) == 0)
                         ? BlockRegistrar.STONE_RAMPART.get().defaultBlockState() : null;
+                    case REINFORCED_TOWER -> h < c.height() || (!isTowerCentre(c, columns) && Math.floorMod(c.x() + c.z(), 2) == 0)
+                        ? BlockRegistrar.REINFORCED_RAMPART.get().defaultBlockState() : null;
                 };
                 if (state != null)
                     blocks.add(new BuildingBlock(new BlockPos(c.x(), c.y() + h, c.z()), state));

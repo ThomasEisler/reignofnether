@@ -11,14 +11,14 @@ import java.util.List;
 // building levels. Costs, durations, unlocks and positions in the tree screen are all set here.
 public enum Tech {
     //              name              food wood ore  seconds  column row  prerequisites   unlocked buildings (Building.name)              unlocked levels ("Building name:level index")
-    MASONRY        ("Maçonnerie",     0,   200, 100, 300,     0,     0,   List.of(),       List.of("Watchtower", "Blacksmith", "Stone Rampart", "Rampart Tower"),             List.of()),
+    MASONRY        ("Maçonnerie",     0,   200, 100, 300,     0,     0,   List.of(),       List.of("Watchtower", "Blacksmith", "Stone Rampart", "Rampart Tower", "Portcullis"),             List.of()),
     COMMERCE       ("Commerce",       150, 150, 0,   300,     0,     2,   List.of(),       List.of("Town Market", "Tavern"),                          List.of()),
-    METALLURGY     ("Métallurgie",    0,   150, 250, 360,     1,     0,   List.of("MASONRY"), List.of("Iron Golem", "Portcullis", "Mine"),                      List.of(),
+    METALLURGY     ("Métallurgie",    0,   150, 250, 360,     1,     0,   List.of("MASONRY"), List.of("Iron Golem", "Mine"),                      List.of(),
                     List.of("golem_smithing"), List.of("superior_blacksmith")),
     ARCHITECTURE   ("Architecture",   0,   300, 200, 360,     1,     1,   List.of("MASONRY"), List.of(),                                  List.of("Barracks:1", "Town Centre:1")),
     MYSTICISM      ("Mysticisme",     200, 100, 150, 360,     1,     2,   List.of("COMMERCE"), List.of("Witch Hut", "Shrine of Prosperity", "Hospice"), List.of(),
                     List.of(), List.of("grand_library")),
-    FORTIFICATIONS ("Fortifications", 0,   300, 400, 600,     2,     0,   List.of("METALLURGY"), List.of("Castle"),                       List.of("Watchtower:2")),
+    FORTIFICATIONS ("Fortifications", 0,   300, 400, 600,     2,     0,   List.of("METALLURGY"), List.of("Castle", "Reinforced Rampart", "Reinforced Portcullis", "Reinforced Tower"),                       List.of("Watchtower:2")),
     ENGINEERING    ("Ingénierie",     0,   400, 400, 480,     2,     1,   List.of("ARCHITECTURE", "METALLURGY"), List.of("Siege Workshop"),               List.of("Barracks:2", "Town Centre:2")),
     ARCANA         ("Arcanes",        300, 200, 300, 480,     2,     2,   List.of("MYSTICISM"), List.of("Arcane Tower"),                 List.of()),
 

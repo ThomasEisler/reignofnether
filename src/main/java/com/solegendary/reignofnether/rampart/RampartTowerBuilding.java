@@ -9,13 +9,13 @@ import net.minecraft.world.level.block.Block;
 import javax.annotation.Nullable;
 import java.util.List;
 
-// A 3 x 3 stone tower set into a rampart: its garrison stands on top behind the crenels and shoots from there
+// A 3 x 3 tower (wood, stone or reinforced) set into a rampart: its garrison stands on top behind the crenels and shoots from there
 public class RampartTowerBuilding extends RampartBuilding implements GarrisonableBuildingAddon {
 
     public static final int CAPACITY = 2;
 
-    public RampartTowerBuilding(String buildingName, double maxHealth, Block portraitBlock, String iconTexture) {
-        super(Kind.TOWER, buildingName, maxHealth, portraitBlock, iconTexture);
+    public RampartTowerBuilding(Kind kind, String buildingName, double maxHealth, Block portraitBlock, String iconTexture) {
+        super(kind, buildingName, maxHealth, portraitBlock, iconTexture);
         setActiveAddon(GarrisonableBuildingAddon.class, this, true);
     }
 
