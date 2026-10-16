@@ -364,6 +364,12 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - **Avant la version finale** : retirer WorldEdit du dossier mods du profil RTS (outil de construction seulement).
 - **Pour le serveur** : ne pas mettre **Distant Horizons** (ni dans le serveur, ni dans le pack des joueurs) ; retiré aussi de mon profil le 14/10/2026 (inutile avec les nuages ; fichier rangé dans `.minecraft/mods-retires/`).
 
+### Idées inspirées de Civilization (en réflexion)
+- **Ressources rares** (idée du 16/10, pas décidée) : gisements à quelques endroits de la carte — **chevaux** (cavaliers moins chers / plus rapides), **fer** (golems, herse renforcée, soldats plus solides), **pierre de taille** (remparts niveau 3, château et tours moins chers), **épices / luxe** (émeraudes au marché, cadeaux aux bots plus efficaces). On « possède » la ressource (pas de nouveau compteur), icône en haut ; cession d'accès en diplomatie ; les bots les cherchent. ~120 briques.
+  - Frein : 4 nouveaux bâtiments d'exploitation à modéliser. Pistes pour l'éviter : le gisement compte dès qu'il est **dans mes frontières** (pas de bâtiment, gisements = petits décors en blocs du jeu générés), ou **réutiliser les bâtiments existants** (mine sur un filon de fer, écurie près des chevaux).
+  - Questions ouvertes : bonus (recommandé) ou obligation ; ces 4 ressources ou d'autres (sel, bois précieux, or) ; qui fait les modèles.
+- Autres idées citées le 16/10 : **merveilles** (bâtiment unique au monde, course entre civilisations, ~60 briques chacune), croissance des villes (village → bourg → cité), bonheur, grands personnages (général, architecte, marchand), âges / ères, plusieurs façons de gagner, capitale.
+
 ### Routes
 - [ ] Bâtiments qui **exigent une route** : aucun pour l'instant (décidé le 13/10), à revoir plus tard.
 - [x] Remboursement de la partie non construite si un bâtiment relié est détruit pendant le chantier.
