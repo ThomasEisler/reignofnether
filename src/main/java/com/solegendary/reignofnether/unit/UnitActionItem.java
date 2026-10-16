@@ -132,6 +132,17 @@ public class UnitActionItem {
         return false;
     }
 
+    // no attacking a civilisation we're at peace with: war has to be declared first
+    private boolean refusedAtPeace(Level level, Unit unit, String targetOwner) {
+        if (!com.solegendary.reignofnether.diplomacy.Diplomacy.atPeace(level.isClientSide(), unit.getOwnerName(), targetOwner))
+            return false;
+        if (level.isClientSide())
+            HudClientEvents.showTemporaryMessage("En paix avec " + targetOwner + " : déclarez d'abord la guerre");
+        else
+            com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.warnAtPeace(unit.getOwnerName(), targetOwner);
+        return true;
+    }
+
     // can be done server or clientside - but only serverside will have an effect on the world
     // clientside actions are purely for tracking data
     public void action(Level level) {
@@ -296,7 +307,9 @@ public class UnitActionItem {
                 }
                 case ATTACK -> {
                     LivingEntity le = (LivingEntity) level.getEntity(unitId);
-                    if (unit instanceof AttackerUnit attackerUnit) {
+                    if (le instanceof Unit target && refusedAtPeace(level, unit, target.getOwnerName())) {
+                        unit.setFollowTarget(le);
+                    } else if (unit instanceof AttackerUnit attackerUnit) {
                         if (unit instanceof WorkerUnit && ResourceSources.isHuntableAnimal(le) && Unit.atMaxResources(unit)) {
                             if (level.isClientSide()) {
                                 HudClientEvents.showTemporaryMessage(LanguageUtil.getTranslation("hud.reignofnether.worker_inv_full"));
@@ -344,8 +357,11 @@ public class UnitActionItem {
                     }
                 }
                 case ATTACK_BUILDING -> {
+                    BuildingPlacement attacked = BuildingUtils.findBuilding(level.isClientSide(), preselectedBlockPos);
                     // if the unit can't actually attack just treat this as a move action
-                    if (unit instanceof AttackerUnit attackerUnit) {
+                    if (attacked != null && refusedAtPeace(level, unit, attacked.ownerName)) {
+                        unit.setMoveTarget(preselectedBlockPos);
+                    } else if (unit instanceof AttackerUnit attackerUnit) {
                         attackerUnit.setAttackBuildingTarget(preselectedBlockPos);
                     } else {
                         unit.setMoveTarget(preselectedBlockPos);

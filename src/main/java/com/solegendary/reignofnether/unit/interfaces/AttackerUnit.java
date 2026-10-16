@@ -448,6 +448,7 @@ public interface AttackerUnit {
         for (BuildingPlacement buildingPlacement : buildingsCopy) {
             if (!unit.getOwnerName().equals(buildingPlacement.ownerName) &&
                     !AlliancesServerEvents.isAllied(unit.getOwnerName(), buildingPlacement.ownerName) &&
+                    !com.solegendary.reignofnether.diplomacy.Diplomacy.atPeace(mob.level().isClientSide(), unit.getOwnerName(), buildingPlacement.ownerName) &&
                     !buildingPlacement.ownerName.isBlank() &&
                     buildingPlacement.isAttackable()) {
                 eligibleTargets.add(buildingPlacement);
@@ -475,6 +476,7 @@ public interface AttackerUnit {
                     (!workersOnly || entity instanceof WorkerUnit) &&
                     !unit.getOwnerName().equals(otherUnit.getOwnerName()) &&
                     !AlliancesServerEvents.isAllied(unit.getOwnerName(), otherUnit.getOwnerName()) &&
+                    !com.solegendary.reignofnether.diplomacy.Diplomacy.atPeace(mob.level().isClientSide(), unit.getOwnerName(), otherUnit.getOwnerName()) &&
                     !otherUnit.getOwnerName().isBlank()) {
                 eligibleTargets.add(entity);
             }

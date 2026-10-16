@@ -133,6 +133,7 @@ public class AlliancesServerEvents {
 
     public static void resetAllAlliances() {
         alliances.clear();
+        com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.reset();
         AllianceClientboundPacket.resetAlliances();
     }
 

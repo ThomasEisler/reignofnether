@@ -418,6 +418,10 @@ public class MiscUtil {
         // If the relationship is FRIENDLY, do not allow the attack
         if (rs == Relationship.FRIENDLY)
             return false;
+        // nor against a civilisation we're at peace with
+        if (unitMob instanceof Unit u && targetEntity instanceof Unit tu &&
+                com.solegendary.reignofnether.diplomacy.Diplomacy.atPeace(unitMob.level().isClientSide(), u.getOwnerName(), tu.getOwnerName()))
+            return false;
 
         // Prevents certain attacks based on specific unit and goal conditions
         if (targetEntity instanceof Unit unit &&
@@ -480,6 +484,8 @@ public class MiscUtil {
         if (relationship == Relationship.FRIENDLY) {
             return false;
         }
+        if (com.solegendary.reignofnether.diplomacy.Diplomacy.atPeace(unitMob.level().isClientSide(), ((Unit) unitMob).getOwnerName(), building.ownerName))
+            return false;
         boolean neutralAggro = unitMob.level().getGameRules().getRule(GameRuleRegistrar.NEUTRAL_AGGRO).get();
 
         if (relationship == Relationship.NEUTRAL && neutralAggro)

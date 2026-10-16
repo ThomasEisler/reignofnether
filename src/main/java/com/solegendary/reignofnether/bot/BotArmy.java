@@ -1,6 +1,5 @@
 package com.solegendary.reignofnether.bot;
 
-import com.solegendary.reignofnether.alliance.AlliancesServerEvents;
 import com.solegendary.reignofnether.barbarian.BarbarianServerEvents;
 import com.solegendary.reignofnether.building.BuildingPlacement;
 import com.solegendary.reignofnether.building.BuildingServerEvents;
@@ -8,7 +7,6 @@ import com.solegendary.reignofnether.building.Buildings;
 import com.solegendary.reignofnether.building.buildings.placements.ProductionPlacement;
 import com.solegendary.reignofnether.building.production.ProductionItem;
 import com.solegendary.reignofnether.building.production.ProductionItems;
-import com.solegendary.reignofnether.player.PlayerServerEvents;
 import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceName;
 import com.solegendary.reignofnether.resources.ResourcesServerEvents;
@@ -128,13 +126,13 @@ public class BotArmy {
 
     // ---- enemies ------------------------------------------------------------------------------------------------
 
-    // barbarians, and the other civilisations (players and bots) that aren't allies
+    // barbarians, and the civilisations (players and bots) it is at war with (see DiplomacyServerEvents)
     private static boolean isEnemy(String name, String other) {
         if (other == null || other.isEmpty() || other.equals(name))
             return false;
         if (BarbarianServerEvents.OWNER_NAME.equals(other))
             return true;
-        return PlayerServerEvents.isRTSPlayer(other) && !AlliancesServerEvents.isAllied(name, other);
+        return com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.atWar(name, other);
     }
 
     private static boolean defend(String name, State st, List<LivingEntity> army, List<BuildingPlacement> buildings) {

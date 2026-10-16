@@ -101,6 +101,19 @@ public class BotServerEvents {
         return serverLevel != null && data().bots.stream().anyMatch(b -> b.name.equals(name));
     }
 
+    // how long the bot has been in the game (0 if it isn't a bot)
+    public static long ticksAlive(String name) {
+        if (serverLevel == null)
+            return 0;
+        return data().bots.stream().filter(b -> b.name.equals(name)).mapToLong(b -> b.ticksAlive).findFirst().orElse(0);
+    }
+
+    public static List<String> botNames() {
+        if (serverLevel == null)
+            return List.of();
+        return data().bots.stream().map(b -> b.name).toList();
+    }
+
     // ---- arrival ------------------------------------------------------------------------------------------------
 
     // adds a bot civilisation; returns a message for whoever asked

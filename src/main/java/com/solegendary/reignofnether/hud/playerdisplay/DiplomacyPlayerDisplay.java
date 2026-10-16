@@ -4,6 +4,11 @@ import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.alliance.AllianceAction;
 import com.solegendary.reignofnether.alliance.AllianceServerboundPacket;
 import com.solegendary.reignofnether.alliance.AlliancesClient;
+import com.solegendary.reignofnether.diplomacy.DiplomacyClient;
+import com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents;
+import com.solegendary.reignofnether.diplomacy.DiplomacyServerboundPacket;
+import com.solegendary.reignofnether.diplomacy.Proposal;
+import com.solegendary.reignofnether.diplomacy.Stance;
 import com.solegendary.reignofnether.gamerules.GameruleClient;
 import com.solegendary.reignofnether.hud.buttons.Button;
 import com.solegendary.reignofnether.hud.RectZone;
@@ -45,8 +50,9 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
         super(player);
     }
 
+    private static final int MAX_ASK = 2000;
     private static final int RESOURCE_FRAME_WIDTH = Button.DEFAULT_ICON_FRAME_SIZE * 2; // frame containing a resource value + icon
-    private static final int ALLIANCE_FRAME_WIDTH = (Button.DEFAULT_ICON_FRAME_SIZE * 5); // frame containing a resource value + icon
+    private static final int ALLIANCE_FRAME_WIDTH = (Button.DEFAULT_ICON_FRAME_SIZE * 9); // stance buttons + stance (and opinion) text
     public static final int DISPLAY_WIDTH = // total width of a player display
             PLAYER_FRAME_WIDTH +
                     RESOURCE_FRAME_WIDTH * 4 +
@@ -60,6 +66,21 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
 
     protected boolean isRTSPlayer() {
         return PlayerClientEvents.isRTSPlayer(playerName);
+    }
+
+    private boolean isBotCiv() {
+        RTSPlayer p = PlayerClientEvents.getRTSPlayer(playerName);
+        return p != null && p.isBot();
+    }
+
+    // bots are never "logged in" but can always be dealt with
+    @Override
+    public boolean isPlayerLoggedIn() {
+        return super.isPlayerLoggedIn() || isBotCiv();
+    }
+
+    private String myName() {
+        return MC.player == null ? "" : MC.player.getName().getString();
     }
 
     private boolean allianceRequested() {
@@ -79,17 +100,17 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
             case FOOD -> {
                 iconPath = "textures/icons/items/wheat.png";
                 value = String.valueOf(resourcesToSend.food);
-                color = 0xE8BC5F;
+                color = resourcesToSend.food < 0 ? 0xFF6060 : 0xE8BC5F;
             }
             case WOOD -> {
                 iconPath = "textures/icons/items/wood.png";
                 value = String.valueOf(resourcesToSend.wood);
-                color = 0xA3753B;
+                color = resourcesToSend.wood < 0 ? 0xFF6060 : 0xA3753B;
             }
             default -> {
                 iconPath = "textures/icons/items/iron_ore.png";
                 value = String.valueOf(resourcesToSend.ore);
-                color = 0xFFF4ED;
+                color = resourcesToSend.ore < 0 ? 0xFF6060 : 0xFFF4ED;
             }
         }
         MyRenderer.renderFrameWithBg(guiGraphics,
@@ -122,9 +143,9 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
                     }
                     Resources res = ResourcesClientEvents.getOwnResources();
                     if (res != null) {
-                        resourcesToSend.food = Math.min(resourcesToSend.food, res.food);
-                        resourcesToSend.wood = Math.min(resourcesToSend.wood, res.wood);
-                        resourcesToSend.ore = Math.min(resourcesToSend.ore, res.ore);
+                        resourcesToSend.food = Math.min(resourcesToSend.food, Math.max(res.food, 0));
+                        resourcesToSend.wood = Math.min(resourcesToSend.wood, Math.max(res.wood, 0));
+                        resourcesToSend.ore = Math.min(resourcesToSend.ore, Math.max(res.ore, 0));
                     }
                 },
                 () -> {
@@ -133,16 +154,17 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
                         case WOOD -> resourcesToSend.wood -= Keybindings.shiftMod.isDown() ? 1000 : 100;
                         default -> resourcesToSend.ore -= Keybindings.shiftMod.isDown() ? 1000 : 100;
                     }
-                    resourcesToSend.food = Math.max(resourcesToSend.food, 0);
-                    resourcesToSend.wood = Math.max(resourcesToSend.wood, 0);
-                    resourcesToSend.ore = Math.max(resourcesToSend.ore, 0);
+                    // below 0 = asked for in exchange
+                    resourcesToSend.food = Math.max(resourcesToSend.food, -MAX_ASK);
+                    resourcesToSend.wood = Math.max(resourcesToSend.wood, -MAX_ASK);
+                    resourcesToSend.ore = Math.max(resourcesToSend.ore, -MAX_ASK);
                 },
-                switch (resourceName) {
-                    case FOOD -> List.of(FormattedCharSequence.forward(I18n.get("alliances.reignofnether.tooltip.send_food"), Style.EMPTY));
-                    case WOOD -> List.of(FormattedCharSequence.forward(I18n.get("alliances.reignofnether.tooltip.send_wood"), Style.EMPTY));
-                    case ORE -> List.of(FormattedCharSequence.forward(I18n.get("alliances.reignofnether.tooltip.send_ore"), Style.EMPTY));
-                    default -> null;
-                }
+                List.of(FormattedCharSequence.forward(switch (resourceName) {
+                        case FOOD -> "Nourriture";
+                        case WOOD -> "Bois";
+                        default -> "Minerai";
+                    } + " : clic gauche +100, clic droit -100 (Maj : 1000)", Style.EMPTY),
+                    FormattedCharSequence.forward("Positif = je donne, négatif (rouge) = je demande en échange", Style.EMPTY))
         );
         changeResourceButton.bgIconResource = ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, iconPath);
         changeResourceButton.render(guiGraphics, x + RESOURCE_FRAME_WIDTH, y, mouseX, mouseY);
@@ -166,10 +188,10 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
                 (Keybinding) null,
                 () -> false,
                 () -> false,
-                () -> resourcesToSend.getTotalValue() > 0 && isPlayerLoggedIn(),
+                () -> hasTrade() && isPlayerLoggedIn(),
                 this::sendResources,
                 null,
-                List.of(FormattedCharSequence.forward(I18n.get("alliances.reignofnether.tooltip.confirm_send_resources"), Style.EMPTY))
+                List.of(FormattedCharSequence.forward("Envoyer (cadeau) ou proposer l'échange", Style.EMPTY))
         );
         confirmButton.render(guiGraphics, x, y, mouseX, mouseY);
 
@@ -180,7 +202,7 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
                 (Keybinding) null,
                 () -> false,
                 () -> false,
-                () -> resourcesToSend.getTotalValue() > 0,
+                this::hasTrade,
                 this::resetResources,
                 null,
                 List.of(FormattedCharSequence.forward(I18n.get("alliances.reignofnether.tooltip.cancel_send_resources"), Style.EMPTY))
@@ -188,6 +210,72 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
         cancelButton.render(guiGraphics, x + Button.DEFAULT_ICON_FRAME_SIZE, y, mouseX, mouseY);
 
         return List.of(confirmButton, cancelButton);
+    }
+
+    private Button stanceButton(String name, String icon, String tooltip, Runnable onClick) {
+        return new Button(
+                name,
+                Button.DEFAULT_ICON_SIZE,
+                ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, icon),
+                (Keybinding) null,
+                () -> false,
+                () -> false,
+                this::isPlayerLoggedIn,
+                onClick,
+                null,
+                List.of(FormattedCharSequence.forward(tooltip, Style.EMPTY))
+        );
+    }
+
+    // war / peace / alliance, what a bot thinks of me, and the buttons to change it (or answer an offer)
+    private List<Button> renderStance(GuiGraphics guiGraphics, int x, int y, int mouseX, int mouseY) {
+        List<Button> buttons = new ArrayList<>();
+        String me = myName();
+        Stance stance = DiplomacyClient.getStance(me, playerName);
+        Proposal offer = DiplomacyClient.getProposal(playerName, me);
+        String text;
+        if (offer != null) {
+            text = switch (offer.kind()) {
+                case PEACE -> "Propose la paix";
+                case ALLIANCE -> "Propose une alliance";
+                case TRADE -> "Offre " + DiplomacyServerEvents.describeTrade(offer.food(), offer.wood(), offer.ore());
+            };
+            buttons.add(stanceButton("Accept offer", "textures/hud/tick.png", "Accepter", () -> DiplomacyServerboundPacket.send("accepter", playerName)));
+            buttons.add(stanceButton("Refuse offer", "textures/hud/cross.png", "Refuser", () -> DiplomacyServerboundPacket.send("refuser", playerName)));
+        } else {
+            text = stance.frName;
+            switch (stance) {
+                case WAR -> buttons.add(stanceButton("Propose peace", "textures/icons/items/book.png", "Proposer la paix",
+                        () -> DiplomacyServerboundPacket.send("paix", playerName)));
+                case PEACE -> {
+                    buttons.add(stanceButton("Propose alliance", "textures/icons/items/sweet_berries.png", "Proposer une alliance",
+                            () -> DiplomacyServerboundPacket.send("alliance", playerName)));
+                    buttons.add(stanceButton("Declare war", "textures/icons/items/crossed_swords.png", "Déclarer la guerre",
+                            () -> DiplomacyServerboundPacket.send("guerre", playerName)));
+                }
+                case ALLIANCE -> buttons.add(stanceButton("Break alliance", "textures/hud/cross.png", "Rompre l'alliance (retour à la paix)",
+                        () -> DiplomacyServerboundPacket.send("rompre", playerName)));
+            }
+        }
+        var opinion = DiplomacyClient.getOpinion(playerName, me);
+        if (opinion != null)
+            text += " · opinion " + (opinion.value() > 0 ? "+" : "") + opinion.value();
+
+        for (int i = 0; i < buttons.size(); i++)
+            buttons.get(i).render(guiGraphics, x + i * Button.DEFAULT_ICON_FRAME_SIZE, y, mouseX, mouseY);
+        int textX = x + 2 * Button.DEFAULT_ICON_FRAME_SIZE;
+        int drawStringStartOffset = (Button.DEFAULT_ICON_SIZE / 2) + 1;
+        int maxWidth = ALLIANCE_FRAME_WIDTH - 2 * Button.DEFAULT_ICON_FRAME_SIZE;
+        String shown = MC.font.plainSubstrByWidth(text, maxWidth - drawStringStartOffset * 2);
+        MyRenderer.renderFrameWithBg(guiGraphics, textX, y, Math.min(maxWidth, drawStringStartOffset * 2 + MC.font.width(shown)),
+                Button.DEFAULT_ICON_FRAME_SIZE, 0xA0000000 | (offer != null ? 0x2060A0 : stance.colour & 0x7F7F7F));
+        guiGraphics.drawString(MC.font, shown, textX + drawStringStartOffset, y + (Button.DEFAULT_ICON_SIZE / 2) + 1,
+                offer != null ? 0xFFFFFF : stance.colour);
+        // the reason a bot is unhappy, when hovering the text
+        if (opinion != null && !opinion.reason().isEmpty() && mouseX >= textX && mouseX < textX + maxWidth &&
+                mouseY >= y && mouseY < y + Button.DEFAULT_ICON_FRAME_SIZE)
+            guiGraphics.renderTooltip(MC.font, Component.literal("Dernier grief : " + opinion.reason()), mouseX, mouseY);
+        return buttons;
     }
 
     private Button renderAllianceButton(GuiGraphics guiGraphics, int x, int y, int mouseX, int mouseY) {
@@ -296,9 +384,13 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
         return renderedButton;
     }
 
+    private boolean hasTrade() {
+        return resourcesToSend.food != 0 || resourcesToSend.wood != 0 || resourcesToSend.ore != 0;
+    }
+
     private void sendResources() {
         if (MC.player != null) {
-            ResourcesServerboundPacket.sendResources(resourcesToSend, MC.player.getName().getString());
+            DiplomacyServerboundPacket.send("echange", playerName, resourcesToSend.food, resourcesToSend.wood, resourcesToSend.ore);
             resetResources();
         }
     }
@@ -379,7 +471,10 @@ public class DiplomacyPlayerDisplay extends AbstractPlayerDisplay {
             renderedButtons.add(gotoFpvPlayerButton);
             x += (Button.DEFAULT_ICON_FRAME_SIZE * 1.25f);
         }
-        renderedButtons.add(this.renderAllianceButton(guiGraphics, x, y, mouseX, mouseY));
+        if (isRTSPlayer())
+            renderedButtons.addAll(this.renderStance(guiGraphics, x, y, mouseX, mouseY));
+        else
+            renderedButtons.add(this.renderAllianceButton(guiGraphics, x, y, mouseX, mouseY));
         return renderedButtons;
     }
 

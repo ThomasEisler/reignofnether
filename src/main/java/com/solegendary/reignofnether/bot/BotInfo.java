@@ -46,6 +46,7 @@ public class BotInfo {
                 if (le.isAlive() && bot.name.equals(((Unit) le).getOwnerName()))
                     units.add(le);
             lines.add(BotArmy.describe(bot.name));
+            lines.addAll(com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.describeBot(bot.name));
             lines.add("Unités : " + units.size());
             for (LivingEntity le : units) {
                 BlockPos p = le.blockPosition();
