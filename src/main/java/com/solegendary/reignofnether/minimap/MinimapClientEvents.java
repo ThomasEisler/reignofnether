@@ -800,6 +800,14 @@ public class MinimapClientEvents {
     }
 
     private static void updateMapUnitsAndBuildings() {
+        // territory borders, half see-through over the terrain
+        for (int[] bb : com.solegendary.reignofnether.territory.TerritoryClientEvents.getMapBorderBlocks()) {
+            if (!isWorldXZinsideMap(bb[0], bb[1]) || !com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(bb[0], bb[1]))
+                continue;
+            int xN = bb[0] - xc_world + worldRadius, zN = bb[1] - zc_world + worldRadius;
+            int abgr = MiscUtil.reverseHexRGB(bb[2]) | (0xFF << 24);
+            mapColoursOverlays[xN][zN] = blend(abgr, mapColoursTerrain[xN][zN]);
+        }
         // draw buildings
         for (BuildingPlacement building : BuildingClientEvents.getBuildings()) {
 
@@ -876,6 +884,16 @@ public class MinimapClientEvents {
             drawMapMarker(marker);
         }
 
+    }
+
+    // two colours (same byte order) mixed 60 / 40, fully opaque
+    private static int blend(int a, int b) {
+        int out = 0xFF << 24;
+        for (int shift = 0; shift < 24; shift += 8) {
+            int ca = (a >> shift) & 0xFF, cb = (b >> shift) & 0xFF;
+            out |= ((ca * 6 + cb * 4) / 10) << shift;
+        }
+        return out;
     }
 
     private static void drawBuildingOnMap(int xc, int zc, int color, int radius, int thickness) {

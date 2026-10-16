@@ -33,7 +33,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -49,7 +48,7 @@ import java.util.*;
 // opinion of every other civilisation (-100 to +100) that decides what it does: war under WAR_AT, alliance over
 // ALLY_AT. At peace nobody attacks: units don't pick fights and attack orders are refused until war is declared.
 // Opinion goes up with gifts, fair trades, a common enemy and being allies; down with units on its territory
-// (TERRITORY blocks around its buildings), cities too close, attacks during a war and broken
+// (territory/Territory, the borders drawn on the ground), cities too close, attacks during a war and broken
 // agreements; and slowly back towards 0 (and up, out of weariness, in a long war). Bots deal with each other the same way.
 public class DiplomacyServerEvents {
 
@@ -60,7 +59,6 @@ public class DiplomacyServerEvents {
     public static final int ALLY_AT = 50;        // a bot accepts an alliance over this
     public static final int OFFER_ALLY_AT = 65;  // and offers one itself over this
     public static final int TRADE_AT = -20;      // a bot refuses to trade under this
-    public static final int TERRITORY = 36;      // blocks around a bot's buildings
     public static final int NEIGHBOUR_DIST = 260, FAR_NEIGHBOUR_DIST = 420; // cities this close make a bot uneasy
     public static final int GIFT_PER_POINT = 20; // resources given for +1
     public static final int MAX_GIFT_POINTS = 25;
@@ -258,25 +256,22 @@ public class DiplomacyServerEvents {
         return false;
     }
 
-    // every TERRITORY_INTERVAL: -1 towards each civilisation at peace with units near the bot's buildings
+    // every TERRITORY_INTERVAL: -1 towards each civilisation at peace with units on the bot's land (Territory: the
+    // same borders players see)
     private static void checkTerritory() {
-        for (String bot : BotServerEvents.botNames()) {
-            List<BuildingPlacement> buildings = BuildingServerEvents.getBuildings().stream().filter(b -> bot.equals(b.ownerName)).toList();
-            if (buildings.isEmpty())
+        List<String> bots = BotServerEvents.botNames();
+        if (bots.isEmpty())
+            return;
+        List<BuildingPlacement> buildings = new ArrayList<>(BuildingServerEvents.getBuildings());
+        Set<String> seen = new HashSet<>(); // "bot>intruder", once each time
+        for (LivingEntity le : UnitServerEvents.getAllUnits()) {
+            String owner = ((Unit) le).getOwnerName();
+            if (!le.isAlive() || !isCiv(owner))
                 continue;
-            Set<String> intruders = new HashSet<>();
-            for (LivingEntity le : UnitServerEvents.getAllUnits()) {
-                String owner = ((Unit) le).getOwnerName();
-                if (!le.isAlive() || owner.equals(bot) || intruders.contains(owner) || !atPeace(bot, owner))
-                    continue;
-                for (BuildingPlacement b : buildings)
-                    if (le.distanceToSqr(Vec3.atCenterOf(b.centrePos)) < TERRITORY * TERRITORY) {
-                        intruders.add(owner);
-                        break;
-                    }
-            }
-            for (String owner : intruders)
-                change(bot, owner, -1, "vos unités entrent sur son territoire");
+            String land = com.solegendary.reignofnether.territory.Territory.ownerAt(buildings, DiplomacyServerEvents::isCiv, le.getX(), le.getZ());
+            if (land == null || land.equals(owner) || !bots.contains(land) || !atPeace(land, owner) || !seen.add(land + ">" + owner))
+                continue;
+            change(land, owner, -1, "vos unités entrent sur son territoire");
         }
     }
 
