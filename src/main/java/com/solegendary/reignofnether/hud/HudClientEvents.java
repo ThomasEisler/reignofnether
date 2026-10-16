@@ -1703,6 +1703,16 @@ public class HudClientEvents {
                     );
                     renderedButtons.add(barbariansButton);
 
+                    // number of bots and their difficulty (in the empty slot of the hidden piglin faction)
+                    Button botsButton = com.solegendary.reignofnether.bot.BotClientEvents.getButton();
+                    botsButton.render(evt.getGuiGraphics(),
+                            screenWidth - (StartButtons.ICON_SIZE * 4),
+                            StartButtons.ICON_SIZE / 2,
+                            mouseX,
+                            mouseY
+                    );
+                    renderedButtons.add(botsButton);
+
                     if (!StartPosClientEvents.isEnabled()) {
                         if (!StartButtons.villagerStartButton.isHidden.get()) {
                             StartButtons.villagerStartButton.render(evt.getGuiGraphics(),

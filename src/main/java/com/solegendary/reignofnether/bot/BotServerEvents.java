@@ -54,7 +54,7 @@ public class BotServerEvents {
     public static final int START_MIN_DIST = 220, START_MAX_DIST = 320; // from the other civilisations' cities
     public static final int BARBARIAN_DIST = 100;
     public static final int MAX_VILLAGERS = 18;
-    public static final double FOOD_SHARE = 0.35, ORE_SHARE = 0.2; // the rest gathers wood
+    public static final double FOOD_SHARE = 0.35, ORE_SHARE = 0.25; // of the villagers (farms), of the others (ore); the rest gathers wood
     public static final int WORKERS_PER_FARM = 2;
     public static final int RESOURCE_RANGE = 48; // how far from the Town Centre villagers are sent to gather
     public static final int VILLAGERS_PER_NEW_CITY = 8; // more villagers allowed for each city after the first
@@ -62,6 +62,10 @@ public class BotServerEvents {
     public static final int NEW_CITY_VILLAGERS = 16; // villagers needed before founding another city
     public static final int NEW_CITY_MIN_DIST = 110, NEW_CITY_MAX_DIST = 150;
     public static final int FOOD_RESERVE = 100; // kept for villagers when paying for research
+    public static final int WOOD_RESERVE = 30; // never spent on buildings: farmers need 1 wood to replant each crop
+    public static final int FARMERS_PER_FARM = 1; // a farm only grows so fast: a second farmer just waits for the wheat
+    public static final int MAX_FARMS = 6;
+    public static final int MAX_MOVES = 2; // villagers taken off one resource for another each time the bot thinks
 
     // buildings wanted, in order: building, how many, villagers needed first (locked ones wait for their technology)
     private record Wish(Building building, int count, int villagers) { }
@@ -201,6 +205,12 @@ public class BotServerEvents {
         return le instanceof WorkerUnit w && w.getBuildRepairGoal() != null && w.getBuildRepairGoal().getBuildingTarget() != null;
     }
 
+    // full and on its way to drop off what it carries: its gather goal is reset meanwhile, so without this the bot
+    // took it for idle and sent it back to work every 2 seconds, and nothing ever reached the stock
+    private static boolean isReturning(LivingEntity le) {
+        return le instanceof Unit u && u.getReturnResourcesGoal() != null && u.getReturnResourcesGoal().getBuildingTarget() != null;
+    }
+
     private static ResourceName gatherType(LivingEntity le) {
         if (!(le instanceof WorkerUnit w) || w.getGatherResourceGoal() == null)
             return ResourceName.NONE;
@@ -216,7 +226,7 @@ public class BotServerEvents {
     // it was sent to is out of reach). Walking doesn't count: a villager stuck on a path it can't finish was
     // never handed a new job before, which left the whole bot standing still.
     private static boolean isIdle(LivingEntity le) {
-        if (isBuilding(le))
+        if (isBuilding(le) || isReturning(le))
             return false;
         if (gatherType(le) == ResourceName.NONE)
             return true;
@@ -237,6 +247,8 @@ public class BotServerEvents {
     @Nullable
     private static BuildingPlacement placeNear(ServerLevel level, String name, Building building, BlockPos centre,
                                                int minR, int maxR, List<LivingEntity> builders) {
+        if (!building.isCapitol && !com.solegendary.reignofnether.resources.ResourcesServerEvents.canAfford(name, ResourceName.WOOD, building.cost.wood + WOOD_RESERVE))
+            return null; // keeps wood for the farms
         int[] s = size(building, level);
         for (int attempt = 0; attempt < 40; attempt++) {
             double angle = random.nextDouble() * Math.PI * 2;
@@ -305,7 +317,8 @@ public class BotServerEvents {
         int pop = UnitServerEvents.getCurrentPopulation(bot.name);
         int supply = BuildingServerEvents.getTotalPopulationSupply(bot.name);
         List<BuildingPlacement> cities = buildings.stream().filter(b -> b.getBuilding().isCapitol && b.isBuilt).toList();
-        int maxVillagers = MAX_VILLAGERS + VILLAGERS_PER_NEW_CITY * (cities.size() - 1);
+        int maxVillagers = BotSettings.difficulty().maxVillagers + VILLAGERS_PER_NEW_CITY * (cities.size() - 1);
+        boolean hungry = rescue(bot.name, villagers, cities);
 
         // more villagers, from every city
         int queued = 0;
@@ -323,9 +336,9 @@ public class BotServerEvents {
             if (placeNear(level, bot.name, Buildings.VILLAGER_HOUSE, capital.centrePos, 10, 26, nearest(builderPool, capital.centrePos, 1)) != null)
                 building = true;
         }
-        // farms as the village grows
+        // farms as the village grows: one farmer each, about a third of the villagers (one more when out of food)
         long farms = buildings.stream().filter(b -> b.getBuilding() == Buildings.WHEAT_FARM).count();
-        if (!building && villagers.size() >= 5 && farms < Math.min(4, villagers.size() / 5 + 1)) {
+        if (!building && villagers.size() >= 2 && farms < wantedFarms(villagers.size(), hungry)) {
             if (placeNear(level, bot.name, Buildings.WHEAT_FARM, capital.centrePos, 10, 24, nearest(builderPool, capital.centrePos, 1)) != null)
                 building = true;
         }
@@ -342,57 +355,139 @@ public class BotServerEvents {
             building = develop(level, bot.name, villagers, buildings, cities, builderPool);
         research(bot.name, buildings);
         upgradeLevels(bot.name, buildings, villagers.size(), maxVillagers);
+        BotArmy.think(bot.name, bot.ticksAlive, units, villagers.size(), maxVillagers, buildings, capital); // step 4
         if (!building && cities.size() < MAX_CITIES && villagers.size() >= NEW_CITY_VILLAGERS && buildings.stream().noneMatch(b -> b.isCapitol && !b.isBuilt))
             foundCity(level, bot.name, capital, villagers);
 
-        // share out the idle villagers: food (farms), ore, wood
-        free = new ArrayList<>(villagers.stream().filter(BotServerEvents::isIdle).toList());
-        if (free.isEmpty())
-            return;
-        int food = 0, ore = 0;
-        for (LivingEntity v : villagers) {
-            ResourceName r = gatherType(v);
-            if (r == ResourceName.FOOD) food++;
-            else if (r == ResourceName.ORE) ore++;
-        }
+        shareOut(level, bot.name, villagers, buildings, cities, capital, hungry);
+    }
+
+    private static int wantedFarms(int villagers, boolean hungry) {
+        return Math.min(MAX_FARMS, Math.max(1, (int) Math.round(villagers * FOOD_SHARE)) + (hungry ? 1 : 0));
+    }
+
+    private enum Job { BUSY, FREE, FOOD, WOOD, ORE, MILL }
+
+    private static Job job(LivingEntity v) {
+        if (isBuilding(v) || isReturning(v))
+            return Job.BUSY;
+        if (isIdle(v))
+            return Job.FREE;
+        GatherResourcesGoal g = ((WorkerUnit) v).getGatherResourceGoal();
+        if (g.isFarming())
+            return g.getTargetFarm() != null && g.getTargetFarm().getBuilding() == Buildings.SAWMILL ? Job.MILL : Job.FOOD;
+        ResourceName r = gatherType(v);
+        return r == ResourceName.ORE ? Job.ORE : Job.WOOD;
+    }
+
+    // Every villager has a job, and the jobs follow targets: one farmer per farm, then ore and wood for the others
+    // (ore only when it's short). Not just the idle ones: when a resource has too many, some leave it for the one
+    // that lacks them, a couple at a time so no one keeps switching.
+    private static void shareOut(ServerLevel level, String name, List<LivingEntity> villagers, List<BuildingPlacement> buildings,
+                                 List<BuildingPlacement> cities, BuildingPlacement capital, boolean hungry) {
+        Map<LivingEntity, Job> jobs = new HashMap<>();
+        for (LivingEntity v : villagers)
+            jobs.put(v, job(v));
+        List<LivingEntity> free = new ArrayList<>();
         List<BuildingPlacement> farmList = buildings.stream().filter(b -> b.getBuilding() == Buildings.WHEAT_FARM && b.isBuilt).toList();
+
+        // farmers beyond one per farm (or on a farm that's gone) are free
+        Map<BuildingPlacement, Integer> farmers = new HashMap<>();
+        for (LivingEntity v : villagers) {
+            if (jobs.get(v) == Job.FREE)
+                free.add(v);
+            if (jobs.get(v) != Job.FOOD)
+                continue;
+            BuildingPlacement f = ((WorkerUnit) v).getGatherResourceGoal().getTargetFarm();
+            int n = farmers.merge(f, 1, Integer::sum);
+            if (f == null || !farmList.contains(f) || n > FARMERS_PER_FARM) {
+                jobs.put(v, Job.FREE);
+                free.add(v);
+            }
+        }
+        int workers = (int) villagers.stream().filter(v -> jobs.get(v) != Job.BUSY && jobs.get(v) != Job.MILL).count();
+        int foodTarget = Math.min(farmList.size() * FARMERS_PER_FARM, hungry ? workers : Math.max(1, (int) Math.round(workers * FOOD_SHARE)));
+        int others = workers - foodTarget;
+        // ore is little used early on: none while there's plenty in stock and wood is short
+        boolean oreShort = !com.solegendary.reignofnether.resources.ResourcesServerEvents.canAfford(name, ResourceName.ORE, 300) ||
+            com.solegendary.reignofnether.resources.ResourcesServerEvents.canAfford(name, ResourceName.WOOD, 400);
+        int oreTarget = oreShort ? (int) Math.round(others * ORE_SHARE) : 0;
+
+        // too many on a resource: some leave it (those carrying the least first, so little is lost)
+        int moves = 0;
+        Comparator<LivingEntity> lightest = Comparator.comparingInt(v -> com.solegendary.reignofnether.resources.Resources
+            .getTotalResourcesFromItems(((Unit) v).getItems()).getTotalValue());
+        int food = count(jobs, Job.FOOD), ore = count(jobs, Job.ORE), wood = count(jobs, Job.WOOD);
+        int woodTarget = others - oreTarget;
+        for (Job j : List.of(Job.ORE, Job.FOOD, Job.WOOD)) {
+            int have = j == Job.ORE ? ore : j == Job.FOOD ? food : wood;
+            int want = j == Job.ORE ? oreTarget : j == Job.FOOD ? foodTarget : woodTarget;
+            // wood only gives up villagers when another resource lacks some
+            int lacking = Math.max(0, foodTarget - food) + Math.max(0, oreTarget - ore) - free.size();
+            int surplus = j == Job.WOOD ? Math.min(have - want, lacking) : have - want;
+            List<LivingEntity> on = villagers.stream().filter(v -> jobs.get(v) == j).sorted(lightest).toList();
+            for (int i = 0; i < surplus && i < on.size() && moves < MAX_MOVES; i++, moves++) {
+                jobs.put(on.get(i), Job.FREE);
+                free.add(on.get(i));
+                if (j == Job.ORE) ore--; else if (j == Job.FOOD) food--; else wood--;
+            }
+        }
+
         for (LivingEntity v : free) {
-            int n = villagers.size();
-            if (food < Math.round(n * FOOD_SHARE) && !farmList.isEmpty()) {
-                BuildingPlacement farm = farmList.stream().min(Comparator.comparingLong(f -> villagers.stream()
-                    .filter(w -> w instanceof WorkerUnit wu && wu.getGatherResourceGoal() != null && wu.getGatherResourceGoal().getTargetFarm() == f).count())).get();
-                long workers = villagers.stream().filter(w -> w instanceof WorkerUnit wu && wu.getGatherResourceGoal() != null &&
-                    wu.getGatherResourceGoal().getTargetFarm() == farm).count();
-                if (workers < WORKERS_PER_FARM) {
-                    order(bot.name, UnitAction.FARM, List.of(v), farm.centrePos);
+            // an empty farm first
+            if (food < foodTarget) {
+                BuildingPlacement farm = farmList.stream().filter(f -> farmers.getOrDefault(f, 0) < FARMERS_PER_FARM).findFirst().orElse(null);
+                if (farm != null) {
+                    farmers.merge(farm, 1, Integer::sum);
+                    order(name, UnitAction.FARM, List.of(v), farm.centrePos);
                     food++;
                     continue;
                 }
             }
-            ResourceName type = ore < Math.round(n * ORE_SHARE) ? ResourceName.ORE : ResourceName.WOOD;
+            ResourceName type = ore < oreTarget ? ResourceName.ORE : ResourceName.WOOD;
             // wood: the sawmills first (2 villagers each)
             if (type == ResourceName.WOOD) {
                 BuildingPlacement mill = buildings.stream().filter(b -> b.getBuilding() == Buildings.SAWMILL && b.isBuilt)
                     .filter(b -> villagers.stream().filter(w -> w instanceof WorkerUnit wu && wu.getGatherResourceGoal() != null &&
                         wu.getGatherResourceGoal().getTargetFarm() == b).count() < WORKERS_PER_FARM).findFirst().orElse(null);
                 if (mill != null) {
-                    order(bot.name, UnitAction.FARM, List.of(v), mill.centrePos);
+                    order(name, UnitAction.FARM, List.of(v), mill.centrePos);
                     continue;
                 }
             }
             // searched from a random spot around the Town Centre, so a villager that couldn't reach its last
-            // resource isn't sent straight back to the same one
+            // resource isn't sent straight back to the same one, and villagers spread over several spots
             BlockPos home = nearestCity(cities, v.blockPosition(), capital).centrePos;
             BlockPos from = home.offset(random.nextInt(33) - 16, 0, random.nextInt(33) - 16);
             Optional<BlockPos> target = ResourceIndex.get(level).findClosest(level, from, RESOURCE_RANGE, type, bp -> true);
             if (target.isEmpty() && type == ResourceName.ORE)
                 target = ResourceIndex.get(level).findClosest(level, from, RESOURCE_RANGE, type = ResourceName.WOOD, bp -> true);
             if (target.isPresent()) {
-                order(bot.name, UnitAction.MOVE, List.of(v), target.get());
+                order(name, UnitAction.MOVE, List.of(v), target.get());
                 if (type == ResourceName.ORE)
                     ore++;
             }
         }
+    }
+
+    private static int count(Map<LivingEntity, Job> jobs, Job job) {
+        return (int) jobs.values().stream().filter(j -> j == job).count();
+    }
+
+    // out of food = no more villagers. The bot farms with everyone it can (see think) and, if it has no villager left
+    // and none on the way, it's given just enough food for one so it can't stay stuck forever
+    private static boolean rescue(String name, List<LivingEntity> villagers, List<BuildingPlacement> cities) {
+        int cost = com.solegendary.reignofnether.resources.ResourceCosts.VILLAGER.food;
+        if (com.solegendary.reignofnether.resources.ResourcesServerEvents.canAfford(name, ResourceName.FOOD, cost))
+            return false;
+        boolean training = cities.stream().anyMatch(c -> c instanceof ProductionPlacement pp && !pp.productionQueue.isEmpty());
+        if (villagers.isEmpty() && !training) {
+            int have = com.solegendary.reignofnether.resources.ResourcesServerEvents.resourcesList.stream()
+                .filter(r -> r.ownerName.equals(name)).mapToInt(r -> r.food).findFirst().orElse(0);
+            com.solegendary.reignofnether.resources.ResourcesServerEvents.addSubtractResources(
+                new com.solegendary.reignofnether.resources.Resources(name, cost - have, 0, 0));
+        }
+        return true;
     }
 
     private static boolean startProduction(String name, ProductionPlacement pp, com.solegendary.reignofnether.building.production.ProductionItem item) {

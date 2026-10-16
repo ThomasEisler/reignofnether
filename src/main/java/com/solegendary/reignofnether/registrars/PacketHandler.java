@@ -493,6 +493,18 @@ public final class PacketHandler {
                 .consumerMainThread(com.solegendary.reignofnether.barbarian.BarbarianClientboundPacket::handle)
                 .add();
 
+        INSTANCE.messageBuilder(com.solegendary.reignofnether.bot.BotServerboundPacket.class, index++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.solegendary.reignofnether.bot.BotServerboundPacket::encode)
+                .decoder(com.solegendary.reignofnether.bot.BotServerboundPacket::new)
+                .consumerMainThread(com.solegendary.reignofnether.bot.BotServerboundPacket::handle)
+                .add();
+
+        INSTANCE.messageBuilder(com.solegendary.reignofnether.bot.BotClientboundPacket.class, index++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.solegendary.reignofnether.bot.BotClientboundPacket::encode)
+                .decoder(com.solegendary.reignofnether.bot.BotClientboundPacket::new)
+                .consumerMainThread(com.solegendary.reignofnether.bot.BotClientboundPacket::handle)
+                .add();
+
         INSTANCE.messageBuilder(com.solegendary.reignofnether.nation.NationServerboundPacket.class, index++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(com.solegendary.reignofnether.nation.NationServerboundPacket::encode)
                 .decoder(com.solegendary.reignofnether.nation.NationServerboundPacket::new)

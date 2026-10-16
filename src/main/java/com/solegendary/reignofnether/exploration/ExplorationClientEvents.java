@@ -21,7 +21,7 @@ import java.util.Random;
 
 // Clouds over every chunk this player has not explored yet (see ExplorationServerEvents). They cover everything as
 // soon as the player has started (is an RTS player); only the spot choice before starting shows the whole map.
-// They reach far beyond the render distance so that far terrain (Distant Horizons) stays hidden too.
+// They reach a little beyond the render distance (no need for more since Distant Horizons was removed).
 // Things inside unexplored chunks (units, icons, minimap) are hidden through FogOfWarClientEvents.isInBrightChunk.
 public class ExplorationClientEvents {
 
@@ -33,8 +33,7 @@ public class ExplorationClientEvents {
 
     // cloud look
     private static final int TOP_ABOVE_GROUND = 3; // a cloud is at least this tall above the lowest ground
-    private static final int EXTRA_RADIUS = 4;    // puffy clouds up to this many chunks beyond the render distance
-    private static final int FAR_RADIUS = 64;     // flat clouds up to here (1024 blocks), over far terrain
+    private static final int EXTRA_RADIUS = 4;    // clouds up to this many chunks beyond the render distance
 
     public static void receive(boolean isEnabled, boolean replace, long[] chunks) {
         enabled = isEnabled;
@@ -182,7 +181,7 @@ public class ExplorationClientEvents {
         if (MC.level == null)
             return;
         int nearRadius = MC.options.getEffectiveRenderDistance() + EXTRA_RADIUS;
-        int radius = Math.max(nearRadius, FAR_RADIUS);
+        int radius = nearRadius;
         originX = camCx << 4;
         originZ = camCz << 4;
 

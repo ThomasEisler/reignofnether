@@ -17,7 +17,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 | Code du mod | `~/locallab/mc/RTS/reignofnether` |
 | Java 17 | installé avec Homebrew (`openjdk@17`) |
 | Profil de jeu pour tester | **Prism Launcher → profil « RTS »** (CurseForge n'est plus utilisé) |
-| Mods du profil RTS | ma version de Reign of Nether, Distant Horizons, Embeddium, Oculus + shaders Complementary, Tectonic, Lithostitched, WorldEdit 7.2.15 (TEMPORAIRE : outil de construction, à retirer avant la version finale) |
+| Mods du profil RTS | ma version de Reign of Nether, Embeddium, Oculus + shaders Complementary, Tectonic, Lithostitched, WorldEdit 7.2.15 (TEMPORAIRE : outil de construction, à retirer avant la version finale) |
 
 **Fabriquer le mod** : `./gradlew build` → le fichier est dans `build/libs/reignofnether-1.5.0.jar`, à copier (jeu fermé) dans le dossier `mods` du profil RTS.
 
@@ -35,7 +35,7 @@ Un **serveur unique** avec ce mod : je ne partage pas le mod, on joue seulement 
 4. **Distance de sécurité** : impossible de poser son Hôtel de ville trop près de celui d'un autre joueur.
 5. Ensuite, on joue tous ensemble sur la même carte.
 
-Rien de tout ça n'est fait. À prévoir aussi : retirer Distant Horizons et WorldEdit du serveur et du pack des joueurs.
+Rien de tout ça n'est fait. À prévoir aussi : retirer WorldEdit du serveur (Distant Horizons déjà retiré le 14/10) et du pack des joueurs.
 
 ---
 
@@ -239,13 +239,24 @@ Hauteurs (depuis le 14/10/2026) : palissade 2 ou 3 blocs, pierre 4 (créneaux co
 | Russie | Pierre le Grand | Récolte 15 % plus rapide |
 | Suède | Gustave II Adolphe | Unités 10 % plus rapides |
 
-### Civilisations dirigées par l'ordinateur (bots) — étapes 1, 2 et 3 faites
+### Civilisations dirigées par l'ordinateur (bots) — étapes 1 à 5 faites
 - But : jouer seul ou à deux avec **4 civilisations** ; les bots s'attaquent aussi **entre eux** (étape 4).
 - **`/rts-bot ajouter`** (triches) : ajoute un bot. Il prend une **nation libre au hasard** (son nom = celui de la nation, ex. « Espagne »), s'installe dans une **zone libre** à 220-320 blocs des autres villes (et à 100 blocs au moins des camps barbares), reçoit 3 villageois et les ressources de départ, et pose son **Hôtel de ville** (construit par ses villageois).
-- **Économie** (le bot réfléchit toutes les 2 s) : fait des villageois jusqu'à **18** ; répartit ceux qui ne font rien : **35 % nourriture** (dans ses fermes, 2 par ferme), **20 % minerai**, le reste **bois** (ressource la plus proche à moins de 48 blocs) ; construit une **maison** quand il lui reste 2 places de population ou moins, des **fermes** au fil de la croissance (jusqu'à 4), un **entrepôt** près de la forêt la plus proche ; tout bâtiment en chantier reçoit un constructeur.
+- **Économie** (le bot réfléchit toutes les 2 s, revue le 14/10) : fait des villageois jusqu'à **18** ; **un seul fermier par ferme** (un 2e ne fait qu'attendre le blé) et des fermes pour environ 35 % des villageois (6 au plus, une de plus quand il manque de nourriture, dès 2 villageois) ; les autres : **25 % minerai** (aucun tant qu'il a 300 de minerai et moins de 400 de bois), le reste **bois** (ressource la plus proche à moins de 48 blocs d'un point au hasard autour de la ville, pour qu'ils s'étalent). **Rééquilibrage permanent** : pas seulement les inoccupés — fermiers en trop, minerai en trop, et bois quand une autre ressource manque de monde, 2 villageois déplacés au plus toutes les 2 s (ceux qui portent le moins d'abord) (`shareOut`). Construit une **maison** quand il lui reste 2 places de population ou moins, un **entrepôt** près de la forêt la plus proche ; tout bâtiment en chantier reçoit un constructeur.
 - **Développement** (étape 3) : construit dans l'ordre caserne (8 villageois), bibliothèque (10), forge et 2 tours de guet (12, après Maçonnerie), marché (14, après Commerce), 2e caserne (20), 4 tours (22) ; recherche les technologies à la suite (Maçonnerie, Sacs de récolte, Commerce, Architecture, Tir à l'arc, Métallurgie… en gardant 100 de nourriture) ; améliore Hôtel de ville (dès 14 villageois) et casernes ; fonde une **nouvelle ville** à 110-150 blocs dès 16 villageois (3 villes au plus, 8 villageois de plus par ville, chaque ville en forme). Réglages en tête de `BotServerEvents` (`WISHES`, `RESEARCH`).
-- Reste à faire : **étape 4** (armée, défense, attaques, y compris entre bots et contre les barbares), **étape 5** (bouton dans le menu de départ : nombre de bots et difficulté).
-- Code : dossier `bot/` (`BotServerEvents` : arrivée `addBot`/`findStart`, cerveau `think` ; `BotSaveData`).
+- **Armée** (étape 4, 14/10, à tester en jeu) : chaque caserne forme à la suite 2 vindicateurs, 1 pillard, 1 cavalier (vindicateur si le cavalier n'est pas possible) ; la forge fait 2 golems de fer au plus dès 6 soldats ; 24 soldats au plus ; il garde 50 de nourriture et 2 places de population pour ses villageois tant que le village grandit. Les soldats attendent près de l'Hôtel de ville. **Défense** : tout ennemi à moins de 36 blocs d'un de ses bâtiments → toute l'armée y va (une attaque en cours est annulée). **Attaques** : dès 6 soldats (puis 2 de plus à chaque attaque, 16 au plus), contre le bâtiment ennemi le plus proche à moins de 450 blocs : camps barbares à tout moment, autres civilisations (bots **et joueurs**, sauf alliés) seulement **25 min après l'arrivée du bot**. L'armée enchaîne les bâtiments du même ennemi à moins de 60 blocs, frappe les bâtiments quand il n'y a plus personne à combattre, et rentre quand il reste 35 % des soldats partis ; 3 min entre deux attaques. Réglages en tête de `bot/BotArmy.java` ; `/rts-bot info` dit ce que fait l'armée.
+- **Nombre et difficulté** (étape 5, 14/10, à tester en jeu) : bouton **« Bots »** dans le menu de départ (à la place de la faction piglin cachée, à côté du bouton Barbares) : **clic gauche** = nombre de bots (0 → 1 → 2 → 3), **clic droit** = facile → normal → difficile ; icône barrière (aucun) ou épée en bois / fer / netherite. Aussi `/rts-bot nombre 0-3` et `/rts-bot difficulte facile|normal|difficile`. Sauvegardé avec le monde. Les bots manquants **arrivent un par un (toutes les 5 s) dès qu'un joueur a un Hôtel de ville**, message « Une nouvelle civilisation arrive : … » ; augmenter le nombre en cours de partie en ajoute, le baisser n'en retire pas. `/rts-bot ajouter` marche toujours en plus.
+
+| Difficulté | Villageois (1re ville) | Paix avant d'attaquer joueurs et bots | 1re attaque | Armée max | Entre deux attaques | Bonus de départ |
+|---|---|---|---|---|---|---|
+| Facile | 14 | 40 min | 8 soldats | 14 | 5 min | — |
+| Normal | 18 | 25 min | 6 soldats | 24 | 3 min | — |
+| Difficile | 24 | 15 min | 6 soldats | 32 | 2 min | +300 de chaque |
+
+- **Anti-blocage** (14/10) : le bot garde toujours **30 de bois** (replanter coûte 1 bois par plant ; avant, il dépensait tout et ses fermiers ne produisaient plus rien → nourriture à 0, plus de villageois). Sans assez de nourriture pour un villageois, toutes ses fermes ont leur fermier et il construit une ferme de plus ; s'il n'a plus aucun villageois, il reçoit juste de quoi en refaire un (`rescue`).
+- **Vraie cause du blocage** (14/10, vue avec `/rts-bot info`) : un villageois plein qui rentre déposer n'a plus de tâche de récolte, le bot le croyait inoccupé et le renvoyait au travail toutes les 2 s ; rien n'arrivait jamais au stock (la sauvegarde compte ce que portent les unités, d'où des chiffres trompeurs dans le journal). Corrigé (`isReturning`).
+- **`/rts-bot info`** : ressources, population, bâtiments (chantiers, production) et ce que fait chaque unité de chaque bot (dont « rapporte »), ce qu'elle porte et sa position (`BotInfo`).
+- Code : dossier `bot/` (`BotServerEvents` : arrivée `addBot`/`findStart`, cerveau `think`, répartition `shareOut` ; `BotArmy` = armée ; `BotDifficulty` = réglages par difficulté ; `BotSettings` = nombre voulu, arrivées, sauvegarde dans `BotSaveData` ; `BotClientEvents` = bouton ; paquets `Bot*boundPacket` ; `BotInfo` = `/rts-bot info`).
 
 ### Villes
 - On peut construire **plusieurs Hôtels de ville** (menu des ouvriers) : chacun est une **ville**, nommée d'après la **prochaine ville de sa nation** (France : Paris, Lyon, Marseille, Bordeaux… ; 12 noms par nation, puis « Paris 2 »… ; « Ville 1 », « Ville 2 »… sans nation). Le nom flotte au-dessus de l'Hôtel de ville, dans la couleur de la nation. Les noms ne resservent pas (même si une ville est détruite) ; ils repartent du début avec `/rts-reset`.
@@ -323,7 +334,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 ## À faire
 
 - **Avant la version finale** : retirer WorldEdit du dossier mods du profil RTS (outil de construction seulement).
-- **Pour le serveur** : ne pas mettre **Distant Horizons** (ni dans le serveur, ni dans le pack des joueurs) ; je le garde seulement dans mon profil à moi.
+- **Pour le serveur** : ne pas mettre **Distant Horizons** (ni dans le serveur, ni dans le pack des joueurs) ; retiré aussi de mon profil le 14/10/2026 (inutile avec les nuages ; fichier rangé dans `.minecraft/mods-retires/`).
 
 ### Routes
 - [ ] Bâtiments qui **exigent une route** : aucun pour l'instant (décidé le 13/10), à revoir plus tard.
@@ -376,6 +387,9 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
 - [ ] Bots (`/rts-bot ajouter`, 3 fois pour 4 civilisations) : arrivée loin des villes, Hôtel de ville, villageois produits et répartis, maisons, fermes, entrepôt.
+- [ ] Bouton « Bots » du menu de départ (clic gauche nombre, clic droit difficulté), arrivée des bots une fois l'Hôtel de ville posé, effets de la difficulté.
+- [ ] Armée des bots : formation à la caserne, attente près de l'Hôtel de ville, défense quand un ennemi approche, attaque d'un camp barbare (dès 6 soldats), retour quand l'armée est battue, attaque des autres civilisations après 25 min.
+- [ ] Bot bloqué (Saint-Empire, nourriture à 0) : repart après l'anti-blocage ? `/rts-bot info` pour voir ses villageois (le bois s'est arrêté à 19 h 43 sans explication).
 - [ ] Villes : 2e Hôtel de ville loin du premier, nom au-dessus, refus trop près (100 / 180 blocs) et zone rouge.
 - [ ] Carrières (minage, minerai qui repousse) et ruines (deviennent attaquables quand on approche, trésor) ; icônes.
 - [ ] Pêche et troupeaux : bulles sur l'eau près des rives, port posé contre l'eau, pêcheurs en bateau (clic droit sur le port) qui vont aux bulles et rapportent, troupeaux qui tournent en rond, s'éloignent des villes, repoussent ; plus de bêtes seules (nouveau monde conseillé).

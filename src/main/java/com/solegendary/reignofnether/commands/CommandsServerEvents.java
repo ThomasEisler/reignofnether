@@ -440,6 +440,27 @@ public class CommandsServerEvents {
 					ctx.getSource().sendSuccess(() -> Component.literal(msg), true);
 					return 1;
 				}))
+				.then(Commands.literal("nombre").then(Commands.argument("n", IntegerArgumentType.integer(0, com.solegendary.reignofnether.bot.BotSettings.MAX_BOTS)).executes(ctx -> {
+					int n = IntegerArgumentType.getInteger(ctx, "n");
+					com.solegendary.reignofnether.bot.BotSettings.set(n, com.solegendary.reignofnether.bot.BotSettings.difficulty());
+					ctx.getSource().sendSuccess(() -> Component.literal("Bots voulus : " + n), true);
+					return 1;
+				})))
+				.then(Commands.literal("difficulte").then(Commands.argument("d", StringArgumentType.word())
+					.suggests((ctx, b) -> SharedSuggestionProvider.suggest(List.of("facile", "normal", "difficile"), b))
+					.executes(ctx -> {
+						var d = com.solegendary.reignofnether.bot.BotDifficulty.fromFr(StringArgumentType.getString(ctx, "d"));
+						if (d == null)
+							return 0;
+						com.solegendary.reignofnether.bot.BotSettings.set(com.solegendary.reignofnether.bot.BotSettings.wanted(), d);
+						ctx.getSource().sendSuccess(() -> Component.literal("Difficulté des bots : " + d.frName), true);
+						return 1;
+					})))
+				.then(Commands.literal("info").executes(ctx -> {
+					for (String line : com.solegendary.reignofnether.bot.BotInfo.describe(ctx.getSource().getLevel()))
+						ctx.getSource().sendSuccess(() -> Component.literal(line), false);
+					return 1;
+				}))
 		);
 		dispatcher.register(Commands.literal("rts-barbarian-camp")
 				.requires(source -> source.hasPermission(2))

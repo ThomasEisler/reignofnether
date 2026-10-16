@@ -23,6 +23,8 @@ public class BotSaveData extends SavedData {
     }
 
     public final List<BotData> bots = new ArrayList<>();
+    public int wanted = 0; // bots the game should have (start menu button)
+    public String difficulty = "NORMAL";
 
     @Nonnull
     public static BotSaveData getInstance(LevelAccessor level) {
@@ -44,6 +46,9 @@ public class BotSaveData extends SavedData {
             bot.ticksAlive = b.getLong("ticksAlive");
             data.bots.add(bot);
         }
+        data.wanted = tag.getInt("wanted");
+        if (tag.contains("difficulty"))
+            data.difficulty = tag.getString("difficulty");
         return data;
     }
 
@@ -59,6 +64,8 @@ public class BotSaveData extends SavedData {
             list.add(b);
         }
         tag.put("bots", list);
+        tag.putInt("wanted", wanted);
+        tag.putString("difficulty", difficulty);
         return tag;
     }
 }
