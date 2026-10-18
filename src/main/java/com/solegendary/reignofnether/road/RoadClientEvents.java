@@ -65,8 +65,9 @@ public class RoadClientEvents {
     }
 
     private static void updatePreview() {
+        boolean royal = CursorClientEvents.getLeftClickAction() == UnitAction.BUILD_ROYAL_ROAD;
         if (MC.level == null || MC.player == null || !OrthoviewClientEvents.isEnabled() ||
-            CursorClientEvents.getLeftClickAction() != UnitAction.BUILD_ROAD) {
+            (CursorClientEvents.getLeftClickAction() != UnitAction.BUILD_ROAD && !royal)) {
             clearPreview();
             return;
         }
@@ -85,6 +86,32 @@ public class RoadClientEvents {
         previewBlocks = List.of();
         previewValid = false;
 
+        if (royal) {
+            String me = MC.player.getName().getString();
+            if (!from.getBuilding().isCapitol || !to.getBuilding().isCapitol)
+                previewText = "Une route royale relie deux Hôtels de ville";
+            else if (!from.isBuilt || !to.isBuilt)
+                previewText = I18n.get("hud.reignofnether.road_not_built");
+            else if (!to.ownerName.equals(me) && com.solegendary.reignofnether.diplomacy.DiplomacyClient.getStance(me, to.ownerName) ==
+                com.solegendary.reignofnether.diplomacy.Stance.WAR)
+                previewText = "Pas de route royale vers une civilisation en guerre avec vous";
+            else {
+                RoadClientboundPacket.RoadInfo existing = getRoad(from.originPos, to.originPos);
+                if (existing != null && existing.type().isRoyal()) {
+                    previewText = "Déjà reliées par une route royale";
+                    return;
+                }
+                RoadPathTracer.Result path = RoadPathTracer.trace(MC.level, from, to, RoadType.ROYAL);
+                if (path.errorKey != null) {
+                    previewText = I18n.get(path.errorKey);
+                    return;
+                }
+                previewBlocks = path.blocks;
+                previewText = "Route royale : " + path.length + " blocs — " + getCostText(RoadType.ROYAL, path.length);
+                previewValid = true;
+            }
+            return;
+        }
         if (!to.ownerName.equals(MC.player.getName().getString())) {
             previewText = I18n.get("hud.reignofnether.road_not_owned");
             return;
@@ -97,7 +124,7 @@ public class RoadClientEvents {
         if (existing != null) {
             if (existing.underConstruction())
                 previewText = I18n.get("hud.reignofnether.road_under_construction");
-            else if (existing.type().ordinal() >= RoadType.values().length - 1)
+            else if (existing.type().ordinal() >= RoadType.MAX_BUILDING_ROAD.ordinal())
                 previewText = I18n.get("hud.reignofnether.road_max_level");
             else {
                 RoadType next = RoadType.values()[existing.type().ordinal() + 1];

@@ -42,7 +42,7 @@ public class NationDyes {
         else return state;
         if (dye == DyeColor.WHITE)
             return state;
-        Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation("minecraft", dye.getName() + "_" + kind));
+        Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath("minecraft", dye.getName() + "_" + kind));
         BlockState out = block.defaultBlockState();
         for (Property<?> p : state.getProperties())
             out = copy(state, out, p); // banner rotation and facing

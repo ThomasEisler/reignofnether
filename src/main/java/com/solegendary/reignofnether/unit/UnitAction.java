@@ -152,6 +152,7 @@ public enum UnitAction {
 
     SET_ATTACK_COUNT, // for marauders
     BUILD_ROAD, // building ability: click another owned building to connect them with a road
+    BUILD_ROYAL_ROAD, // Town Centre ability: click another city (also another civilisation's) for a royal road
     RAMPART_TOWER, // rampart ability: turn this segment into a tower
     RAMPART_GATE, // rampart ability: turn this segment into a gate
     RAMPART_UPGRADE, // rampart ability: the whole wall goes up a level

@@ -105,6 +105,7 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer WorldEdit du serveur (D
 - Une **place irrégulière** (0 à 2 blocs) entoure chaque bâtiment terminé, en matériau « chemin », et prend le matériau de la route quand elle arrive.
 - Les unités **préfèrent passer par les routes** : une case de route « coûte » moitié moins qu'une case de terre (`ROAD_COST = 0.5` dans `PathfinderConfig`), donc elles font un détour pour les prendre. Le déplacement propre au mod est maintenant **activé sur toutes les cartes** (avant : seulement avec une bordure de 1280 blocs ou moins ; sans bordure, pas de pré-calcul de la carte, à surveiller si ça rame). Les routes sont reconnues par leur position : le gravier ou la pierre naturels ne comptent pas.
 - Le serveur connaît le **réseau** : quels bâtiments sont reliés entre eux. Sauvegardé avec le monde.
+- **Route royale** (18/10, à tester en jeu) : bouton sur un **Hôtel de ville** (pierre ciselée, touche 9), puis clic sur un **autre Hôtel de ville** — le mien ou celui d'une civilisation **pas en guerre** avec moi. **5 blocs de large** (briques de pierre, andésite polie, briques fissurées), jusqu'à **500 blocs** entre les villes (720 de tracé), **2 bois + 2 minerai par bloc**, unités **+40 %** ; quelques **murets** de loin en loin sur les bords (pas de lanternes). Construite par mes ouvriers comme les autres routes ; une petite route déjà là entre les deux villes est remplacée. Elle ne s'améliore pas (les routes entre bâtiments s'arrêtent à « avancée »). Il en faudra une pour les **routes commerciales** (étape 2, marchands et lamas).
 
 ### Nouveaux bâtiments et unités (14/10 au soir)
 - **Hospice** (200 PV ; 175 bois, 100 minerai ; 90 s ; recherche **Mysticisme**) : soigne de 1 PV toutes les 2 s mes unités (et alliées) à 12 blocs ; forme des **Prêtres**. Modèle `hospice` provisoire.
@@ -481,6 +482,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 - [ ] Carte plein écran (bouton d'agrandissement) : taille, centrage, clic sur la carte pour déplacer la caméra, boutons encore cliquables, ralentissements ; menu de départ (qui utilise la grande carte). Nuages la nuit avec et sans shaders.
 - [ ] Formations : groupe de soldats déplacé → rangs face à la marche (corps à corps devant, tireurs derrière, catapultes au fond), troupe qui avance au pas de la plus lente, aussi en « attaquer en avançant » ; vérifier les cavaliers (pas de place en double) et les bots.
 - [ ] Laine blanche des modèles dans la couleur de la nation (nouveau bâtiment, montée de niveau) ; anciens bâtiments pas abîmés.
+- [ ] Route royale : bouton sur l'Hôtel de ville, aperçu et prix vers une autre ville (aussi étrangère), 5 de large, murets, vitesse ; refusée en guerre.
 - [ ] Classement : tableau en bas de l'écran Diplomatie (touche 8), points qui bougent (villes, recherches, unités tuées…), `/rts-classement`, `/rts-fin` (vainqueur à l'écran).
 - [ ] Religion (étape 3) : boutons des rites dans le temple (effets, attente), jauges en cliquant sur un Hôtel de ville, bouton « Religions » de la carte plein écran, bots qui bâtissent un temple, fondent, envoient leurs prophètes.
 - [ ] Religion (étape 2) : prophètes au temple (2 gratuits puis 80 de foi, limite), conversion d'une ville voisine (prophète posté près de son Hôtel de ville, message quand elle change), protection (temple, prophète chez soi), bouton d'expulsion sur un prophète étranger dans mes frontières, camp barbare calmé (plus de raids, tribut), 2e croyance à 3 villes.
@@ -631,3 +633,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 18/10/2026 | Religion étape 3 : rites, jauges des villes, carte des religions, religion des bots |
 | 18/10/2026 | Classement par points (territoire, population, technologies, militaire, religion, économie) dans l'écran Diplomatie ; `/rts-fin` |
 | 18/10/2026 | Laine blanche des modèles dans la couleur de la nation (tentes, drapeaux) |
+| 18/10/2026 | Route royale entre deux villes (5 de large, jusqu'à 500 blocs, aussi vers une ville étrangère) |

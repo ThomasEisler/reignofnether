@@ -92,6 +92,8 @@ public class RoadServerEvents {
         String error = null;
         if (from == null || to == null || from == to)
             error = "hud.reignofnether.road_invalid_buildings";
+        else if (type.isRoyal())
+            error = royalRoadError(ownerName, from, to);
         else if (!from.ownerName.equals(ownerName) || !to.ownerName.equals(ownerName))
             error = "hud.reignofnether.road_not_owned";
         else if (!from.isBuilt || !to.isBuilt)
@@ -102,10 +104,22 @@ public class RoadServerEvents {
         }
         // connecting two already connected buildings upgrades their road to the next tier instead
         RoadConnection existing = getConnection(from.originPos, to.originPos);
+        if (existing != null && type.isRoyal()) {
+            if (existing.type.isRoyal() || existing.isUnderConstruction()) {
+                HudClientboundPacket.showTempMessageI18n(ownerName, existing.isUnderConstruction() ?
+                    "hud.reignofnether.road_under_construction" : "Ces villes sont déjà reliées par une route royale");
+                return false;
+            }
+            // a smaller road between the two cities: the royal road replaces it (its stones stay where they are)
+            RoadConnection replaced = existing;
+            connections.remove(replaced);
+            roadBlocks.values().removeIf(c -> c == replaced);
+            existing = null;
+        }
         if (existing != null)
             return tryUpgradeRoad(level, ownerName, existing, from, to);
 
-        RoadPathTracer.Result path = RoadPathTracer.trace(level, from, to);
+        RoadPathTracer.Result path = RoadPathTracer.trace(level, from, to, type);
         if (path.errorKey != null) {
             HudClientboundPacket.showTempMessageI18n(ownerName, path.errorKey);
             return false;
@@ -125,9 +139,23 @@ public class RoadServerEvents {
         return true;
     }
 
+    // a royal road: from one of one's cities to another city (one's own, or another civilisation's not at war)
+    @Nullable
+    public static String royalRoadError(String ownerName, BuildingPlacement from, BuildingPlacement to) {
+        if (!from.getBuilding().isCapitol || !to.getBuilding().isCapitol)
+            return "Une route royale relie deux Hôtels de ville";
+        if (!from.ownerName.equals(ownerName))
+            return "hud.reignofnether.road_not_owned";
+        if (!from.isBuilt || !to.isBuilt)
+            return "hud.reignofnether.road_not_built";
+        if (!to.ownerName.equals(ownerName) && com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.atWar(ownerName, to.ownerName))
+            return "Pas de route royale vers une civilisation en guerre avec vous";
+        return null;
+    }
+
     private static boolean tryUpgradeRoad(ServerLevel level, String ownerName, RoadConnection existing,
                                           BuildingPlacement from, BuildingPlacement to) {
-        if (existing.type.ordinal() >= RoadType.values().length - 1) {
+        if (existing.type.ordinal() >= RoadType.MAX_BUILDING_ROAD.ordinal()) {
             HudClientboundPacket.showTempMessageI18n(ownerName, "hud.reignofnether.road_max_level");
             return false;
         }
@@ -278,7 +306,7 @@ public class RoadServerEvents {
     // ---- little details along the road's edges: a few bushes by paths, fences by paved roads, lantern posts by
     // advanced roads. Spots are picked from the position, so the same ones come back when the road is upgraded.
 
-    private static final int[] DECORATION_RARITY = { 30, 25, 30 }; // one edge spot in N, per road tier
+    private static final int[] DECORATION_RARITY = { 30, 25, 30, 22 }; // one edge spot in N, per road tier
     private static final int DECORATION_SPACING = 7; // min blocks between two details, so they never form a line
 
     // ground blocks right next to the road, where a decoration could stand
@@ -340,6 +368,7 @@ public class RoadServerEvents {
                     level.setBlockAndUpdate(above, Blocks.STONE_BRICK_WALL.defaultBlockState());
                     level.setBlockAndUpdate(above.above(), Blocks.LANTERN.defaultBlockState());
                 }
+                case ROYAL -> level.setBlockAndUpdate(above, Blocks.STONE_BRICK_WALL.defaultBlockState()); // a few low walls
             }
         }
     }
@@ -354,7 +383,7 @@ public class RoadServerEvents {
             boolean ours = switch (type) {
                 case PATH -> bs.is(Blocks.OAK_LEAVES) || bs.is(Blocks.AZALEA_LEAVES);
                 case PAVED -> bs.is(Blocks.OAK_FENCE);
-                case ADVANCED -> bs.is(Blocks.STONE_BRICK_WALL);
+                case ADVANCED, ROYAL -> bs.is(Blocks.STONE_BRICK_WALL);
             };
             if (!ours)
                 continue;

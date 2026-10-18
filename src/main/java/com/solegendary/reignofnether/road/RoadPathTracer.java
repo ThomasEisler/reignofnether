@@ -80,10 +80,20 @@ public class RoadPathTracer {
         }
     }
 
+    // royal roads (between cities): wider and much longer
+    public static final int ROYAL_MAX_LENGTH = 500, ROYAL_MAX_PATH_LENGTH = 720, ROYAL_WIDTH_RADIUS = 2, ROYAL_MAX_NODES = 300000;
+
     public static Result trace(Level level, BuildingPlacement a, BuildingPlacement b) {
+        return trace(level, a, b, RoadType.PATH);
+    }
+
+    public static Result trace(Level level, BuildingPlacement a, BuildingPlacement b, RoadType type) {
+        boolean royal = type.isRoyal();
+        int maxLength = royal ? ROYAL_MAX_LENGTH : MAX_LENGTH, maxPathLength = royal ? ROYAL_MAX_PATH_LENGTH : MAX_PATH_LENGTH;
+        int widthRadius = royal ? ROYAL_WIDTH_RADIUS : WIDTH_RADIUS, maxNodes = royal ? ROYAL_MAX_NODES : MAX_NODES;
         int x0 = a.centrePos.getX(), z0 = a.centrePos.getZ();
         int x1 = b.centrePos.getX(), z1 = b.centrePos.getZ();
-        if (Math.max(Math.abs(x1 - x0), Math.abs(z1 - z0)) > MAX_LENGTH)
+        if (Math.max(Math.abs(x1 - x0), Math.abs(z1 - z0)) > maxLength)
             return Result.error("hud.reignofnether.road_too_long");
 
         int minX = Math.min(a.minCorner.getX(), b.minCorner.getX()) - SEARCH_MARGIN;
@@ -103,7 +113,7 @@ public class RoadPathTracer {
 
         boolean found = false;
         int expanded = 0;
-        while (!open.isEmpty() && expanded < MAX_NODES) {
+        while (!open.isEmpty() && expanded < maxNodes) {
             Node node = open.poll();
             long current = node.key();
             int cx = keyX(current), cz = keyZ(current);
@@ -171,9 +181,9 @@ public class RoadPathTracer {
             if (isInFootprint(a, x, z) || isInFootprint(b, x, z))
                 continue;
             length++;
-            // a square brush keeps the road 3 wide whatever its direction
-            for (int wx = x - WIDTH_RADIUS; wx <= x + WIDTH_RADIUS; wx++) {
-                for (int wz = z - WIDTH_RADIUS; wz <= z + WIDTH_RADIUS; wz++) {
+            // a square brush keeps the road 3 (royal: 5) wide whatever its direction
+            for (int wx = x - widthRadius; wx <= x + widthRadius; wx++) {
+                for (int wz = z - widthRadius; wz <= z + widthRadius; wz++) {
                     if (isInFootprint(a, wx, wz) || isInFootprint(b, wx, wz))
                         continue;
                     Column col = getColumn(level, columns, wx, wz);
@@ -184,7 +194,7 @@ public class RoadPathTracer {
         }
         if (length == 0)
             return Result.error("hud.reignofnether.road_too_short");
-        if (length > MAX_PATH_LENGTH)
+        if (length > maxPathLength)
             return Result.error("hud.reignofnether.road_too_long");
         return new Result(new ArrayList<>(blocks), length, null);
     }

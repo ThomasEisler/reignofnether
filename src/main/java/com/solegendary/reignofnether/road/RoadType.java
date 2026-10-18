@@ -13,7 +13,16 @@ import java.util.List;
 public enum RoadType {
     PATH(List.of(Blocks.GRAVEL, Blocks.COARSE_DIRT), 1, 0, 0.15f),
     PAVED(List.of(Blocks.ANDESITE, Blocks.GRAVEL), 1, 1, 0.25f),
-    ADVANCED(List.of(Blocks.ANDESITE, Blocks.STONE_BRICKS, Blocks.STONE), 0, 3, 0.35f);
+    ADVANCED(List.of(Blocks.ANDESITE, Blocks.STONE_BRICKS, Blocks.STONE), 0, 3, 0.35f),
+    // between two cities (Town Centres, also another civilisation's): 5 wide, longer, needed for trade routes
+    ROYAL(List.of(Blocks.STONE_BRICKS, Blocks.POLISHED_ANDESITE, Blocks.STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS, Blocks.ANDESITE), 2, 2, 0.40f);
+
+    // the tiers a road between buildings goes through when upgraded (the royal road is apart)
+    public static final RoadType MAX_BUILDING_ROAD = ADVANCED;
+
+    public boolean isRoyal() {
+        return this == ROYAL;
+    }
 
     public final List<Block> blocks;
     public final int woodPerLength;

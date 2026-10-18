@@ -26,7 +26,7 @@ public class BuildRoad extends Ability {
     private final RoadType type;
 
     public BuildRoad(RoadType type) {
-        super(UnitAction.BUILD_ROAD, 0, 0, 0, false);
+        super(type.isRoyal() ? UnitAction.BUILD_ROYAL_ROAD : UnitAction.BUILD_ROAD, 0, 0, 0, false);
         this.type = type;
     }
 
@@ -34,6 +34,27 @@ public class BuildRoad extends Ability {
     public AbilityButton getButton(Keybinding hotkey, BuildingPlacement placement) {
         if (placement.getBuilding() instanceof AbstractBridge || placement.ownerName.isEmpty())
             return null;
+        if (type.isRoyal()) {
+            if (!placement.getBuilding().isCapitol)
+                return null;
+            return new AbilityButton("Build Royal Road",
+                ResourceLocation.fromNamespaceAndPath("minecraft", "textures/block/chiseled_stone_bricks.png"),
+                hotkey,
+                () -> CursorClientEvents.getLeftClickAction() == UnitAction.BUILD_ROYAL_ROAD,
+                () -> false,
+                () -> placement.isBuilt,
+                () -> CursorClientEvents.setLeftClickAction(UnitAction.BUILD_ROYAL_ROAD),
+                null,
+                List.of(FormattedCharSequence.forward("Route royale", Style.EMPTY.withBold(true)),
+                    FormattedCharSequence.forward("", Style.EMPTY),
+                    FormattedCharSequence.forward("Cliquez sur un autre Hôtel de ville (le vôtre, ou celui d'une civilisation", Style.EMPTY),
+                    FormattedCharSequence.forward("qui n'est pas en guerre avec vous) : grande route de 5 blocs, jusqu'à 500 blocs.", Style.EMPTY),
+                    FormattedCharSequence.forward(type.woodPerLength + " bois et " + type.orePerLength + " minerai par bloc de longueur ; unités +" +
+                        Math.round(type.speedBonus * 100) + " % plus rapides. Il en faut une pour les routes commerciales.", Style.EMPTY)),
+                this,
+                placement
+            );
+        }
         return new AbilityButton("Build Road",
             ResourceLocation.fromNamespaceAndPath("minecraft", "textures/block/dirt_path_top.png"),
             hotkey,

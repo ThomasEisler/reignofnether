@@ -97,6 +97,7 @@ public abstract class Building {
         this.cost = cost;
         this.isCapitol = isCapitol;
         this.abilities.add(new BuildRoad(RoadType.PATH), Keybindings.hotkey10);
+        this.abilities.add(new BuildRoad(RoadType.ROYAL), Keybindings.hotkey9); // only shown on Town Centres
     }
 
     public float getMeleeDamageMult() {
