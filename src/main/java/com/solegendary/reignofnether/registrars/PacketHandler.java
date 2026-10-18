@@ -493,6 +493,12 @@ public final class PacketHandler {
                 .consumerMainThread(com.solegendary.reignofnether.barbarian.BarbarianClientboundPacket::handle)
                 .add();
 
+        INSTANCE.messageBuilder(com.solegendary.reignofnether.score.ScoreClientboundPacket.class, index++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.solegendary.reignofnether.score.ScoreClientboundPacket::encode)
+                .decoder(com.solegendary.reignofnether.score.ScoreClientboundPacket::new)
+                .consumerMainThread(com.solegendary.reignofnether.score.ScoreClientboundPacket::handle)
+                .add();
+
         INSTANCE.messageBuilder(com.solegendary.reignofnether.religion.ReligionServerboundPacket.class, index++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(com.solegendary.reignofnether.religion.ReligionServerboundPacket::encode)
                 .decoder(com.solegendary.reignofnether.religion.ReligionServerboundPacket::new)

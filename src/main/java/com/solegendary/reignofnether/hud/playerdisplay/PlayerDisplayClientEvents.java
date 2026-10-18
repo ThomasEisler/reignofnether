@@ -49,6 +49,10 @@ public class PlayerDisplayClientEvents {
     private static DisplayType displayType = DisplayType.NONE;
     private static final int BG_BORDER_WIDTH = 7;
 
+    public static boolean isDiplomacyOpen() {
+        return displayType == DisplayType.DIPLOMACY;
+    }
+
     public static void resetDisplay() {
         displayType = DisplayType.NONE;
     }

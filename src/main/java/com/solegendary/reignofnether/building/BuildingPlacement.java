@@ -701,6 +701,7 @@ public class BuildingPlacement {
     // only explode a fraction of the blocks to avoid lag and sound spikes
     public void destroy(ServerLevel serverLevel) {
         this.forceChunk(false);
+        com.solegendary.reignofnether.score.ScoreServerEvents.onBuildingDestroyed(this); // ranking: enemy buildings destroyed
 
         this.blocks.forEach((BuildingBlock block) -> {
             if ((!block.getBlockState().getFluidState().isEmpty() ||

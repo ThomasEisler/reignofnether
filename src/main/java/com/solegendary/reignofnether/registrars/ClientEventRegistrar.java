@@ -100,6 +100,7 @@ public class ClientEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.nation.CityClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.territory.TerritoryClientEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.religion.ReligionClientEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.score.ScoreClientEvents.class);
         vanillaEventBus.register(MinimapClientEvents.class);
         vanillaEventBus.register(TimeClientEvents.class);
         vanillaEventBus.register(BlockClientEvents.class);

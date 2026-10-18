@@ -135,6 +135,7 @@ public class AlliancesServerEvents {
         alliances.clear();
         com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.reset();
         com.solegendary.reignofnether.religion.ReligionServerEvents.reset();
+        com.solegendary.reignofnether.score.ScoreServerEvents.reset();
         AllianceClientboundPacket.resetAlliances();
     }
 

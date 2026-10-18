@@ -282,6 +282,12 @@ Code : `rampart/RampartUpgrades.java` (mur entier, prix, remplacement des morcea
 - **Toute la troupe avance au pas de la plus lente** (une catapulte ralentit tout le monde), pour que les rangs tiennent en chemin ; chacun retrouve sa vitesse au prochain ordre ou en combat.
 - Sans soldats (ouvriers seuls), rien ne change. Réglages en tête de la partie « military formations » de `unit/UnitFormations.java` (`SPACING`, largeur des rangs) ; vitesse commune : `MoveToTargetBlockGoal.formationSpeed`.
 
+### Classement (18/10, à tester en jeu) — à la place d'une victoire
+- Des **points dans tous les domaines**, recalculés toutes les 10 s : **territoire** (10 par ville + 1 par 50 carrés de 2 × 2 blocs de terres), **population** (1 par villageois, 2 par autre unité), **technologies** (10 par recherche), **militaire** (2 par unité ennemie tuée, barbares compris ; 5 par bâtiment ennemi détruit, sauf les remparts), **religion** (20 pour la fondation + 5 par ville qui la suit, partout), **économie** (2 par bâtiment fini, sauf remparts et ponts ; 1 par 200 ressources en stock).
+- Visible **en bas de l'écran Diplomatie** (touche 8), dans la couleur de chaque nation ; aussi `/rts-classement`.
+- **`/rts-fin`** (triches) : on arrête quand on veut, classement final dans le chat et le vainqueur en grand à l'écran de tous.
+- Code `score/` (`ScoreServerEvents` : formules en tête ; morts et bâtiments détruits gardés dans `ScoreSaveData`) ; `/rts-reset` remet les compteurs à zéro.
+
 ### Carte en plein écran (18/10, à tester en jeu)
 - Le bouton d'agrandissement de la minimap ouvre la carte **en grand, au milieu de l'écran**, sur le jeu assombri (aussi grande que l'écran le permet, 1 bloc par point : on voit plus de terrain, jusqu'à 880 blocs de large). Les boutons de la carte et l'horloge restent dans le coin. Réglages `SMALL_GUI_RADIUS`, `MAX_LARGE_GUI_RADIUS`, `LARGE_MARGIN` dans `MinimapClientEvents`.
 
@@ -365,6 +371,8 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | `/rts-barbarian-camp <pos> [1-5]` | pose un camp barbare du niveau choisi (test) |
 | `/rts-diplo` | état diplomatique et opinions des bots ; `guerre`, `paix`, `alliance`, `rompre`, `accepter`, `refuser` + nom |
 | `/rts-diplo opinion <valeur> <bot>` | fixe ce que ce bot pense de moi (test) |
+| `/rts-religion` / `/rts-religion foi <n>` | religions et foi de chacun / ajoute de la foi (test) |
+| `/rts-classement` / `/rts-fin` | classement / fin de partie avec le vainqueur |
 
 ---
 
@@ -470,6 +478,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 - [ ] Armée des bots : formation à la caserne, attente près de l'Hôtel de ville, défense quand un ennemi approche, attaque d'un camp barbare (dès 6 soldats), retour quand l'armée est battue, attaque des autres civilisations après 25 min.
 - [ ] Carte plein écran (bouton d'agrandissement) : taille, centrage, clic sur la carte pour déplacer la caméra, boutons encore cliquables, ralentissements ; menu de départ (qui utilise la grande carte). Nuages la nuit avec et sans shaders.
 - [ ] Formations : groupe de soldats déplacé → rangs face à la marche (corps à corps devant, tireurs derrière, catapultes au fond), troupe qui avance au pas de la plus lente, aussi en « attaquer en avançant » ; vérifier les cavaliers (pas de place en double) et les bots.
+- [ ] Classement : tableau en bas de l'écran Diplomatie (touche 8), points qui bougent (villes, recherches, unités tuées…), `/rts-classement`, `/rts-fin` (vainqueur à l'écran).
 - [ ] Religion (étape 3) : boutons des rites dans le temple (effets, attente), jauges en cliquant sur un Hôtel de ville, bouton « Religions » de la carte plein écran, bots qui bâtissent un temple, fondent, envoient leurs prophètes.
 - [ ] Religion (étape 2) : prophètes au temple (2 gratuits puis 80 de foi, limite), conversion d'une ville voisine (prophète posté près de son Hôtel de ville, message quand elle change), protection (temple, prophète chez soi), bouton d'expulsion sur un prophète étranger dans mes frontières, camp barbare calmé (plus de raids, tribut), 2e croyance à 3 villes.
 - [ ] Religion (étape 1) : temple (après Mysticisme, un par ville, refusé hors de ses terres), foi qui monte sous les ressources (`/rts-religion foi 500` pour aller vite), boutons de fondation dans le temple et leurs infobulles, message à tous, symbole après le nom de la ville, Panthéon (ex-Autel de la Prospérité), effets (construction plus rapide avec l'Orthodoxie, etc.).
@@ -617,3 +626,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 18/10/2026 | Religion étape 2 : pression entre villes, prophètes (limite, coût en foi), protection, expulsion, camps barbares calmés, diplomatie (même religion, Fraternité) |
 | 18/10/2026 | Éditeur de remparts : un clic par virage, double-clic ou Entrée pour construire tout le mur |
 | 18/10/2026 | Religion étape 3 : rites, jauges des villes, carte des religions, religion des bots |
+| 18/10/2026 | Classement par points (territoire, population, technologies, militaire, religion, économie) dans l'écran Diplomatie ; `/rts-fin` |
