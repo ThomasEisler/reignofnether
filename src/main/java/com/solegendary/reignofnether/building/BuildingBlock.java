@@ -97,6 +97,12 @@ public class BuildingBlock {
 
         if (RoadType.isRoadFloorMarker(this.blockState) && RoadType.isRoadBlock(bs))
             return true;
+
+        // wool, carpets and banners of any colour count (buildings built before nation colours kept their white)
+        if ((this.blockState.is(net.minecraft.tags.BlockTags.WOOL) && bs.is(net.minecraft.tags.BlockTags.WOOL)) ||
+            (this.blockState.is(net.minecraft.tags.BlockTags.WOOL_CARPETS) && bs.is(net.minecraft.tags.BlockTags.WOOL_CARPETS)) ||
+            (this.blockState.is(net.minecraft.tags.BlockTags.BANNERS) && bs.is(net.minecraft.tags.BlockTags.BANNERS)))
+            return true;
         if (block1 instanceof com.solegendary.reignofnether.rampart.RampartGateBlock && block1 == block2)
             return true; // open or closed
 
