@@ -71,6 +71,7 @@ public class ExplorationClientEvents {
     private static boolean hasSolid = false, hasCurtain = false;
     private static int builtVersion = -1;
     private static float bakedLight = 1f;
+    public static final float NIGHT_LIGHT = 0.3f; // cloud brightness at night (1 = white)
     private static long builtCentre = Long.MIN_VALUE;
     private static long lastBuildTime = 0;
     private static int originX = 0, originZ = 0;
@@ -83,9 +84,10 @@ public class ExplorationClientEvents {
         int camCx = (int) Math.floor(cam.x) >> 4, camCz = (int) Math.floor(cam.z) >> 4;
         long centre = ChunkPos.asLong(camCx, camCz);
         long now = System.currentTimeMillis();
-        // daylight is baked into the cloud colours (shaders ignore a colour set at draw time): dark at night
-        float light = Mth.clamp((MC.level.getSkyDarken(1f) - 0.2f) / 0.8f, 0f, 1f);
-        light = 0.1f + 0.9f * light * light;
+        // daylight is baked into the cloud colours (shaders ignore a colour set at draw time): dark grey at night.
+        // Worked out from the time of day itself (sky darkness stayed high at night in game, the clouds were glaring)
+        float sun = Mth.clamp(Mth.cos(MC.level.getTimeOfDay(1f) * Mth.TWO_PI) * 2f + 0.5f, 0f, 1f);
+        float light = NIGHT_LIGHT + (1f - NIGHT_LIGHT) * sun;
         if (Math.abs(light - bakedLight) > 0.03f)
             builtVersion = -1;
         if (builtVersion != version || builtCentre != centre || now - lastBuildTime > 3000) {
