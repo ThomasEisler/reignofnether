@@ -40,7 +40,7 @@ import java.util.*;
 //   technologies: 10 per technology
 //   military: 2 per enemy unit killed (barbarians too), 5 per enemy building destroyed
 //   religion: 20 for founding one, 5 per city following it (anywhere)
-//   economy: 2 per finished building (not walls or bridges), 1 per 200 resources in stock
+//   economy: 2 per finished building (not walls or bridges), 1 per 200 resources in stock, 1 per 20 emeralds of trade
 public class ScoreServerEvents {
 
     private static ServerLevel serverLevel = null;
@@ -69,6 +69,14 @@ public class ScoreServerEvents {
         if (!isCiv(k) || k.equals(v) || !(isCiv(v) || BarbarianServerEvents.OWNER_NAME.equals(v)))
             return;
         data().kills.merge(k, 1, Integer::sum);
+        data().setDirty();
+    }
+
+    // emeralds earned by trade routes (trade/TradeServerEvents)
+    public static void onTrade(String civ, int emeralds) {
+        if (serverLevel == null)
+            return;
+        data().trade.merge(civ, emeralds, Integer::sum);
         data().setDirty();
     }
 
@@ -119,7 +127,7 @@ public class ScoreServerEvents {
                 10 * techs,
                 2 * data().kills.getOrDefault(civ, 0) + 5 * data().destroyed.getOrDefault(civ, 0),
                 religion,
-                2 * built + stock / 200));
+                2 * built + stock / 200 + data().trade.getOrDefault(civ, 0) / 20));
         }
         list.sort(Comparator.comparingInt(Score::total).reversed());
         scores = list;
@@ -179,6 +187,7 @@ public class ScoreServerEvents {
             return;
         data().kills.clear();
         data().destroyed.clear();
+        data().trade.clear();
         data().setDirty();
     }
 

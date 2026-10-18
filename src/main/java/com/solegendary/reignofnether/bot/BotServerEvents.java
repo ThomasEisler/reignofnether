@@ -371,6 +371,7 @@ public class BotServerEvents {
         upgradeLevels(bot.name, buildings, villagers.size(), maxVillagers);
         BotArmy.think(bot.name, bot.ticksAlive, units, villagers.size(), maxVillagers, buildings, capital); // step 4
         com.solegendary.reignofnether.religion.ReligionBot.think(bot.name, bot.ticksAlive, buildings, capital); // religion
+        com.solegendary.reignofnether.trade.TradeBot.think(level, bot.name, bot.ticksAlive, buildings, capital); // trade routes
         if (!building && cities.size() < MAX_CITIES && villagers.size() >= NEW_CITY_VILLAGERS && buildings.stream().noneMatch(b -> b.isCapitol && !b.isBuilt))
             foundCity(level, bot.name, capital, villagers);
 

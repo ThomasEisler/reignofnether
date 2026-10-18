@@ -129,6 +129,12 @@ public class EntityRegistrar {
                     .clientTrackingRange(UNIT_CLIENT_TRACKING_RANGE)
                     .build(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "prophet_unit").toString()));
 
+    public static final RegistryObject<EntityType<com.solegendary.reignofnether.trade.MerchantUnit>> MERCHANT_UNIT = ENTITIES.register("merchant_unit",
+            () -> EntityType.Builder.of(com.solegendary.reignofnether.trade.MerchantUnit::new, MobCategory.CREATURE)
+                    .sized(EntityType.VILLAGER.getWidth(), EntityType.VILLAGER.getHeight())
+                    .clientTrackingRange(UNIT_CLIENT_TRACKING_RANGE)
+                    .build(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "merchant_unit").toString()));
+
     public static final RegistryObject<EntityType<com.solegendary.reignofnether.unit.units.villagers.CrossbowmanUnit>> CROSSBOWMAN_UNIT = ENTITIES.register("crossbowman_unit",
             () -> EntityType.Builder.of(com.solegendary.reignofnether.unit.units.villagers.CrossbowmanUnit::new, MobCategory.CREATURE)
                     .sized(EntityType.PILLAGER.getWidth(), EntityType.PILLAGER.getHeight())
@@ -529,6 +535,7 @@ public class EntityRegistrar {
             case com.solegendary.reignofnether.unit.units.villagers.CrossbowmanProd.itemName -> EntityRegistrar.CROSSBOWMAN_UNIT.get();
             case com.solegendary.reignofnether.unit.units.villagers.PriestProd.itemName -> EntityRegistrar.PRIEST_UNIT.get();
             case com.solegendary.reignofnether.religion.ProphetProd.itemName -> EntityRegistrar.PROPHET_UNIT.get();
+            case com.solegendary.reignofnether.trade.MerchantProd.itemName -> EntityRegistrar.MERCHANT_UNIT.get();
             case ScoutCatProd.itemName -> EntityRegistrar.SCOUT_CAT_UNIT.get();
             case ZombieVillagerProd.itemName -> EntityRegistrar.ZOMBIE_VILLAGER_UNIT.get();
             case BatProd.itemName -> EntityRegistrar.BAT_UNIT.get();

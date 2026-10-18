@@ -14,6 +14,7 @@ public class ScoreSaveData extends SavedData {
 
     public final Map<String, Integer> kills = new HashMap<>();
     public final Map<String, Integer> destroyed = new HashMap<>();
+    public final Map<String, Integer> trade = new HashMap<>(); // emeralds earned by trade routes
 
     @Nonnull
     public static ScoreSaveData getInstance(LevelAccessor level) {
@@ -29,6 +30,8 @@ public class ScoreSaveData extends SavedData {
         for (String n : k.getAllKeys()) data.kills.put(n, k.getInt(n));
         CompoundTag d = tag.getCompound("destroyed");
         for (String n : d.getAllKeys()) data.destroyed.put(n, d.getInt(n));
+        CompoundTag t = tag.getCompound("trade");
+        for (String n : t.getAllKeys()) data.trade.put(n, t.getInt(n));
         return data;
     }
 
@@ -40,6 +43,9 @@ public class ScoreSaveData extends SavedData {
         CompoundTag d = new CompoundTag();
         destroyed.forEach(d::putInt);
         tag.put("destroyed", d);
+        CompoundTag t = new CompoundTag();
+        trade.forEach(t::putInt);
+        tag.put("trade", t);
         return tag;
     }
 }

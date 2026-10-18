@@ -283,6 +283,14 @@ Code : `rampart/RampartUpgrades.java` (mur entier, prix, remplacement des morcea
 - **Toute la troupe avance au pas de la plus lente** (une catapulte ralentit tout le monde), pour que les rangs tiennent en chemin ; chacun retrouve sa vitesse au prochain ordre ou en combat.
 - Sans soldats (ouvriers seuls), rien ne change. Réglages en tête de la partie « military formations » de `unit/UnitFormations.java` (`SPACING`, largeur des rangs) ; vitesse commune : `MoveToTargetBlockGoal.formationSpeed`.
 
+### Routes commerciales (18/10, à tester en jeu)
+- Il faut une **route royale terminée** entre une de mes villes et la ville visée (voir Routes).
+- **Marchand** (au **Marché**, 100 nourriture + 75 bois, 30 s, 1 pop. ; tenue de tanneur, villageois du désert) suivi de **2 lamas de bât** (en laisse, invulnérables, remis s'ils se perdent, partent avec lui). **1 par marché, 2 avec le Grand marché**.
+- **Clic droit avec le marchand sur l'Hôtel de ville** visé : il part et fait les **allers-retours tout seul**. À chaque arrivée là-bas : **8 émeraudes + 1 par 25 blocs** entre les deux villes, **× 2 si la ville est étrangère** ; la civilisation étrangère touche **25 %** en plus (et un bot y gagne +1 d'opinion). Les émeraudes s'échangent contre des ressources au Marché (achat avec le Grand marché).
+- La route s'arrête si on donne un autre ordre au marchand, en cas de **guerre** avec la ville visée, ou si une ville ou la route royale disparaît (il rentre). Il peut être tué en chemin.
+- **Bots** : avec un marché, ils construisent une route royale de leur capitale vers la ville en paix la plus proche (étrangère d'abord) quand ils ont de quoi payer, forment des marchands et les y envoient (`trade/TradeBot`).
+- Classement : 1 point d'économie par 20 émeraudes de commerce. Réglages en tête de `trade/TradeServerEvents.java`.
+
 ### Classement (18/10, à tester en jeu) — à la place d'une victoire
 - Des **points dans tous les domaines**, recalculés toutes les 10 s : **territoire** (10 par ville + 1 par 50 carrés de 2 × 2 blocs de terres), **population** (1 par villageois, 2 par autre unité), **technologies** (10 par recherche), **militaire** (2 par unité ennemie tuée, barbares compris ; 5 par bâtiment ennemi détruit, sauf les remparts), **religion** (20 pour la fondation + 5 par ville qui la suit, partout), **économie** (2 par bâtiment fini, sauf remparts et ponts ; 1 par 200 ressources en stock).
 - Visible **en bas de l'écran Diplomatie** (touche 8), dans la couleur de chaque nation ; aussi `/rts-classement`.
@@ -422,7 +430,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 - **Ressources rares** (idée du 16/10, pas décidée) : gisements à quelques endroits de la carte — **chevaux** (cavaliers moins chers / plus rapides), **fer** (golems, herse renforcée, soldats plus solides), **pierre de taille** (remparts niveau 3, château et tours moins chers), **épices / luxe** (émeraudes au marché, cadeaux aux bots plus efficaces). On « possède » la ressource (pas de nouveau compteur), icône en haut ; cession d'accès en diplomatie ; les bots les cherchent. ~120 briques.
   - Frein : 4 nouveaux bâtiments d'exploitation à modéliser. Pistes pour l'éviter : le gisement compte dès qu'il est **dans mes frontières** (pas de bâtiment, gisements = petits décors en blocs du jeu générés), ou **réutiliser les bâtiments existants** (mine sur un filon de fer, écurie près des chevaux).
   - Questions ouvertes : bonus (recommandé) ou obligation ; ces 4 ressources ou d'autres (sel, bois précieux, or) ; qui fait les modèles.
-- **Routes commerciales** (idée du 18/10, pour plus tard) : entre deux villes ; une route avec une ville **qui n'est pas la mienne rapporte plus**. Il faut d'abord une **route établie entre les deux villes** : les routes **entre villes** sont différentes des routes entre bâtiments (ce sont **les plus grosses**). Les commerçants sont un **marchand avec des lamas** qui font le trajet.
+- ~~Routes commerciales~~ (faites le 18/10, voir plus haut) — idée de départ : entre deux villes ; une route avec une ville **qui n'est pas la mienne rapporte plus**. Il faut d'abord une **route établie entre les deux villes** : les routes **entre villes** sont différentes des routes entre bâtiments (ce sont **les plus grosses**). Les commerçants sont un **marchand avec des lamas** qui font le trajet.
 - Autres idées citées le 16/10 : **merveilles** (bâtiment unique au monde, course entre civilisations, ~60 briques chacune), croissance des villes (village → bourg → cité), bonheur, grands personnages (général, architecte, marchand), âges / ères, plusieurs façons de gagner, capitale.
 
 ### Routes
@@ -482,6 +490,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 - [ ] Carte plein écran (bouton d'agrandissement) : taille, centrage, clic sur la carte pour déplacer la caméra, boutons encore cliquables, ralentissements ; menu de départ (qui utilise la grande carte). Nuages la nuit avec et sans shaders.
 - [ ] Formations : groupe de soldats déplacé → rangs face à la marche (corps à corps devant, tireurs derrière, catapultes au fond), troupe qui avance au pas de la plus lente, aussi en « attaquer en avançant » ; vérifier les cavaliers (pas de place en double) et les bots.
 - [ ] Laine blanche des modèles dans la couleur de la nation (nouveau bâtiment, montée de niveau) ; anciens bâtiments pas abîmés.
+- [ ] Routes commerciales : marchand au Marché (limite), 2 lamas qui suivent, clic droit sur une ville reliée par route royale, allers-retours, émeraudes à chaque arrivée (message), part de l'autre civilisation, arrêt en guerre ou sur un autre ordre ; bots qui font une route royale et commercent.
 - [ ] Route royale : bouton sur l'Hôtel de ville, aperçu et prix vers une autre ville (aussi étrangère), 5 de large, murets, vitesse ; refusée en guerre.
 - [ ] Classement : tableau en bas de l'écran Diplomatie (touche 8), points qui bougent (villes, recherches, unités tuées…), `/rts-classement`, `/rts-fin` (vainqueur à l'écran).
 - [ ] Religion (étape 3) : boutons des rites dans le temple (effets, attente), jauges en cliquant sur un Hôtel de ville, bouton « Religions » de la carte plein écran, bots qui bâtissent un temple, fondent, envoient leurs prophètes.
@@ -634,3 +643,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 18/10/2026 | Classement par points (territoire, population, technologies, militaire, religion, économie) dans l'écran Diplomatie ; `/rts-fin` |
 | 18/10/2026 | Laine blanche des modèles dans la couleur de la nation (tentes, drapeaux) |
 | 18/10/2026 | Route royale entre deux villes (5 de large, jusqu'à 500 blocs, aussi vers une ville étrangère) |
+| 18/10/2026 | Routes commerciales : marchand et lamas, allers-retours sur route royale, émeraudes (×2 avec l'étranger) ; bots commerçants |

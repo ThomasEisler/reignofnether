@@ -44,6 +44,7 @@ public class VillagerMarket extends AbstractMarket {
         this.startingBlockTypes.add(Blocks.STONE);
 
         this.productions.add(ProductionItems.RESEARCH_MARKET_UPGRADE_VILLAGER, Keybindings.abilitySlot4);
+        this.productions.add(ProductionItems.MERCHANT, Keybindings.abilitySlot7); // trade routes (trade/)
     }
 
     @Override

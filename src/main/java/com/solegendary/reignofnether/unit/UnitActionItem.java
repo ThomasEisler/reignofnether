@@ -239,6 +239,10 @@ public class UnitActionItem {
                     }
                 }
             }
+            // a merchant sent to a city opens a trade route there (any other order ends its route)
+            if (!level.isClientSide() && com.solegendary.reignofnether.trade.TradeServerEvents.onOrder(unit, action,
+                    BuildingUtils.findBuilding(false, preselectedBlockPos)))
+                continue;
             switch (action) {
                 case STOP -> {
                     Entity passenger = ((Entity) unit).getFirstPassenger();

@@ -56,6 +56,7 @@ public class CommonModEvents {
         evt.put(EntityRegistrar.CROSSBOWMAN_UNIT.get(), com.solegendary.reignofnether.unit.units.villagers.CrossbowmanUnit.createAttributes().build());
         evt.put(EntityRegistrar.PRIEST_UNIT.get(), com.solegendary.reignofnether.unit.units.villagers.PriestUnit.createAttributes().build());
         evt.put(EntityRegistrar.PROPHET_UNIT.get(), com.solegendary.reignofnether.religion.ProphetUnit.createAttributes().build());
+        evt.put(EntityRegistrar.MERCHANT_UNIT.get(), com.solegendary.reignofnether.trade.MerchantUnit.createAttributes().build());
         evt.put(EntityRegistrar.SCOUT_CAT_UNIT.get(), ScoutCatUnit.createAttributes().build());
         evt.put(EntityRegistrar.MILITIA_UNIT.get(), MilitiaUnit.createAttributes().build());
         evt.put(EntityRegistrar.TEMPORARY_MILITIA_UNIT.get(), MilitiaUnit.createAttributes().build());

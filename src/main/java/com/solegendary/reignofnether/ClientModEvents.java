@@ -125,6 +125,7 @@ public class ClientModEvents {
         evt.registerEntityRenderer(EntityRegistrar.CROSSBOWMAN_UNIT.get(), (net.minecraft.client.renderer.entity.EntityRendererProvider) com.solegendary.reignofnether.unit.modelling.renderers.PillagerUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.PRIEST_UNIT.get(), (net.minecraft.client.renderer.entity.EntityRendererProvider) com.solegendary.reignofnether.unit.modelling.renderers.VillagerUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.PROPHET_UNIT.get(), (net.minecraft.client.renderer.entity.EntityRendererProvider) com.solegendary.reignofnether.unit.modelling.renderers.VillagerUnitRenderer::new);
+        evt.registerEntityRenderer(EntityRegistrar.MERCHANT_UNIT.get(), (net.minecraft.client.renderer.entity.EntityRendererProvider) com.solegendary.reignofnether.unit.modelling.renderers.VillagerUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.TEMPORARY_MILITIA_UNIT.get(), VillagerUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.ZOMBIE_VILLAGER_UNIT.get(), ZombieVillagerUnitRenderer::new);
         evt.registerEntityRenderer(EntityRegistrar.BAT_UNIT.get(), BatUnitRenderer::new);
