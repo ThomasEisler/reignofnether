@@ -29,7 +29,11 @@ public class ReligionServerboundPacket {
         PacketHandler.INSTANCE.sendToServer(new ReligionServerboundPacket(false, EXPEL + prophetId, BlockPos.ZERO));
     }
 
-    private static final String EXPEL = "expel:";
+    private static final String EXPEL = "expel:", RITE = "rite:";
+
+    public static void rite(Rite rite, BlockPos temple) {
+        PacketHandler.INSTANCE.sendToServer(new ReligionServerboundPacket(false, RITE + rite.name(), temple));
+    }
 
     public ReligionServerboundPacket(boolean found, String what, BlockPos temple) {
         this.found = found;
@@ -60,6 +64,10 @@ public class ReligionServerboundPacket {
             BuildingPlacement b = BuildingUtils.findBuilding(false, temple);
             if (b == null || !b.ownerName.equals(me) || !(b.getBuilding() instanceof Temple))
                 return;
+            if (what.startsWith(RITE)) {
+                try { ReligionServerEvents.performRite(me, Rite.valueOf(what.substring(RITE.length())), b); } catch (IllegalArgumentException ignored) { }
+                return;
+            }
             try {
                 if (found)
                     ReligionServerEvents.found(me, Religion.valueOf(what), b);

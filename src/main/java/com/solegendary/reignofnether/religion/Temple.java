@@ -41,6 +41,8 @@ public class Temple extends ProductionBuilding {
         this.startingBlockTypes.add(Blocks.POLISHED_ANDESITE);
         this.productions.add(com.solegendary.reignofnether.building.production.ProductionItems.PROPHET,
             com.solegendary.reignofnether.keybinds.Keybindings.abilitySlot1);
+        for (Rite rite : Rite.values())
+            this.abilities.add(new RiteAbility(rite));
         for (Religion r : Religion.values())
             this.abilities.add(new ReligionAbility(r, null));
         for (Belief b : Belief.values())

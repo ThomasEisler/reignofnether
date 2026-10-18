@@ -75,6 +75,7 @@ public class BotServerEvents {
         new Wish(Buildings.BLACKSMITH, 1, 12),
         new Wish(Buildings.WATCHTOWER, 2, 12),
         new Wish(Buildings.VILLAGER_MARKET, 1, 14),
+        new Wish(Buildings.TEMPLE, 1, 16), // after Mysticism: faith, religion, prophets (religion/ReligionBot)
         new Wish(Buildings.SAWMILL, 1, 18),
         new Wish(Buildings.BARRACKS, 2, 20),
         new Wish(Buildings.WATCHTOWER, 4, 22)
@@ -369,6 +370,7 @@ public class BotServerEvents {
         research(bot.name, buildings);
         upgradeLevels(bot.name, buildings, villagers.size(), maxVillagers);
         BotArmy.think(bot.name, bot.ticksAlive, units, villagers.size(), maxVillagers, buildings, capital); // step 4
+        com.solegendary.reignofnether.religion.ReligionBot.think(bot.name, bot.ticksAlive, buildings, capital); // religion
         if (!building && cities.size() < MAX_CITIES && villagers.size() >= NEW_CITY_VILLAGERS && buildings.stream().noneMatch(b -> b.isCapitol && !b.isBuilt))
             foundCity(level, bot.name, capital, villagers);
 

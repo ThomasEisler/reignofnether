@@ -810,6 +810,23 @@ public class MinimapClientEvents {
     }
 
     private static void updateMapUnitsAndBuildings() {
+        // religion map: each city's land tinted with the colour of the religion it follows
+        if (com.solegendary.reignofnether.religion.ReligionClientEvents.religionMap)
+            for (var e : com.solegendary.reignofnether.territory.TerritoryClientEvents.getGrid().entrySet()) {
+                int cx = (int) (e.getKey() >> 32), cz = (int) (long) e.getKey();
+                int x0 = cx * com.solegendary.reignofnether.territory.Territory.CELL, z0 = cz * com.solegendary.reignofnether.territory.Territory.CELL;
+                var religion = com.solegendary.reignofnether.religion.Religions.religionAt(true, x0 + 1, z0 + 1);
+                if (religion == null)
+                    continue;
+                int abgr = MiscUtil.reverseHexRGB(religion.colour) | (0xFF << 24);
+                for (int x = x0; x < x0 + com.solegendary.reignofnether.territory.Territory.CELL; x++)
+                    for (int z = z0; z < z0 + com.solegendary.reignofnether.territory.Territory.CELL; z++) {
+                        if (!isWorldXZinsideMap(x, z) || !com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(x, z))
+                            continue;
+                        int xN = x - xc_world + worldRadius, zN = z - zc_world + worldRadius;
+                        mapColoursOverlays[xN][zN] = blend(abgr, mapColoursTerrain[xN][zN]);
+                    }
+            }
         // territory borders, half see-through over the terrain
         for (int[] bb : com.solegendary.reignofnether.territory.TerritoryClientEvents.getMapBorderBlocks()) {
             if (!isWorldXZinsideMap(bb[0], bb[1]) || !com.solegendary.reignofnether.exploration.ExplorationClientEvents.isExplored(bb[0], bb[1]))

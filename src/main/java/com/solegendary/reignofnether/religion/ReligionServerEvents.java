@@ -203,7 +203,14 @@ public class ReligionServerEvents {
     }
 
     public static float farmSpeed(BuildingPlacement farm) {
-        return Religions.beliefAt(farm.getLevel().isClientSide(), farm.centrePos.getX(), farm.centrePos.getZ(), Belief.BLESSED_HARVEST) ? BLESSED_HARVEST : 1f;
+        boolean client = farm.getLevel().isClientSide();
+        float mult = Religions.beliefAt(client, farm.centrePos.getX(), farm.centrePos.getZ(), Belief.BLESSED_HARVEST) ? BLESSED_HARVEST : 1f;
+        if (!client && !harvests.isEmpty() && serverLevel != null) { // harvest festival
+            BuildingPlacement city = Religions.cityAt(false, farm.centrePos.getX(), farm.centrePos.getZ());
+            if (city != null && harvests.getOrDefault(city.originPos.asLong(), 0L) > serverLevel.getGameTime())
+                mult *= HARVEST;
+        }
+        return mult;
     }
 
     // research ticks go this many times faster
@@ -217,10 +224,12 @@ public class ReligionServerEvents {
 
     @SubscribeEvent
     public static void onEntityDamaged(LivingDamageEvent evt) {
-        if (serverLevel == null || evt.getEntity().level().isClientSide() || !Religions.anyFounded(false))
+        if (serverLevel == null || evt.getEntity().level().isClientSide() || (!Religions.anyFounded(false) && blessings.isEmpty()))
             return;
         float mult = 1f;
         if (evt.getSource().getEntity() instanceof Unit attacker) {
+            if (!(attacker instanceof WorkerUnit) && evt.getSource().getEntity() instanceof LivingEntity ale)
+                mult *= blessing(attacker, ale);
             if (attacker instanceof HeroUnit)
                 mult *= 1f + SAGAS * Religions.civShare(false, attacker.getOwnerName(), Belief.SAGAS);
             // crusade: the founder's soldiers on the land of a city of another religion
@@ -450,6 +459,62 @@ public class ReligionServerEvents {
     private static String cityName(BuildingPlacement c) {
         String name = com.solegendary.reignofnether.nation.CitySaveData.getInstance(serverLevel).names.get(c.originPos.asLong());
         return name != null ? name : "Une ville";
+    }
+
+    // ---- rites ------------------------------------------------------------------------------------------------------
+
+    public static final int BLESSING_RANGE = 24, BLESSING_TICKS = 20 * 60, HARVEST_TICKS = 20 * 120, PRAYER_RANGE = 20;
+    public static final float BLESSING = 1.15f, HARVEST = 1.5f, PRAYER = 0.3f;
+    private static final Map<String, Long> riteReady = new HashMap<>(); // "civ|RITE" -> game time it can be done again
+    private record Blessing(String civ, BlockPos centre, long until) { }
+    private static final List<Blessing> blessings = new ArrayList<>();
+    private static final Map<Long, Long> harvests = new HashMap<>(); // city origin -> until
+
+    public static void performRite(String civ, Rite rite, BuildingPlacement temple) {
+        if (!temple.isBuilt || !temple.ownerName.equals(civ) || !isTemple(temple))
+            return;
+        long now = serverLevel.getGameTime();
+        String key = civ + "|" + rite.name();
+        long wait = riteReady.getOrDefault(key, 0L) - now;
+        if (wait > 0) {
+            HudClientboundPacket.showTempMessageI18n(civ, rite.frName + " possible dans " + (wait / 20 + 1) + " s");
+            return;
+        }
+        if (!spendFaith(civ, rite.faith))
+            return;
+        riteReady.put(key, now + rite.cooldownSeconds * 20L);
+        BlockPos centre = temple.centrePos;
+        switch (rite) {
+            case BLESSING -> blessings.add(new Blessing(civ, centre, now + BLESSING_TICKS));
+            case HARVEST -> {
+                BuildingPlacement city = Religions.cityAt(false, centre.getX(), centre.getZ());
+                if (city != null)
+                    harvests.put(city.originPos.asLong(), now + HARVEST_TICKS);
+            }
+            case PRAYER -> {
+                for (LivingEntity le : serverLevel.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(centre).inflate(PRAYER_RANGE)))
+                    if (le instanceof Unit u && le.isAlive() &&
+                        com.solegendary.reignofnether.alliance.AlliancesServerEvents.isAlliedOrOwned(u.getOwnerName(), civ))
+                        le.heal(le.getMaxHealth() * PRAYER);
+            }
+        }
+        for (var p : serverLevel.players())
+            serverLevel.sendParticles(p, net.minecraft.core.particles.ParticleTypes.END_ROD, true, centre.getX() + 0.5, centre.getY() + 4,
+                centre.getZ() + 0.5, 40, 3, 2, 3, 0.05);
+        HudClientboundPacket.showTempMessageI18n(civ, rite.frName + " !");
+    }
+
+    public static boolean riteReady(String civ, Rite rite) {
+        return serverLevel != null && riteReady.getOrDefault(civ + "|" + rite.name(), 0L) <= serverLevel.getGameTime();
+    }
+
+    private static float blessing(Unit attacker, LivingEntity attackerEntity) {
+        long now = serverLevel.getGameTime();
+        blessings.removeIf(b -> b.until() < now);
+        for (Blessing b : blessings)
+            if (b.civ().equals(attacker.getOwnerName()) && b.centre().distToCenterSqr(attackerEntity.position()) < BLESSING_RANGE * BLESSING_RANGE)
+                return BLESSING;
+        return 1f;
     }
 
     // ---- barbarians -------------------------------------------------------------------------------------------------

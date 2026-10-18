@@ -44,6 +44,7 @@ public class TerritoryClientEvents {
     private record Edge(float x1, float z1, float x2, float z2, boolean alongZ, int colour) { }
 
     private static List<Edge> edges = new ArrayList<>();
+    private static Map<Long, String> grid = new java.util.HashMap<>(); // cell -> owner (for the religion map)
     private static List<int[]> mapBlocks = new ArrayList<>(); // x, z, colour of the blocks just inside each border
     private static int lastSignature = 0;
     private static int ticks = 0;
@@ -70,6 +71,7 @@ public class TerritoryClientEvents {
             return;
         lastSignature = sig;
         Map<Long, String> grid = Territory.grid(buildings, PlayerClientEvents::isRTSPlayer);
+        TerritoryClientEvents.grid = grid;
         List<Edge> newEdges = new ArrayList<>();
         List<int[]> newMap = new ArrayList<>();
         int c = Territory.CELL;
@@ -97,6 +99,10 @@ public class TerritoryClientEvents {
         edges = newEdges;
         mapBlocks = newMap;
         groundCache.clear();
+    }
+
+    public static Map<Long, String> getGrid() {
+        return grid;
     }
 
     // for the minimap: each border block that has been explored
