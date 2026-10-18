@@ -86,7 +86,7 @@ public class FarmPlacement extends BuildingPlacement {
             if (getWorker() != null) {
                 ticksToIncrement = (int) (TICK_CROPS_INTERVAL * CivilEnchantment.getEfficiencyMultiplier(getWorker()));
             }
-            ticksToIncrement = Math.round(ticksToIncrement * millBonus);
+            ticksToIncrement = Math.round(ticksToIncrement * millBonus * com.solegendary.reignofnether.religion.ReligionServerEvents.farmSpeed(this));
 
             if (block instanceof CropBlock cropBlock && (cropBlock == Blocks.WHEAT || cropBlock == Blocks.CARROTS || cropBlock == Blocks.POTATOES)) {
                 farmBlock.tickAge += ticksToIncrement;

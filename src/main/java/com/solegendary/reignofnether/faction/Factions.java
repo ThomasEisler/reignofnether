@@ -220,6 +220,7 @@ public class Factions {
 		registerBuildings(VILLAGERS, Buildings.MINE);
 		registerBuildings(VILLAGERS, Buildings.MILL);
 		registerBuildings(VILLAGERS, Buildings.HOSPICE);
+		registerBuildings(VILLAGERS, Buildings.TEMPLE);
 		registerBuildings(VILLAGERS, Buildings.BEACON);
 		
 		//Neutral

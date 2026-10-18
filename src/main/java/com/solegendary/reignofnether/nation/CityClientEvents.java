@@ -56,8 +56,16 @@ public class CityClientEvents {
             float w = font.width(name) / 2f;
             // drawn in one see-through pass only: with shaders (Oculus) the usual second, depth-tested pass
             // is lost and only a faint grey name remained. Dark nation colours are lightened to stay readable.
+            // the religion the city follows, after its name, in the religion's colour
+            var religion = com.solegendary.reignofnether.religion.Religions.anyFounded(true) ?
+                com.solegendary.reignofnether.religion.Religions.religionOfCity(true, b) : null;
+            if (religion != null)
+                w = (font.width(name) + font.width(" " + religion.symbol)) / 2f;
             font.drawInBatch(name, -w, 0, 0xFF000000 | lighten(colour), false, matrix.last().pose(), buffers,
                 Font.DisplayMode.SEE_THROUGH, 0x90000000, 0xF000F0);
+            if (religion != null)
+                font.drawInBatch(" " + religion.symbol, -w + font.width(name), 0, 0xFF000000 | religion.colour, false, matrix.last().pose(), buffers,
+                    Font.DisplayMode.SEE_THROUGH, 0x90000000, 0xF000F0);
             matrix.popPose();
         }
         buffers.endBatch();

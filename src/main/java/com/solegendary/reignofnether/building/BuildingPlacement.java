@@ -1048,6 +1048,7 @@ public class BuildingPlacement {
                     else
                         msPerBuild *= building.buildTimeModifier * CONSTRUCTION_TIME_MULTIPLIER;
                     msPerBuild /= com.solegendary.reignofnether.nation.Nation.buildSpeed(false, ownerName);
+                    msPerBuild /= com.solegendary.reignofnether.religion.ReligionServerEvents.buildSpeed(this);
                     if (isCapitol && BuildingUtils.getTotalCompletedBuildingsOwned(false, ownerName) > 0)
                         msPerBuild *= 2;
                 } else {

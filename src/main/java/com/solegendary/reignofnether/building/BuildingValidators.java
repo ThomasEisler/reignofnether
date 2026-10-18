@@ -81,6 +81,9 @@ public class BuildingValidators {
             return "building.reignofnether.needs_tech";
         } else if (!isSandbox && building.isCapitol && getCityError(level, ownerName, absoluteBlocks) != null) {
             return getCityError(level, ownerName, absoluteBlocks);
+        } else if (!isSandbox && building instanceof com.solegendary.reignofnether.religion.Temple &&
+                com.solegendary.reignofnether.religion.Temple.getPlacementError(level, ownerName, originPos) != null) {
+            return com.solegendary.reignofnether.religion.Temple.getPlacementError(level, ownerName, originPos);
         } else if (building == Buildings.PORT && getPortError(level, absoluteBlocks) != null) {
             return getPortError(level, absoluteBlocks);
         } else if (!isSandbox && !BuildRange.isExempt(building)) {

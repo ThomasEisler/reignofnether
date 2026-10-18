@@ -566,7 +566,7 @@
     "buildings.reignofnether.wheat_farm.tooltip1": "\uE001  %d  +  %d  par  culture  plantée",
     "buildings.reignofnether.wheat_farm.tooltip2": "Un champ de blé pouvant être labouré pour la nourriture.",
     "buildings.reignofnether.wheat_farm.tooltip3": "Les ouvriers utilisent automatiquement du bois pour replanter les graines.",
-    "buildings.reignofnether.shrine_of_prosperity": "Autel de la Prospérité",
+    "buildings.reignofnether.shrine_of_prosperity": "Panthéon",
     "buildings.reignofnether.shrine_of_prosperity.tooltip1": "Un symbole de l'alliance entre Villageois et Pillards.",
     "buildings.reignofnether.shrine_of_prosperity.tooltip2": "Entraîne les nouveaux héros Villageois et ravive ceux tombés.",
 
@@ -2418,6 +2418,7 @@
     "entity.reignofnether.priest_unit": "Prêtre",
     "entity.reignofnether.priest_unit.tooltip1": "Soigne l'unité alliée la plus blessée près de lui.",
     "entity.reignofnether.priest_unit.tooltip2": "Ne se bat pas.",
+    "buildings.reignofnether.temple": "Temple",
     "buildings.reignofnether.hospice": "Hospice",
     "buildings.reignofnether.hospice.tooltip1": "Soigne lentement les unités autour de lui.",
     "buildings.reignofnether.hospice.tooltip2": "Forme des prêtres.",

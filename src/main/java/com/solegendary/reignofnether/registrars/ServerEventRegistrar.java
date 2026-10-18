@@ -85,5 +85,6 @@ public class ServerEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.bot.BotServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.bot.BotSettings.class);
         vanillaEventBus.register(com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.religion.ReligionServerEvents.class);
     }
 }

@@ -334,6 +334,7 @@ public class GatherResourcesGoal extends MoveToTargetBlockGoal {
                     }
 
                     ticksToProgress *= com.solegendary.reignofnether.nation.Nation.gatherSpeed(false, ((Unit) mob).getOwnerName());
+                    ticksToProgress *= com.solegendary.reignofnether.religion.ReligionServerEvents.gatherSpeed(mob);
                     this.gatherTicksLeft -= ticksToProgress;
 
                     gatherTicksLeft = Math.min(gatherTicksLeft, data.targetResourceSource != null ? data.targetResourceSource.ticksToGather : Integer.MAX_VALUE);

@@ -180,7 +180,8 @@ public class PriestUnit extends Vindicator implements Unit, VillagerDataHolder {
     private void healSomeone() {
         LivingEntity best = null;
         float worst = 1f;
-        for (LivingEntity le : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(HEAL_RANGE))) {
+        boolean compassion = com.solegendary.reignofnether.religion.ReligionServerEvents.compassion(this); // religion: twice the healing, further
+        for (LivingEntity le : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(compassion ? HEAL_RANGE * 1.5 : HEAL_RANGE))) {
             if (!(le instanceof Unit u) || !le.isAlive() || le.getHealth() >= le.getMaxHealth())
                 continue;
             if (!u.getOwnerName().equals(getOwnerName()) &&
@@ -191,7 +192,7 @@ public class PriestUnit extends Vindicator implements Unit, VillagerDataHolder {
         }
         if (best == null)
             return;
-        best.heal(HEAL_AMOUNT);
+        best.heal(compassion ? HEAL_AMOUNT * 2 : HEAL_AMOUNT);
         this.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
         if (level() instanceof net.minecraft.server.level.ServerLevel sl)
             for (net.minecraft.server.level.ServerPlayer p : sl.players())

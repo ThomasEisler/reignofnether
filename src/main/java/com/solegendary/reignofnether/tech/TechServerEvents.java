@@ -164,7 +164,8 @@ public class TechServerEvents {
             PlayerTech state = entry.getValue();
             if (state.current == null || !hasLibrary(player))
                 continue; // paused without a library
-            state.ticksLeft -= ResearchServerEvents.playerHasCheat(player, "warpten") ? TICK_INTERVAL * 10 : TICK_INTERVAL;
+            state.ticksLeft -= Math.round((ResearchServerEvents.playerHasCheat(player, "warpten") ? TICK_INTERVAL * 10 : TICK_INTERVAL) *
+                com.solegendary.reignofnether.religion.ReligionServerEvents.researchSpeed(player));
             if (state.ticksLeft <= 0) {
                 Tech tech = state.current;
                 state.done.add(tech);

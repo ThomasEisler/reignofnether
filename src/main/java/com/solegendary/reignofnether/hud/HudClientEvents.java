@@ -1337,6 +1337,20 @@ public class HudClientEvents {
 
                 blitY += iconFrameSize - 1;
             }
+            // religion: faith, once there is some (temples, town centres), with the symbol of one's religion
+            int faith = com.solegendary.reignofnether.religion.Religions.faith(true, selPlayerName);
+            var religion = com.solegendary.reignofnether.religion.Religions.foundedBy(true, selPlayerName);
+            if (faith > 0 || religion != null) {
+                hudZones.add(MyRenderer.renderFrameWithBg(evt.getGuiGraphics(), blitX + iconFrameSize - 1, blitY, 49, iconFrameSize, frameBgColour));
+                hudZones.add(MyRenderer.renderIconFrameWithBg(evt.getGuiGraphics(),
+                    ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "textures/hud/icon_frame.png"), blitX, blitY, iconFrameSize, iconBgColour));
+                MyRenderer.renderIcon(evt.getGuiGraphics(), ResourceLocation.fromNamespaceAndPath("minecraft", "textures/item/nether_star.png"),
+                    blitX + 4, blitY + 4, iconSize);
+                evt.getGuiGraphics().drawCenteredString(MC.font, String.valueOf(faith), blitX + iconFrameSize + 24, blitY + (iconSize / 2) + 1, 0xF0D0FF);
+                if (religion != null)
+                    evt.getGuiGraphics().drawCenteredString(MC.font, religion.symbol, blitX + 69 + (iconFrameSize / 2), blitY + (iconSize / 2) + 1, religion.colour);
+                blitY += iconFrameSize - 1;
+            }
             resourcePanelBottomY = blitY;
 
             blitY = resourceBlitYStart;

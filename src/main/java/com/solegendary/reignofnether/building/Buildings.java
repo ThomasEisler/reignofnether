@@ -62,6 +62,7 @@ public class Buildings {
     public static final PiglinMarket PIGLIN_MARKET = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "piglin_market"), new PiglinMarket());
     public static final VillagerMarket VILLAGER_MARKET = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "villager_market"), new VillagerMarket());
     public static final com.solegendary.reignofnether.building.buildings.villagers.Sawmill SAWMILL = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "sawmill"), new com.solegendary.reignofnether.building.buildings.villagers.Sawmill());
+    public static final com.solegendary.reignofnether.religion.Temple TEMPLE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "temple"), new com.solegendary.reignofnether.religion.Temple());
     public static final com.solegendary.reignofnether.building.buildings.villagers.Hospice HOSPICE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "hospice"), new com.solegendary.reignofnether.building.buildings.villagers.Hospice());
     public static final com.solegendary.reignofnether.building.buildings.villagers.Mill MILL = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "mill"), new com.solegendary.reignofnether.building.buildings.villagers.Mill());
     public static final com.solegendary.reignofnether.building.buildings.villagers.Mine MINE = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "mine"), new com.solegendary.reignofnether.building.buildings.villagers.Mine());

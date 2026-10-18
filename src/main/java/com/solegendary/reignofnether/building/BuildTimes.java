@@ -19,6 +19,7 @@ public class BuildTimes {
         Map.entry("Mine", 75),
         Map.entry("Mill", 60),
         Map.entry("Hospice", 90),
+        Map.entry("Temple", 60),
         Map.entry("Stockpile", 40),
         Map.entry("Villager House", 40),
         Map.entry("Barracks", 60),
