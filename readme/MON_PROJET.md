@@ -364,6 +364,36 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 - **Avant la version finale** : retirer WorldEdit du dossier mods du profil RTS (outil de construction seulement).
 - **Pour le serveur** : ne pas mettre **Distant Horizons** (ni dans le serveur, ni dans le pack des joueurs) ; retiré aussi de mon profil le 14/10/2026 (inutile avec les nuages ; fichier rangé dans `.minecraft/mods-retires/`).
 
+### Religion (décidée le 18/10, en cours : étape 1)
+Plan décidé avec moi (comme dans Civilization, en simple) :
+- **Foi** : nouveau compteur (à côté des ressources), produit par les **Temples** (+1 toutes les 5 s) et un peu par l'Hôtel de ville.
+- **Temple** (nouveau bâtiment, **1 modèle à faire par moi**, provisoire en attendant) : 150 bois, 75 minerai, 60 s ; **un par ville** au plus, dans ses frontières. Produit la foi, **protège sa ville** (pression étrangère divisée par 2, même sans religion à soi), **fonde** la religion (bouton, 200 de foi, une seule fois) et **forme les prophètes**.
+- L'ancien **Sanctuaire de prospérité** (héros) est renommé **Panthéon** ; il ne sert pas à la religion.
+- **8 religions fixes** (une seule civilisation par religion, premier arrivé), chacune avec une **croyance imposée** :
+
+| Religion | Croyance imposée | Effet |
+|---|---|---|
+| ✝ Catholicisme | Dîme | +1 émeraude par ville convertie, toutes les minutes (10 villes au plus) |
+| ☦ Orthodoxie | Moines bâtisseurs | Bâtiments construits 15 % plus vite |
+| ✝ Protestantisme | Éthique du travail | Récolte 10 % plus rapide |
+| ☪ Islam | Maisons de la sagesse | Recherches 15 % plus rapides |
+| ✡ Judaïsme | Fidélité | Ses villes 2 fois plus dures à convertir |
+| ☸ Bouddhisme | Compassion | Les prêtres soignent 2 fois plus et plus loin |
+| ॐ Hindouisme | Récoltes bénies | Fermes 10 % plus rapides |
+| ᛟ Paganisme nordique | Sagas | Héros +15 % de vie et de dégâts |
+
+- **2e croyance** achetée avec de la foi quand la religion est dans **3 villes** : Croisade (soldats +10 % de dégâts près d'une ville d'une autre religion, **fondateur seulement**), Pèlerinage (foi par ville convertie, 10 villes au plus), Fraternité (bots de la même religion beaucoup plus amicaux), ou la croyance imposée d'une religion que personne n'a fondée.
+- **Bonus** : pour les **villes qui suivent la religion** (même chez les autres) ; le fondateur touche en plus Dîme / Pèlerinage ; les croyances de guerre seulement au fondateur.
+- **Villes** : chaque ville a une **jauge par religion** ; la plus haute donne sa religion. Elle monte par la **pression** des villes voisines et par les **prophètes**. **Pas de ville sainte** : une religion peut disparaître.
+- **Prophètes** (nouvelle unité, différente du Prêtre qui soigne) : 2 à la fondation, +1 pour 3 villes de la religion, 6 au plus. Ils **ne disparaissent pas** : posté dans une ville étrangère il la convertit en continu, chez moi il la protège. Mort → à reformer dans un temple contre de la foi. Chez un voisin en paix : permis, mais l'opinion du bot baisse.
+- **Expulser** un prophète étranger dans mes frontières : clic dessus → bouton, 60 de foi, une expulsion toutes les 3 min, il ne revient pas avant 5 min, −10 d'opinion.
+- **Rites** (payés en foi, avec recharge) : Bénédiction (soldats +15 % de dégâts 1 min autour d'un temple), Fête des moissons (fermes +50 % 2 min), Prière (soigne autour d'un temple).
+- **Barbares** : un prophète près d'un camp le calme peu à peu (n'attaque plus, voire tribut).
+- **Affichage** : symbole et couleur de la religion à côté du nom des villes ; jauges en cliquant sur un Hôtel de ville ; mode « religions » de la minimap.
+- **Diplomatie** : même religion = +opinion ; prophète chez un bot = −opinion. Les bots fondent et répandent aussi.
+- **Étapes** : 1) foi, temples, Panthéon, fondation, croyances, religion des villes ; 2) pression, prophètes, expulsion, protection, barbares ; 3) rites, bots, diplomatie, minimap, jauges.
+- Ensuite (chantier à part) : **classement** par points dans tous les domaines (territoire, population, technologies, militaire, religion…) et `/rts-fin` pour finir la partie quand on veut, à la place d'une victoire.
+
 ### Idées inspirées de Civilization (en réflexion)
 - **Ressources rares** (idée du 16/10, pas décidée) : gisements à quelques endroits de la carte — **chevaux** (cavaliers moins chers / plus rapides), **fer** (golems, herse renforcée, soldats plus solides), **pierre de taille** (remparts niveau 3, château et tours moins chers), **épices / luxe** (émeraudes au marché, cadeaux aux bots plus efficaces). On « possède » la ressource (pas de nouveau compteur), icône en haut ; cession d'accès en diplomatie ; les bots les cherchent. ~120 briques.
   - Frein : 4 nouveaux bâtiments d'exploitation à modéliser. Pistes pour l'éviter : le gisement compte dès qu'il est **dans mes frontières** (pas de bâtiment, gisements = petits décors en blocs du jeu générés), ou **réutiliser les bâtiments existants** (mine sur un filon de fer, écurie près des chevaux).
