@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 
 // Buildings in their nation's colour: white wool (and white carpets and banners) in a building's model is put down
 // in the dye closest to its owner's nation colour, so tents and flags show whose they are.
-// Barbarians and players without a nation keep the white.
+// Barbarians get black; players without a nation keep the white.
 public class NationDyes {
 
     public static DyeColor dyeOf(Nation nation) {
@@ -23,22 +23,23 @@ public class NationDyes {
             case HRE -> DyeColor.BLACK;
             case ROME -> DyeColor.PURPLE;
             case PORTUGAL -> DyeColor.GREEN;
-            case RUSSIA -> DyeColor.WHITE;
+            case RUSSIA -> DyeColor.ORANGE;
             case SWEDEN -> DyeColor.LIGHT_BLUE;
         };
     }
 
     // the block to put down instead, or the same one
     public static BlockState recolour(BlockState state, @Nullable Nation nation) {
-        if (nation == null)
-            return state;
+        return nation == null ? state : recolour(state, dyeOf(nation));
+    }
+
+    public static BlockState recolour(BlockState state, DyeColor dye) {
         String kind;
         if (state.is(Blocks.WHITE_WOOL)) kind = "wool";
         else if (state.is(Blocks.WHITE_CARPET)) kind = "carpet";
         else if (state.is(Blocks.WHITE_BANNER)) kind = "banner";
         else if (state.is(Blocks.WHITE_WALL_BANNER)) kind = "wall_banner";
         else return state;
-        DyeColor dye = dyeOf(nation);
         if (dye == DyeColor.WHITE)
             return state;
         Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation("minecraft", dye.getName() + "_" + kind));

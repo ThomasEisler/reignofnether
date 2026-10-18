@@ -329,9 +329,12 @@ public class BuildingPlacement {
         // white wool, carpets and banners in the model take the owner's nation colour (tents, flags)
         com.solegendary.reignofnether.nation.Nation nation = ownerName == null || ownerName.isBlank() || level == null ? null :
             com.solegendary.reignofnether.nation.Nation.of(level.isClientSide(), ownerName);
-        if (nation != null)
+        boolean barbarian = com.solegendary.reignofnether.barbarian.BarbarianServerEvents.OWNER_NAME.equals(ownerName); // black
+        if (nation != null || barbarian)
             for (BuildingBlock block : blocks)
-                block.setBlockState(com.solegendary.reignofnether.nation.NationDyes.recolour(block.getBlockState(), nation));
+                block.setBlockState(barbarian
+                    ? com.solegendary.reignofnether.nation.NationDyes.recolour(block.getBlockState(), net.minecraft.world.item.DyeColor.BLACK)
+                    : com.solegendary.reignofnether.nation.NationDyes.recolour(block.getBlockState(), nation));
         this.blocks = blocks;
         var index = 0;
         for (BuildingBlock block : this.blocks) {

@@ -12,7 +12,7 @@ public enum Nation {
     HRE     ("Saint-Empire", "Frédéric Barberousse",   0x303030, "Unités produites 15 % plus vite",                  1f,    1f,      1,        1f,  1.15f, 1f,   0f,   0),
     ROME    ("Rome",         "Auguste",                0x8020A0, "Routes construites deux fois plus vite",           1f,    1f,      2,        1f,  1f,   1f,    0f,   0),
     PORTUGAL("Portugal",     "Jean II",                0x20A050, "+200 de nourriture, bois et minerai au départ",    1f,    1f,      1,        1f,  1f,   1f,    0f,   200),
-    RUSSIA  ("Russie",       "Pierre le Grand",        0xE0E0E0, "Récolte 15 % plus rapide",                         1f,    1f,      1,        1f,  1f,   1.15f, 0f,   0),
+    RUSSIA  ("Russie",       "Pierre le Grand",        0xE07A20, "Récolte 15 % plus rapide",                         1f,    1f,      1,        1f,  1f,   1.15f, 0f,   0),
     SWEDEN  ("Suède",        "Gustave II Adolphe",     0x40A0E0, "Unités 10 % plus rapides",                         1f,    1f,      1,        1f,  1f,   1f,    0.1f, 0);
 
     public final String displayName;

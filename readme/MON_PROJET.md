@@ -346,7 +346,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 ## Ajouter ou modifier un bâtiment
 
-**Couleur de la nation** (18/10) : dans mes modèles, la **laine blanche** (et les tapis et bannières blancs) est posée dans la couleur de la nation du propriétaire (France bleu, Angleterre rouge, Espagne jaune, Saint-Empire noir, Rome violet, Portugal vert, Suède bleu clair ; Russie reste blanche ; barbares et sans nation : blanc). Pour les tentes et les drapeaux. Code `nation/NationDyes.java` (appliqué dans `BuildingPlacement.setBlocks`) ; une laine d'une autre couleur compte comme posée (`BuildingBlock.isPlaced`), donc les bâtiments déjà construits en blanc ne sont pas vus comme abîmés.
+**Couleur de la nation** (18/10) : dans mes modèles, la **laine blanche** (et les tapis et bannières blancs) est posée dans la couleur de la nation du propriétaire (France bleu, Angleterre rouge, Espagne jaune, Saint-Empire noir, Rome violet, Portugal vert, Russie orange (couleur de la nation passée à l’orange partout), Suède bleu clair ; barbares noir ; sans nation : blanc). Pour les tentes et les drapeaux. Code `nation/NationDyes.java` (appliqué dans `BuildingPlacement.setBlocks`) ; une laine d'une autre couleur compte comme posée (`BuildingBlock.isPlaced`), donc les bâtiments déjà construits en blanc ne sont pas vus comme abîmés.
 
 1. En jeu (créatif, triches activées) : `/give @s minecraft:structure_block`.
 2. Bloc de structure en mode **Load**, nom `reignofnether:barracks` (par exemple) → Load : le bâtiment actuel apparaît.
