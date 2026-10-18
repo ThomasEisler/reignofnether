@@ -96,6 +96,7 @@ public class TerritoryClientEvents {
         });
         edges = newEdges;
         mapBlocks = newMap;
+        groundCache.clear();
     }
 
     // for the minimap: each border block that has been explored
@@ -113,8 +114,28 @@ public class TerritoryClientEvents {
 
     // ---- drawing on the ground ----------------------------------------------------------------------------------
 
+    // ground under the trees: the client only keeps MOTION_BLOCKING up to date (leaves included), so step down
+    // through leaves and logs. Remembered per column (the ground hardly changes), forgotten when borders change.
+    private static final java.util.Map<Long, Float> groundCache = new java.util.HashMap<>();
+
     private static float groundY(float x, float z) {
-        return MC.level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) Math.floor(x), (int) Math.floor(z)) + 0.03f;
+        int bx = (int) Math.floor(x), bz = (int) Math.floor(z);
+        long key = net.minecraft.core.BlockPos.asLong(bx, 0, bz);
+        Float cached = groundCache.get(key);
+        if (cached != null)
+            return cached;
+        if (!MC.level.hasChunk(bx >> 4, bz >> 4))
+            return MC.level.getHeight(Heightmap.Types.MOTION_BLOCKING, bx, bz) + 0.03f;
+        int y = MC.level.getHeight(Heightmap.Types.MOTION_BLOCKING, bx, bz) - 1;
+        for (int i = 0; i < 24; i++) {
+            var bs = MC.level.getBlockState(new net.minecraft.core.BlockPos(bx, y, bz));
+            if (!bs.is(net.minecraft.tags.BlockTags.LEAVES) && !bs.is(net.minecraft.tags.BlockTags.LOGS))
+                break;
+            y--;
+        }
+        float ground = y + 1.03f;
+        groundCache.put(key, ground);
+        return ground;
     }
 
     @SubscribeEvent

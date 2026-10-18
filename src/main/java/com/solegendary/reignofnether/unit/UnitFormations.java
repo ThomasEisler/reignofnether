@@ -159,11 +159,18 @@ public class UnitFormations {
     private static BlockPos ground(Level level, BlockPos target, int x, int z) {
         if (!level.hasChunkAt(new BlockPos(x, target.getY(), z)))
             return new BlockPos(x, target.getY(), z);
-        int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
+        // the client only keeps MOTION_BLOCKING up to date (leaves included): step down through the trees
+        int y = level.getHeight(level.isClientSide() ? Heightmap.Types.MOTION_BLOCKING : Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
+        for (int i = 0; i < 24 && isTree(level.getBlockState(new BlockPos(x, y, z))); i++)
+            y--;
         BlockPos bp = new BlockPos(x, y, z);
         if (Math.abs(y - target.getY()) > 6 || !level.getFluidState(bp).isEmpty())
             return target;
         return bp;
+    }
+
+    private static boolean isTree(net.minecraft.world.level.block.state.BlockState bs) {
+        return bs.is(net.minecraft.tags.BlockTags.LEAVES) || bs.is(net.minecraft.tags.BlockTags.LOGS);
     }
 
     // how fast a unit actually walks, to make the group keep the pace of its slowest
