@@ -1586,7 +1586,7 @@ public class HudClientEvents {
             }
             if (!markerModeButton.isHidden.get()) {
                 markerModeButton.render(evt.getGuiGraphics(),
-                    screenWidth - (markerModeButton.iconSize * (MinimapClientEvents.isLargeMap() ? 12 : 8)),
+                    screenWidth - (markerModeButton.iconSize * 8),
                     screenHeight - (markerModeButton.iconSize * 2),
                     mouseX, mouseY);
                 renderedButtons.add(markerModeButton);
@@ -1642,14 +1642,14 @@ public class HudClientEvents {
             }
             if (!rotateCW.isHidden.get()) {
                 rotateCW.render(evt.getGuiGraphics(),
-                        screenWidth - (rotateCW.iconSize * (MinimapClientEvents.isLargeMap() ? 8 : 4)),
+                        screenWidth - (rotateCW.iconSize * 4),
                         screenHeight - (rotateCW.iconSize * 2),
                         mouseX, mouseY);
                 renderedButtons.add(rotateCW);
             }
             if (!rotateCCW.isHidden.get()) {
                 rotateCCW.render(evt.getGuiGraphics(),
-                        screenWidth - (rotateCCW.iconSize * (MinimapClientEvents.isLargeMap() ? 10 : 6)),
+                        screenWidth - (rotateCCW.iconSize * 6),
                         screenHeight - (rotateCCW.iconSize * 2),
                         mouseX, mouseY);
                 renderedButtons.add(rotateCCW);

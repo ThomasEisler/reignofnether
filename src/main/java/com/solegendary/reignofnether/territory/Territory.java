@@ -19,10 +19,11 @@ public class Territory {
     public static final int BUILDING_RADIUS = 28;
     public static final int CELL = 2; // borders follow a grid of 2 x 2 blocks
 
-    // how far a building's land reaches (0: none, eg. walls, bridges, unowned)
+    // how far a building's land reaches (0: none, eg. walls, bridges, stockpiles - only for resources -, unowned)
     public static int radius(BuildingPlacement b, Predicate<String> isCiv) {
         if (b.ownerName.isBlank() || !isCiv.test(b.ownerName) || b.getBuilding() instanceof RampartBuilding ||
-            b.getBuilding() instanceof AbstractBridge)
+            b.getBuilding() instanceof AbstractBridge ||
+            b.getBuilding() instanceof com.solegendary.reignofnether.building.buildings.shared.AbstractStockpile)
             return 0;
         return b.getBuilding().isCapitol ? CITY_RADIUS : BUILDING_RADIUS;
     }

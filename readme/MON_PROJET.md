@@ -282,10 +282,14 @@ Code : `rampart/RampartUpgrades.java` (mur entier, prix, remplacement des morcea
 - **Toute la troupe avance au pas de la plus lente** (une catapulte ralentit tout le monde), pour que les rangs tiennent en chemin ; chacun retrouve sa vitesse au prochain ordre ou en combat.
 - Sans soldats (ouvriers seuls), rien ne change. Réglages en tête de la partie « military formations » de `unit/UnitFormations.java` (`SPACING`, largeur des rangs) ; vitesse commune : `MoveToTargetBlockGoal.formationSpeed`.
 
+### Carte en plein écran (18/10, à tester en jeu)
+- Le bouton d'agrandissement de la minimap ouvre la carte **en grand, au milieu de l'écran**, sur le jeu assombri (aussi grande que l'écran le permet, 1 bloc par point : on voit plus de terrain, jusqu'à 880 blocs de large). Les boutons de la carte et l'horloge restent dans le coin. Réglages `SMALL_GUI_RADIUS`, `MAX_LARGE_GUI_RADIUS`, `LARGE_MARGIN` dans `MinimapClientEvents`.
+
 ### Frontières (16/10, à tester en jeu)
 - Chaque civilisation a un **territoire** : 48 blocs autour de chaque Hôtel de ville, 28 autour de ses autres bâtiments (pas les remparts ni les ponts). Là où deux territoires se touchent, chaque endroit va au bâtiment dont il est le plus « au cœur ».
 - **Frontière dessinée** : un trait fin (0,28 bloc), un peu transparent, posé sur le sol, de la **couleur de la nation**, tout autour du territoire (par carrés de 2 × 2 blocs). Quand deux territoires se touchent, les deux traits courent côte à côte. Visible jusqu'à 160 blocs de la caméra, caché sous les nuages (terrain inexploré).
 - **Sur la minimap** : la même frontière, mélangée au terrain (60 % couleur de la nation).
+- Les **entrepôts** ne donnent pas de territoire (bâtiments de ressources seulement, 18/10).
 - La diplomatie s'en sert : des unités en paix **dans les frontières** d'un bot lui déplaisent.
 - Recalculé quand un bâtiment apparaît ou disparaît (toutes les secondes au plus). Réglages en tête de `territory/Territory.java` (rayons) et `territory/TerritoryClientEvents.java` (épaisseur, transparence, distance) ; la minimap dans `MinimapClientEvents.updateMapUnitsAndBuildings`.
 
@@ -461,6 +465,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 - [ ] Bots (`/rts-bot ajouter`, 3 fois pour 4 civilisations) : arrivée loin des villes, Hôtel de ville, villageois produits et répartis, maisons, fermes, entrepôt.
 - [ ] Bouton « Bots » du menu de départ (clic gauche nombre, clic droit difficulté), arrivée des bots une fois l'Hôtel de ville posé, effets de la difficulté.
 - [ ] Armée des bots : formation à la caserne, attente près de l'Hôtel de ville, défense quand un ennemi approche, attaque d'un camp barbare (dès 6 soldats), retour quand l'armée est battue, attaque des autres civilisations après 25 min.
+- [ ] Carte plein écran (bouton d'agrandissement) : taille, centrage, clic sur la carte pour déplacer la caméra, boutons encore cliquables, ralentissements ; menu de départ (qui utilise la grande carte). Nuages la nuit avec et sans shaders.
 - [ ] Formations : groupe de soldats déplacé → rangs face à la marche (corps à corps devant, tireurs derrière, catapultes au fond), troupe qui avance au pas de la plus lente, aussi en « attaquer en avançant » ; vérifier les cavaliers (pas de place en double) et les bots.
 - [ ] Religion (étape 1) : temple (après Mysticisme, un par ville, refusé hors de ses terres), foi qui monte sous les ressources (`/rts-religion foi 500` pour aller vite), boutons de fondation dans le temple et leurs infobulles, message à tous, symbole après le nom de la ville, Panthéon (ex-Autel de la Prospérité), effets (construction plus rapide avec l'Orthodoxie, etc.).
 - [ ] Frontières : trait au sol de la couleur de la nation (allure, épaisseur, transparence, sur les pentes et l'eau), les deux traits côte à côte entre voisins, frontière sur la minimap, rien sous les nuages, ralentissements éventuels.
@@ -603,3 +608,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 16/10/2026 | Frontières : territoire autour des bâtiments, trait au sol de la couleur de la nation et frontière sur la minimap ; la diplomatie s'en sert |
 | 18/10/2026 | Religion étape 1 : temple, foi, fondation des 8 religions et croyances, religion des villes, effets ; Autel de la Prospérité renommé Panthéon |
 | 18/10/2026 | Formations militaires : rangs face à la marche (corps à corps devant, tireurs derrière, siège au fond), troupe au pas de la plus lente |
+| 18/10/2026 | Carte en plein écran ; entrepôts hors des frontières ; nuages sombres la nuit avec les shaders |

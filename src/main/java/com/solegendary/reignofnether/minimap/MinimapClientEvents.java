@@ -251,8 +251,9 @@ public class MinimapClientEvents {
         }
     }
 
+    // size of the corner minimap (the buttons and clock around it don't move when the map is opened full screen)
     public static int getMapGuiRadius() {
-        return mapGuiRadius;
+        return SMALL_GUI_RADIUS;
     }
 
     public static int getWorldRadius() {
@@ -323,14 +324,23 @@ public class MinimapClientEvents {
 
     public static boolean suppressViewQuad = false;
 
+    public static final int SMALL_GUI_RADIUS = 60;
+    public static final int MAX_LARGE_GUI_RADIUS = 220; // the map texture is 4 x this wide: kept reasonable
+    public static final int LARGE_MARGIN = 24; // free space round the full-screen map
+
+    // opened: as big as the screen allows, in the middle (1 block per pixel as before, so more land is shown)
     private static void toggleMapSize() {
         largeMap = !largeMap;
         if (largeMap) {
-            worldRadius = 240;
-            mapGuiRadius = 120;
+            int sh = MC.getWindow().getGuiScaledHeight(), sw = MC.getWindow().getGuiScaledWidth();
+            int room = Math.min(sh, sw) - 2 * LARGE_MARGIN;
+            // diamond: 2 x radius tall; square: 2 x radius / sqrt 2 x SQUARE_SCALE tall
+            int r = ReignOfNetherClientConfigs.SQUARE_MINIMAP.get() ? (int) (room / (2 / Math.sqrt(2) * SQUARE_SCALE)) : room / 2;
+            mapGuiRadius = Math.max(SMALL_GUI_RADIUS, Math.min(MAX_LARGE_GUI_RADIUS, r));
+            worldRadius = mapGuiRadius * 2;
         } else {
-            worldRadius = 120;
-            mapGuiRadius = 60;
+            worldRadius = SMALL_GUI_RADIUS * 2;
+            mapGuiRadius = SMALL_GUI_RADIUS;
         }
         mapTexture = new DynamicTexture(worldRadius * 2, worldRadius * 2, true);
         mapTexLoc = Minecraft.getInstance().textureManager.register(
@@ -1090,12 +1100,15 @@ public class MinimapClientEvents {
 
         // place vertices in a diamond shape - left, centre, right, top, centre, bottom
         // map vertex coordinates (left, centre, right, top, centre, bottom)
-        xl = MC.getWindow().getGuiScaledWidth() - (mapGuiRadius * 2) - CORNER_OFFSET;
-        xc = MC.getWindow().getGuiScaledWidth() - mapGuiRadius - CORNER_OFFSET;
-        xr = MC.getWindow().getGuiScaledWidth() - CORNER_OFFSET;
-        yt = MC.getWindow().getGuiScaledHeight() - (mapGuiRadius * 2) - CORNER_OFFSET;
-        yc = MC.getWindow().getGuiScaledHeight() - mapGuiRadius - CORNER_OFFSET;
-        yb = MC.getWindow().getGuiScaledHeight() - CORNER_OFFSET;
+        int sw0 = MC.getWindow().getGuiScaledWidth(), sh0 = MC.getWindow().getGuiScaledHeight();
+        if (largeMap) // full screen: darkened game behind, the map in the middle
+            guiGraphics.fill(0, 0, sw0, sh0, 0xD0101010);
+        xc = largeMap ? sw0 / 2f : sw0 - mapGuiRadius - CORNER_OFFSET;
+        yc = largeMap ? sh0 / 2f : sh0 - mapGuiRadius - CORNER_OFFSET;
+        xl = xc - mapGuiRadius;
+        xr = xc + mapGuiRadius;
+        yt = yc - mapGuiRadius;
+        yb = yc + mapGuiRadius;
 
         if (ReignOfNetherClientConfigs.SQUARE_MINIMAP.get()) {
             renderSquareMap(guiGraphics, matrix4f);
@@ -1154,8 +1167,8 @@ public class MinimapClientEvents {
         // anchor bottom-right corner at the very bottom-right of the screen
         int sw = MC.getWindow().getGuiScaledWidth();
         int sh = MC.getWindow().getGuiScaledHeight();
-        float brX = sw - CORNER_OFFSET;
-        float brY = sh - CORNER_OFFSET;
+        float brX = largeMap ? sw / 2f + half : sw - CORNER_OFFSET; // full screen: in the middle
+        float brY = largeMap ? sh / 2f + half : sh - CORNER_OFFSET;
         // centre of the bigger square (grows up-left from the fixed bottom-right)
         xc = brX - half;
         yc = brY - half;
