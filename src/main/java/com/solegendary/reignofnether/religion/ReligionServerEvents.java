@@ -13,6 +13,7 @@ import com.solegendary.reignofnether.unit.interfaces.HeroUnit;
 import com.solegendary.reignofnether.unit.interfaces.Unit;
 import com.solegendary.reignofnether.unit.interfaces.WorkerUnit;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -29,9 +30,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import javax.annotation.Nullable;
 import java.util.*;
 
-// Religion, step 1: faith (made by temples and town centres), founding a religion at a temple, its imposed
+// Religion. Step 1: faith (made by temples and town centres), founding a religion at a temple, its imposed
 // belief and a second one bought later, the religion of each city, and what the beliefs do.
-// Step 2 (pressure between cities, prophets) and step 3 (rites, bots, diplomacy) come later.
+// Step 2: religions spread every PREACH_INTERVAL: each city pushes its religion into the cities around it, temples
+// push their founder's religion in their own city, prophets stood in a city of another religion convert it (in a city
+// of their own religion they protect it). A temple, a protecting prophet and the Faithfulness belief each cut the
+// pressure of foreign religions. Foreign prophets can be expelled from one's land for faith; prophets near a barbarian
+// camp calm it down (no more raids, a small tribute). Step 3 (rites, bots, gauges on screen) comes later.
 public class ReligionServerEvents {
 
     public static final int FOUND_COST = 200;
@@ -42,6 +47,24 @@ public class ReligionServerEvents {
     public static final int MAX_COUNTED_CITIES = 10;    // for the tithe and pilgrimage
     public static final float BUILDER_MONKS = 1.15f, WORK_ETHIC = 1.10f, BLESSED_HARVEST = 1.10f;
     public static final float WISDOM = 0.15f, SAGAS = 0.15f, CRUSADE = 1.10f;
+
+    // step 2: spreading
+    public static final int PREACH_INTERVAL = 200;      // ticks (10 s)
+    public static final int PRESSURE_RANGE = 260;       // cities this close push their religion
+    public static final float CITY_PRESSURE = 1.5f;     // from a city next door (less further away)
+    public static final float TEMPLE_PRESSURE = 1.0f;   // a temple, for its owner's religion, in its own city
+    public static final float PROPHET_PRESSURE = 5f;    // a prophet preaching in a city
+    public static final int PROPHET_RANGE = 28;         // from the city's Town Centre
+    public static final float TEMPLE_SHIELD = 0.5f, FAITHFUL_SHIELD = 0.5f, PROPHET_SHIELD = 0.25f; // foreign pressure kept
+    public static final int FREE_PROPHETS = 2, PROPHETS_PER_CITIES = 3, MAX_PROPHETS = 6;
+    public static final int PROPHET_FAITH = 80;         // for each prophet after the first FREE_PROPHETS
+    public static final int EXPEL_FAITH = 60, EXPEL_COOLDOWN = 20 * 60 * 3, EXPEL_BAN = 20 * 60 * 5;
+    public static final int CALM_RANGE = 30;            // prophets this close to a barbarian camp calm it
+    public static final float CALM_PER_PROPHET = 4f;    // per PREACH_INTERVAL: 25 intervals (~4 min) for one prophet
+
+    private static final Map<String, Long> lastExpel = new HashMap<>();      // civ -> game time
+    private static final Map<Integer, Map<String, Long>> bans = new HashMap<>(); // prophet id -> civ whose land it can't enter -> until
+    private static int preachRound = 0;
 
     private static ServerLevel serverLevel = null;
     private static boolean needsSync = true;
@@ -214,6 +237,263 @@ public class ReligionServerEvents {
             evt.setAmount(evt.getAmount() * mult);
     }
 
+    // ---- prophets ---------------------------------------------------------------------------------------------------
+
+    public static List<ProphetUnit> prophetsOf(String civ) {
+        List<ProphetUnit> list = new ArrayList<>();
+        for (LivingEntity le : com.solegendary.reignofnether.unit.UnitServerEvents.getAllUnits())
+            if (le instanceof ProphetUnit p && p.isAlive() && p.getOwnerName().equals(civ))
+                list.add(p);
+        return list;
+    }
+
+    public static int allowedProphets(boolean clientSide, String civ) {
+        Religion r = Religions.foundedBy(clientSide, civ);
+        if (r == null)
+            return 0;
+        return Math.min(MAX_PROPHETS, FREE_PROPHETS + Religions.followerCities(clientSide, r) / PROPHETS_PER_CITIES);
+    }
+
+    // why a temple can't start a prophet now, or null
+    @Nullable
+    public static String prophetError(String civ) {
+        if (Religions.foundedBy(false, civ) == null)
+            return "Fondez d'abord une religion";
+        int queued = 0;
+        for (BuildingPlacement b : BuildingServerEvents.getBuildings())
+            if (isTemple(b) && b.ownerName.equals(civ) && b instanceof com.solegendary.reignofnether.building.buildings.placements.ProductionPlacement pp)
+                for (var ap : pp.productionQueue)
+                    if (ap.item instanceof ProphetProd)
+                        queued++;
+        int allowed = allowedProphets(false, civ);
+        if (prophetsOf(civ).size() + queued >= allowed)
+            return "Vous avez déjà vos " + allowed + " prophètes (1 de plus pour " + PROPHETS_PER_CITIES + " villes de votre religion)";
+        if (data().prophetsTrained.getOrDefault(civ, 0) + queued >= FREE_PROPHETS && Religions.faith(false, civ) < PROPHET_FAITH)
+            return "Il faut " + PROPHET_FAITH + " de foi pour ce prophète";
+        return null;
+    }
+
+    public static void onProphetTrained(String civ) {
+        int trained = data().prophetsTrained.getOrDefault(civ, 0);
+        if (trained >= FREE_PROPHETS)
+            data().faith.merge(civ, (double) -PROPHET_FAITH, Double::sum);
+        data().prophetsTrained.put(civ, trained + 1);
+        changed();
+    }
+
+    // the city a prophet stands in (near its Town Centre), or null
+    @Nullable
+    private static BuildingPlacement cityOfProphet(ProphetUnit p, List<BuildingPlacement> cities) {
+        for (BuildingPlacement c : cities)
+            if (c.centrePos.distToCenterSqr(p.position()) < PROPHET_RANGE * PROPHET_RANGE)
+                return c;
+        return null;
+    }
+
+    private static boolean isBanned(ProphetUnit p, String landOwner) {
+        Map<String, Long> b = bans.get(p.getId());
+        return b != null && b.getOrDefault(landOwner, 0L) > serverLevel.getGameTime();
+    }
+
+    // a foreign prophet on one's land goes home, can't come back for EXPEL_BAN; costs faith, once every EXPEL_COOLDOWN
+    public static void expel(String civ, int prophetId) {
+        if (!(serverLevel.getEntity(prophetId) instanceof ProphetUnit p) || !p.isAlive() || p.getOwnerName().equals(civ))
+            return;
+        String land = com.solegendary.reignofnether.territory.Territory.ownerAt(new ArrayList<>(BuildingServerEvents.getBuildings()),
+            PlayerServerEvents::isRTSPlayer, p.getX(), p.getZ());
+        if (!civ.equals(land)) {
+            HudClientboundPacket.showTempMessageI18n(civ, "Ce prophète n'est pas sur vos terres");
+            return;
+        }
+        long now = serverLevel.getGameTime();
+        long wait = lastExpel.getOrDefault(civ, -EXPEL_COOLDOWN * 2L) + EXPEL_COOLDOWN - now;
+        if (wait > 0) {
+            HudClientboundPacket.showTempMessageI18n(civ, "Prochaine expulsion possible dans " + (wait / 20 + 1) + " s");
+            return;
+        }
+        if (!spendFaith(civ, EXPEL_FAITH))
+            return;
+        lastExpel.put(civ, now);
+        bans.computeIfAbsent(p.getId(), k -> new HashMap<>()).put(civ, now + EXPEL_BAN);
+        sendHome(p);
+        com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.change(p.getOwnerName(), civ, -10, "vous avez expulsé son prophète");
+        tell(p.getOwnerName(), civ + " a expulsé votre prophète de ses terres (pas de retour avant 5 min).");
+        HudClientboundPacket.showTempMessageI18n(civ, "Prophète expulsé");
+    }
+
+    // back to its owner's nearest temple (or Town Centre)
+    private static void sendHome(ProphetUnit p) {
+        BuildingPlacement home = null;
+        double best = Double.MAX_VALUE;
+        for (BuildingPlacement b : BuildingServerEvents.getBuildings())
+            if (b.ownerName.equals(p.getOwnerName()) && (isTemple(b) || b.getBuilding().isCapitol)) {
+                double d = b.centrePos.distToCenterSqr(p.position());
+                if (d < best) { best = d; home = b; }
+            }
+        if (home != null) {
+            com.solegendary.reignofnether.unit.interfaces.Unit.fullResetBehaviours(p);
+            p.getMoveGoal().setMoveTarget(home.getClosestGroundPos(p.getOnPos(), 2));
+        }
+    }
+
+    private static void tell(String civ, String text) {
+        var player = serverLevel.getServer().getPlayerList().getPlayerByName(civ);
+        if (player != null)
+            player.sendSystemMessage(Component.literal(text).withStyle(ChatFormatting.GOLD));
+    }
+
+    // ---- spreading (every PREACH_INTERVAL) ----------------------------------------------------------------------------
+
+    private static void spread() {
+        if (!Religions.anyFounded(false))
+            return;
+        preachRound++;
+        List<BuildingPlacement> cities = Religions.cities(false);
+        Map<Long, Religion> current = new HashMap<>();
+        for (BuildingPlacement c : cities)
+            current.put(c.originPos.asLong(), Religions.religionOfCity(false, c));
+        Map<Long, Map<Religion, Float>> push = new HashMap<>();
+        Set<Long> protectedCities = new HashSet<>();
+        Set<Long> withTemple = new HashSet<>();
+
+        // neighbouring cities
+        for (BuildingPlacement c : cities)
+            for (BuildingPlacement d : cities) {
+                Religion rd = current.get(d.originPos.asLong());
+                if (c == d || rd == null)
+                    continue;
+                double dist = Math.sqrt(c.centrePos.distSqr(d.centrePos));
+                if (dist < PRESSURE_RANGE)
+                    push.computeIfAbsent(c.originPos.asLong(), k -> new EnumMap<>(Religion.class))
+                        .merge(rd, (float) (CITY_PRESSURE * (1 - dist / PRESSURE_RANGE)), Float::sum);
+            }
+        // temples, in their own city, for their owner's religion
+        for (BuildingPlacement b : BuildingServerEvents.getBuildings()) {
+            if (!isTemple(b) || !b.isBuilt)
+                continue;
+            BuildingPlacement city = Religions.cityAt(false, b.centrePos.getX(), b.centrePos.getZ());
+            if (city == null)
+                continue;
+            withTemple.add(city.originPos.asLong());
+            Religion r = Religions.foundedBy(false, b.ownerName);
+            if (r != null)
+                push.computeIfAbsent(city.originPos.asLong(), k -> new EnumMap<>(Religion.class)).merge(r, TEMPLE_PRESSURE, Float::sum);
+        }
+        // prophets
+        Set<String> preachedAt = new HashSet<>(); // "cityOwner>prophetOwner", for diplomacy
+        for (LivingEntity le : com.solegendary.reignofnether.unit.UnitServerEvents.getAllUnits()) {
+            if (!(le instanceof ProphetUnit p) || !p.isAlive())
+                continue;
+            Religion r = Religions.foundedBy(false, p.getOwnerName());
+            BuildingPlacement city = cityOfProphet(p, cities);
+            if (r == null || city == null)
+                continue;
+            if (isBanned(p, city.ownerName)) {
+                sendHome(p);
+                continue;
+            }
+            long key = city.originPos.asLong();
+            if (current.get(key) == r)
+                protectedCities.add(key);
+            push.computeIfAbsent(key, k -> new EnumMap<>(Religion.class)).merge(r, PROPHET_PRESSURE, Float::sum);
+            if (!city.ownerName.equals(p.getOwnerName()) && current.get(key) != r)
+                preachedAt.add(city.ownerName + ">" + p.getOwnerName());
+            if (serverLevel.getRandom().nextInt(3) == 0)
+                for (var pl : serverLevel.players())
+                    serverLevel.sendParticles(pl, net.minecraft.core.particles.ParticleTypes.ENCHANT, true, p.getX(), p.getY() + 2.2, p.getZ(), 8, 0.4, 0.3, 0.4, 0.4);
+        }
+        // apply, with the shields against foreign religions
+        for (BuildingPlacement c : cities) {
+            long key = c.originPos.asLong();
+            Map<Religion, Float> pushes = push.get(key);
+            if (pushes == null)
+                continue;
+            Religion here = current.get(key);
+            Map<Religion, Float> gauges = data().cities.computeIfAbsent(key, k -> new EnumMap<>(Religion.class));
+            for (Map.Entry<Religion, Float> e : pushes.entrySet()) {
+                float amount = e.getValue();
+                if (here != null && e.getKey() != here) {
+                    if (withTemple.contains(key)) amount *= TEMPLE_SHIELD;
+                    if (Religions.hasBelief(false, here, Belief.FAITHFULNESS)) amount *= FAITHFUL_SHIELD;
+                    if (protectedCities.contains(key)) amount *= PROPHET_SHIELD;
+                }
+                add(gauges, e.getKey(), amount);
+            }
+            Religion now = Religions.religionOfCity(false, c);
+            if (now != here && now != null)
+                broadcast(now.symbol + " " + cityName(c) + " (" + c.ownerName + ") suit désormais " + article(now) + now.frName + ".", ChatFormatting.LIGHT_PURPLE);
+        }
+        // preaching at a bot's at peace annoys it (every 30 s)
+        if (preachRound % 3 == 0)
+            for (String k : preachedAt) {
+                String[] ab = k.split(">", 2);
+                com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.change(ab[0], ab[1], -1, "ses prophètes prêchent chez lui");
+            }
+        calmBarbarians();
+        changed();
+    }
+
+    // more followers for one religion, taken from the others when the city is full (100 in all)
+    private static void add(Map<Religion, Float> gauges, Religion r, float amount) {
+        float value = Math.min(100f, gauges.getOrDefault(r, 0f) + amount);
+        gauges.put(r, value);
+        float others = 0;
+        for (Map.Entry<Religion, Float> e : gauges.entrySet())
+            if (e.getKey() != r) others += e.getValue();
+        if (value + others > 100f && others > 0) {
+            float scale = (100f - value) / others;
+            gauges.replaceAll((k, v) -> k == r ? v : v * scale);
+        }
+        gauges.values().removeIf(v -> v < 0.1f);
+    }
+
+    private static String cityName(BuildingPlacement c) {
+        String name = com.solegendary.reignofnether.nation.CitySaveData.getInstance(serverLevel).names.get(c.originPos.asLong());
+        return name != null ? name : "Une ville";
+    }
+
+    // ---- barbarians -------------------------------------------------------------------------------------------------
+
+    public static boolean isCalmed(BlockPos campOrigin) {
+        return serverLevel != null && data().calm.getOrDefault(campOrigin.asLong(), 0f) >= 100f;
+    }
+
+    private static void calmBarbarians() {
+        for (BlockPos origin : com.solegendary.reignofnether.barbarian.BarbarianServerEvents.campOrigins()) {
+            long key = origin.asLong();
+            BuildingPlacement camp = null;
+            for (BuildingPlacement b : BuildingServerEvents.getBuildings())
+                if (b.originPos.equals(origin)) { camp = b; break; }
+            if (camp == null)
+                continue;
+            Map<String, Integer> near = new HashMap<>();
+            for (LivingEntity le : com.solegendary.reignofnether.unit.UnitServerEvents.getAllUnits())
+                if (le instanceof ProphetUnit p && p.isAlive() && Religions.foundedBy(false, p.getOwnerName()) != null &&
+                    camp.centrePos.distToCenterSqr(p.position()) < CALM_RANGE * CALM_RANGE)
+                    near.merge(p.getOwnerName(), 1, Integer::sum);
+            float before = data().calm.getOrDefault(key, 0f);
+            if (near.isEmpty() || before >= 100f)
+                continue;
+            String calmer = near.entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
+            float after = Math.min(100f, before + CALM_PER_PROPHET * near.values().stream().mapToInt(Integer::intValue).sum());
+            data().calm.put(key, after);
+            if (after >= 100f) {
+                data().calmedBy.put(key, calmer);
+                broadcast("☮ Les prophètes de " + calmer + " ont apaisé un camp barbare : il ne lance plus de raids.", ChatFormatting.LIGHT_PURPLE);
+            }
+        }
+        data().calm.keySet().retainAll(com.solegendary.reignofnether.barbarian.BarbarianServerEvents.campOrigins().stream().map(BlockPos::asLong).toList());
+        data().calmedBy.keySet().retainAll(data().calm.keySet());
+    }
+
+    // every minute: a calmed camp's tribute to the civilisation that calmed it
+    private static void payTributes() {
+        data().calmedBy.forEach((camp, civ) -> {
+            if (PlayerServerEvents.isRTSPlayer(civ))
+                ResourcesServerEvents.addSubtractResources(new Resources(civ, 25, 25, 0));
+        });
+    }
+
     // ---- cities -----------------------------------------------------------------------------------------------------
 
     // forget the followers of cities that no longer exist
@@ -233,6 +513,9 @@ public class ReligionServerEvents {
         data().founders.clear();
         data().secondBeliefs.clear();
         data().cities.clear();
+        data().prophetsTrained.clear();
+        data().calm.clear();
+        data().calmedBy.clear();
         changed();
     }
 
@@ -284,8 +567,12 @@ public class ReligionServerEvents {
         long t = serverLevel.getGameTime();
         if (t % 20 == 0)
             makeFaith();
-        if (t % 1200 == 0)
+        if (t % 1200 == 0) {
             payFounders();
+            payTributes();
+        }
+        if (t % PREACH_INTERVAL == 0)
+            spread();
         if (t % 200 == 0)
             forgetLostCities();
         if (needsSync || t % 40 == 0) { // faith moves all the time: every 2 s

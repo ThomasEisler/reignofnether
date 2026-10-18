@@ -231,6 +231,13 @@ public class DiplomacyServerEvents {
                 Stance st = getStance(bot, other);
                 if (st == Stance.ALLIANCE)
                     change(bot, other, 1, "");
+                // religion: same religion in most cities, more with the Fraternity of the other's religion
+                var faithBot = com.solegendary.reignofnether.religion.Religions.mainReligion(false, bot);
+                if (faithBot != null && faithBot == com.solegendary.reignofnether.religion.Religions.mainReligion(false, other))
+                    change(bot, other, 1, "");
+                if (faithBot != null && com.solegendary.reignofnether.religion.Religions.founderHas(false, other,
+                        com.solegendary.reignofnether.religion.Belief.FRATERNITY) && faithBot == com.solegendary.reignofnether.religion.Religions.foundedBy(false, other))
+                    change(bot, other, 2, "");
                 if (st == Stance.WAR && now() - data().wars.getOrDefault(DiplomacySaveData.key(bot, other), 0L) > MIN_WAR)
                     change(bot, other, 1, ""); // tired of the war
                 if (st == Stance.PEACE && (citiesClose(cities, bot, other, NEIGHBOUR_DIST) ||

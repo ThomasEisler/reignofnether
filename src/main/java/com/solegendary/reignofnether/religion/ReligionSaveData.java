@@ -17,6 +17,9 @@ public class ReligionSaveData extends SavedData {
     public final Map<Religion, String> founders = new EnumMap<>(Religion.class);
     public final Map<Religion, Belief> secondBeliefs = new EnumMap<>(Religion.class);
     public final Map<Long, Map<Religion, Float>> cities = new HashMap<>(); // city origin -> religion -> 0..100
+    public final Map<String, Integer> prophetsTrained = new HashMap<>(); // civ -> prophets ever trained
+    public final Map<Long, Float> calm = new HashMap<>(); // barbarian camp origin -> 0..100 (100 = calmed)
+    public final Map<Long, String> calmedBy = new HashMap<>(); // camp origin -> civ whose prophets calmed it
 
     @Nonnull
     public static ReligionSaveData getInstance(LevelAccessor level) {
@@ -45,6 +48,15 @@ public class ReligionSaveData extends SavedData {
                 try { gauges.put(Religion.valueOf(r), c.getFloat(r)); } catch (IllegalArgumentException ignored) { }
             try { data.cities.put(Long.parseLong(k), gauges); } catch (NumberFormatException ignored) { }
         }
+        CompoundTag trained = tag.getCompound("prophetsTrained");
+        for (String k : trained.getAllKeys())
+            data.prophetsTrained.put(k, trained.getInt(k));
+        CompoundTag calm = tag.getCompound("calm");
+        for (String k : calm.getAllKeys())
+            try { data.calm.put(Long.parseLong(k), calm.getFloat(k)); } catch (NumberFormatException ignored) { }
+        CompoundTag calmedBy = tag.getCompound("calmedBy");
+        for (String k : calmedBy.getAllKeys())
+            try { data.calmedBy.put(Long.parseLong(k), calmedBy.getString(k)); } catch (NumberFormatException ignored) { }
         return data;
     }
 
@@ -66,6 +78,15 @@ public class ReligionSaveData extends SavedData {
             cities.put(Long.toString(origin), c);
         });
         tag.put("cities", cities);
+        CompoundTag trained = new CompoundTag();
+        this.prophetsTrained.forEach(trained::putInt);
+        tag.put("prophetsTrained", trained);
+        CompoundTag calm = new CompoundTag();
+        this.calm.forEach((k, v) -> calm.putFloat(Long.toString(k), v));
+        tag.put("calm", calm);
+        CompoundTag calmedBy = new CompoundTag();
+        this.calmedBy.forEach((k, v) -> calmedBy.putString(Long.toString(k), v));
+        tag.put("calmedBy", calmedBy);
         return tag;
     }
 }

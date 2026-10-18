@@ -189,6 +189,11 @@ public class BarbarianServerEvents {
     }
 
     @Nullable
+    // the camps' main buildings (for religion: prophets calm camps down)
+    public static java.util.Set<BlockPos> campOrigins() {
+        return new java.util.HashSet<>(camps.keySet());
+    }
+
     private static BuildingPlacement getCampPlacement(BlockPos origin) {
         for (BuildingPlacement placement : BuildingServerEvents.getBuildings())
             if (placement.originPos.equals(origin) && placement.getBuilding() == Buildings.BARBARIAN_CAMP)
@@ -744,7 +749,8 @@ public class BarbarianServerEvents {
             // raids
             if (camp.level >= 1) {
                 camp.ticksToRaid -= TICK_INTERVAL;
-                if (camp.ticksToRaid <= 0 && garrison.size() >= 2) {
+                if (camp.ticksToRaid <= 0 && garrison.size() >= 2 &&
+                        !com.solegendary.reignofnether.religion.ReligionServerEvents.isCalmed(camp.origin)) { // calmed by prophets: no raids
                     camp.ticksToRaid = diff().raidInterval;
                     for (int i = 0; i < garrison.size() / 2; i++) {
                         LivingEntity raider = garrison.get(i);

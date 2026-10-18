@@ -418,6 +418,10 @@ public class MiscUtil {
         // If the relationship is FRIENDLY, do not allow the attack
         if (rs == Relationship.FRIENDLY)
             return false;
+        // barbarians leave prophets be: they come to calm the camps down (religion)
+        if (targetEntity instanceof com.solegendary.reignofnether.religion.ProphetUnit && unitMob instanceof Unit bu &&
+                com.solegendary.reignofnether.barbarian.BarbarianServerEvents.OWNER_NAME.equals(bu.getOwnerName()))
+            return false;
         // nor against a civilisation we're at peace with
         if (unitMob instanceof Unit u && targetEntity instanceof Unit tu &&
                 com.solegendary.reignofnether.diplomacy.Diplomacy.atPeace(unitMob.level().isClientSide(), u.getOwnerName(), tu.getOwnerName()))

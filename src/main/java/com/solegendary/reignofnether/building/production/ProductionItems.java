@@ -33,6 +33,7 @@ public class ProductionItems {
     public static final MilitiaProd MILITIA = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "militia"), new MilitiaProd());
     public static final com.solegendary.reignofnether.unit.units.villagers.ExplorerProd EXPLORER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "explorer"), new com.solegendary.reignofnether.unit.units.villagers.ExplorerProd());
     public static final com.solegendary.reignofnether.unit.units.villagers.PriestProd PRIEST = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "priest"), new com.solegendary.reignofnether.unit.units.villagers.PriestProd());
+    public static final com.solegendary.reignofnether.religion.ProphetProd PROPHET = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "prophet"), new com.solegendary.reignofnether.religion.ProphetProd());
     public static final com.solegendary.reignofnether.unit.units.villagers.CrossbowmanProd CROSSBOWMAN = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "crossbowman"), new com.solegendary.reignofnether.unit.units.villagers.CrossbowmanProd());
     public static final com.solegendary.reignofnether.unit.units.villagers.MercenaryProd MERCENARY = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "mercenary"), new com.solegendary.reignofnether.unit.units.villagers.MercenaryProd());
     public static final com.solegendary.reignofnether.unit.units.villagers.MercenaryArcherProd MERCENARY_ARCHER = register(ResourceLocation.fromNamespaceAndPath(ReignOfNether.MOD_ID, "mercenary_archer"), new com.solegendary.reignofnether.unit.units.villagers.MercenaryArcherProd());
@@ -172,6 +173,7 @@ public class ProductionItems {
         MERCENARY,
         CROSSBOWMAN,
         PRIEST,
+        PROPHET,
         SCOUT_CAT,
         ZOMBIE_VILLAGER,
         BAT,

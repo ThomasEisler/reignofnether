@@ -938,6 +938,14 @@ public class HudClientEvents {
         // --------------------------------------------------------
         // Unit action buttons (attack, stop, move, abilities etc.)
         // --------------------------------------------------------
+        // religion: a foreign prophet on my land can be expelled (the buttons below are for my own units only)
+        if (selUnits.size() > 0) {
+            Button expelButton = com.solegendary.reignofnether.religion.ReligionClientEvents.getExpelButton(selUnits.get(0));
+            if (expelButton != null) {
+                expelButton.render(evt.getGuiGraphics(), 0, screenHeight - iconFrameSize, mouseX, mouseY);
+                renderedButtons.add(expelButton);
+            }
+        }
         if (selUnits.size() > 0 &&
                 (getPlayerToEntityRelationship(selUnits.get(0)) == Relationship.OWNED ||
                         !PlayerClientEvents.isRTSPlayer() ||

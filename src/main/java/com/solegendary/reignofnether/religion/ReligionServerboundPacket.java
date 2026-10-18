@@ -10,7 +10,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-// a temple button: found a religion, or adopt a second belief
+// a temple button (found a religion, adopt a second belief), or the expel button on a foreign prophet
 public class ReligionServerboundPacket {
 
     private final boolean found;
@@ -24,6 +24,12 @@ public class ReligionServerboundPacket {
     public static void adopt(Belief belief, BlockPos temple) {
         PacketHandler.INSTANCE.sendToServer(new ReligionServerboundPacket(false, belief.name(), temple));
     }
+
+    public static void expel(int prophetId) {
+        PacketHandler.INSTANCE.sendToServer(new ReligionServerboundPacket(false, EXPEL + prophetId, BlockPos.ZERO));
+    }
+
+    private static final String EXPEL = "expel:";
 
     public ReligionServerboundPacket(boolean found, String what, BlockPos temple) {
         this.found = found;
@@ -47,6 +53,10 @@ public class ReligionServerboundPacket {
             if (player == null)
                 return;
             String me = player.getName().getString();
+            if (what.startsWith(EXPEL)) {
+                try { ReligionServerEvents.expel(me, Integer.parseInt(what.substring(EXPEL.length()))); } catch (NumberFormatException ignored) { }
+                return;
+            }
             BuildingPlacement b = BuildingUtils.findBuilding(false, temple);
             if (b == null || !b.ownerName.equals(me) || !(b.getBuilding() instanceof Temple))
                 return;
