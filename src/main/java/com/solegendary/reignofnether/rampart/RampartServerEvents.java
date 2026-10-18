@@ -32,6 +32,7 @@ import java.util.Set;
 public class RampartServerEvents {
 
     private static final int GATE_TICK_INTERVAL = 2; // a gate slides one column per step
+    public static final int MAX_PATH_POINTS = 32;
     private static final double GATE_OPEN_RANGE = 6; // from the gate's centre
 
     // how many columns of each gate are open, by gate origin
@@ -67,8 +68,17 @@ public class RampartServerEvents {
     // a player's rampart: checked again here, paid for, then cut into segments the workers build one after another
     public static void buildPlayerRampart(ServerLevel level, String ownerName, RampartBuilding building,
                                           BlockPos start, BlockPos end, int[] builderIds) {
-        if (start.distSqr(end) > (RampartLine.MAX_COLUMNS + 4) * (RampartLine.MAX_COLUMNS + 4))
+        buildPlayerRampart(level, ownerName, building, List.of(start, end), builderIds);
+    }
+
+    // the same through several points (a wall with turns, drawn point by point)
+    public static void buildPlayerRampart(ServerLevel level, String ownerName, RampartBuilding building,
+                                          List<BlockPos> points, int[] builderIds) {
+        if (points.isEmpty() || points.size() > MAX_PATH_POINTS)
             return;
+        for (int i = 0; i + 1 < points.size(); i++)
+            if (points.get(i).distSqr(points.get(i + 1)) > (RampartLine.MAX_COLUMNS + 4) * (RampartLine.MAX_COLUMNS + 4))
+                return;
         List<Integer> builders = new ArrayList<>();
         for (int id : builderIds)
             if (level.getEntity(id) instanceof com.solegendary.reignofnether.unit.interfaces.WorkerUnit &&
@@ -78,7 +88,9 @@ public class RampartServerEvents {
             com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(ownerName, "Il faut des ouvriers pour construire un rempart");
             return;
         }
-        RampartLine.Plan plan = RampartLine.plan(level, ownerName, building, start, end);
+        RampartLine.Plan plan = building.isGate() || building.isTower()
+            ? RampartLine.plan(level, ownerName, building, points.get(0), points.get(points.size() - 1))
+            : RampartLine.planPath(level, ownerName, building, points);
         if (!plan.isValid()) {
             com.solegendary.reignofnether.hud.HudClientboundPacket.showTempMessageI18n(ownerName, plan.error());
             return;

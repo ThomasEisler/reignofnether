@@ -25,14 +25,19 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-// Drawing a rampart: pick it in the workers' build menu, click where it starts, then where it ends (the wall and its
-// price follow the cursor). Shift-click to keep drawing from there; right click or Escape to stop.
+// Drawing a rampart, point by point: pick it in the workers' build menu, click where it starts, then click each turn
+// (the whole wall and its price follow the cursor). Double-click or Enter builds it all at once (Shift: start another
+// one); right click or Backspace removes the last point, Escape stops. Gates (2 clicks) and towers (1 click) as before.
 public class RampartClientEvents {
 
     private static final Minecraft MC = Minecraft.getInstance();
 
     @Nullable private static RampartBuilding placing = null;
-    @Nullable private static BlockPos start = null;
+    @Nullable private static BlockPos start = null; // gates
+    private static final List<BlockPos> points = new ArrayList<>(); // walls: the points clicked so far
+    private static long lastClickTime = 0;
+    private static BlockPos lastClickPos = null;
+    public static final long DOUBLE_CLICK_MS = 350;
 
     private static BlockPos previewEnd = null;
     private static RampartLine.Plan preview = null;
@@ -41,6 +46,7 @@ public class RampartClientEvents {
         BuildingClientEvents.setBuildingToPlace(null);
         placing = building;
         start = null;
+        points.clear();
         preview = null;
     }
 
@@ -51,7 +57,36 @@ public class RampartClientEvents {
     private static void stop() {
         placing = null;
         start = null;
+        points.clear();
         preview = null;
+    }
+
+    private static boolean isWall() {
+        return placing != null && !placing.isGate() && !placing.isTower();
+    }
+
+    // the wall drawn so far, plus the stretch to the cursor
+    private static List<BlockPos> pathWithCursor(BlockPos cursor) {
+        List<BlockPos> path = new ArrayList<>(points);
+        if (path.isEmpty() || !path.get(path.size() - 1).equals(cursor))
+            path.add(cursor);
+        return path;
+    }
+
+    private static void buildWall() {
+        if (points.isEmpty())
+            return;
+        RampartLine.Plan plan = RampartLine.planPath(MC.level, MC.player.getName().getString(), placing, points);
+        if (!plan.isValid()) {
+            HudClientEvents.showTemporaryMessage(plan.error());
+            return;
+        }
+        RampartServerboundPacket.build(placing, new ArrayList<>(points), getSelectedWorkerIds());
+        if (Keybindings.shiftMod.isDown()) {
+            points.clear(); // another wall
+            preview = null;
+        } else
+            stop();
     }
 
     private static int[] getSelectedWorkerIds() {
@@ -71,10 +106,14 @@ public class RampartClientEvents {
             return;
         }
         BlockPos cursor = CursorClientEvents.getPreselectedBlockPos();
-        BlockPos from = start != null ? start : cursor;
         if (preview != null && cursor.equals(previewEnd))
             return;
         previewEnd = cursor;
+        if (isWall()) {
+            preview = RampartLine.planPath(MC.level, MC.player.getName().getString(), placing, pathWithCursor(cursor));
+            return;
+        }
+        BlockPos from = start != null ? start : cursor;
         preview = RampartLine.plan(MC.level, MC.player.getName().getString(), placing, from, cursor);
     }
 
@@ -88,6 +127,12 @@ public class RampartClientEvents {
         String cost = preview.wood() + " bois" + (preview.ore() > 0 ? ", " + preview.ore() + " minerai" : "");
         if (placing.isTower())
             return name + " — " + cost;
+        if (isWall()) {
+            if (points.isEmpty())
+                return "Rempart : cliquez où il commence";
+            return "Rempart : " + preview.columns().size() + " blocs — " + cost +
+                " — clic : virage, double-clic ou Entrée : construire, clic droit : retirer un point";
+        }
         if (start == null)
             return name + " : cliquez où il commence";
         return name + " : " + preview.columns().size() + " blocs de long — " + cost;
@@ -103,10 +148,15 @@ public class RampartClientEvents {
         boolean valid = preview.isValid();
         ResourceLocation rl = ResourceLocation.parse("forge:textures/white.png");
         var vertexConsumer = MC.renderBuffers().bufferSource().getBuffer(RenderType.entityTranslucent(rl));
+        boolean drawing = start != null || !points.isEmpty();
         for (RampartShapes.Column c : preview.columns())
             for (int h = 1; h <= c.height(); h++)
                 MyRenderer.drawBox(evt.getPoseStack(), vertexConsumer, new BlockPos(c.x(), c.y() + h, c.z()),
-                    valid ? 0.3f : 0.9f, valid ? 0.9f : 0.3f, 0.3f, start == null ? 0.2f : 0.35f);
+                    valid ? 0.3f : 0.9f, valid ? 0.9f : 0.3f, 0.3f, drawing ? 0.35f : 0.2f);
+        // the turns already clicked: a yellow post
+        for (BlockPos p : points)
+            for (int h = 1; h <= 5; h++)
+                MyRenderer.drawBox(evt.getPoseStack(), vertexConsumer, p.above(h), 1f, 0.85f, 0.2f, 0.5f);
     }
 
     @SubscribeEvent
@@ -129,7 +179,11 @@ public class RampartClientEvents {
         if (placing == null || !OrthoviewClientEvents.isEnabled() || HudClientEvents.isMouseOverAnyButtonOrHud())
             return;
         if (evt.getButton() == GLFW.GLFW_MOUSE_BUTTON_2) {
-            stop();
+            if (isWall() && !points.isEmpty()) { // one point back
+                points.remove(points.size() - 1);
+                preview = null;
+            } else
+                stop();
             evt.setCanceled(true);
             return;
         }
@@ -143,6 +197,24 @@ public class RampartClientEvents {
                 if (!Keybindings.shiftMod.isDown())
                     stop();
             }
+            return;
+        }
+        if (isWall()) {
+            long now = System.currentTimeMillis();
+            boolean doubleClick = now - lastClickTime < DOUBLE_CLICK_MS && lastClickPos != null && lastClickPos.distSqr(cursor) <= 4;
+            lastClickTime = now;
+            lastClickPos = cursor;
+            if (doubleClick) {
+                buildWall();
+                return;
+            }
+            if (preview != null && !preview.isValid() && !points.isEmpty())
+                return; // this stretch can't be built: the point isn't added
+            if (points.size() >= RampartServerEvents.MAX_PATH_POINTS)
+                return;
+            if (points.isEmpty() || !points.get(points.size() - 1).equals(cursor))
+                points.add(cursor);
+            preview = null;
             return;
         }
         if (start == null) {
@@ -163,8 +235,17 @@ public class RampartClientEvents {
 
     @SubscribeEvent
     public static void onKeyPressed(ScreenEvent.KeyPressed.Pre evt) {
-        if (placing != null && evt.getKeyCode() == GLFW.GLFW_KEY_ESCAPE) {
+        if (placing == null)
+            return;
+        if (evt.getKeyCode() == GLFW.GLFW_KEY_ESCAPE) {
             stop();
+            evt.setCanceled(true);
+        } else if (isWall() && (evt.getKeyCode() == GLFW.GLFW_KEY_ENTER || evt.getKeyCode() == GLFW.GLFW_KEY_KP_ENTER)) {
+            buildWall();
+            evt.setCanceled(true);
+        } else if (isWall() && evt.getKeyCode() == GLFW.GLFW_KEY_BACKSPACE && !points.isEmpty()) {
+            points.remove(points.size() - 1);
+            preview = null;
             evt.setCanceled(true);
         }
     }

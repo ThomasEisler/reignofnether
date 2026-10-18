@@ -11,36 +11,37 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-// a player builds a rampart (or a gate) from start to end with the given workers
+// a player builds a rampart through its points (a gate or a tower: start and end) with the given workers
 public class RampartServerboundPacket {
 
     private final ResourceLocation building;
-    private final BlockPos start, end;
+    private final java.util.List<BlockPos> points;
     private final int[] builderIds;
 
     public static void build(RampartBuilding building, BlockPos start, BlockPos end, int[] builderIds) {
-        PacketHandler.INSTANCE.sendToServer(new RampartServerboundPacket(
-            ReignOfNetherRegistries.BUILDING.getKey(building), start, end, builderIds));
+        build(building, java.util.List.of(start, end), builderIds);
     }
 
-    public RampartServerboundPacket(ResourceLocation building, BlockPos start, BlockPos end, int[] builderIds) {
+    public static void build(RampartBuilding building, java.util.List<BlockPos> points, int[] builderIds) {
+        PacketHandler.INSTANCE.sendToServer(new RampartServerboundPacket(
+            ReignOfNetherRegistries.BUILDING.getKey(building), points, builderIds));
+    }
+
+    public RampartServerboundPacket(ResourceLocation building, java.util.List<BlockPos> points, int[] builderIds) {
         this.building = building;
-        this.start = start;
-        this.end = end;
+        this.points = points;
         this.builderIds = builderIds;
     }
 
     public RampartServerboundPacket(FriendlyByteBuf buffer) {
         this.building = buffer.readResourceLocation();
-        this.start = buffer.readBlockPos();
-        this.end = buffer.readBlockPos();
+        this.points = buffer.readList(FriendlyByteBuf::readBlockPos);
         this.builderIds = buffer.readVarIntArray();
     }
 
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeResourceLocation(building);
-        buffer.writeBlockPos(start);
-        buffer.writeBlockPos(end);
+        buffer.writeCollection(points, FriendlyByteBuf::writeBlockPos);
         buffer.writeVarIntArray(builderIds);
     }
 
@@ -49,7 +50,7 @@ public class RampartServerboundPacket {
             ServerPlayer player = ctx.get().getSender();
             Building b = ReignOfNetherRegistries.BUILDING.get(building);
             if (player != null && b instanceof RampartBuilding rb)
-                RampartServerEvents.buildPlayerRampart(player.serverLevel(), player.getName().getString(), rb, start, end, builderIds);
+                RampartServerEvents.buildPlayerRampart(player.serverLevel(), player.getName().getString(), rb, points, builderIds);
         });
         ctx.get().setPacketHandled(true);
         return true;

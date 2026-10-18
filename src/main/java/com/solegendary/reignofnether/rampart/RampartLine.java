@@ -129,6 +129,28 @@ public class RampartLine {
         return new Plan(columns, woodCost(building, columns.size()), oreCost(building, columns.size()), null);
     }
 
+    // a wall through several points (the player's turns): each stretch planned as above, columns joined, one price
+    public static Plan planPath(Level level, String ownerName, RampartBuilding building, List<BlockPos> points) {
+        if (points.size() < 2)
+            return points.isEmpty() ? new Plan(List.of(), 0, 0, "Rien à construire ici") : plan(level, ownerName, building, points.get(0), points.get(0));
+        List<RampartShapes.Column> columns = new ArrayList<>();
+        java.util.Set<Long> seen = new java.util.HashSet<>();
+        for (int i = 0; i + 1 < points.size(); i++) {
+            Plan leg = plan(level, ownerName, building, points.get(i), points.get(i + 1));
+            if (!leg.isValid()) {
+                if (leg.error().equals("Rien à construire ici"))
+                    continue; // eg. a stretch along an existing wall
+                return new Plan(List.of(), 0, 0, (points.size() > 2 ? "Tronçon " + (i + 1) + " : " : "") + leg.error());
+            }
+            for (RampartShapes.Column c : leg.columns())
+                if (seen.add(BlockPos.asLong(c.x(), 0, c.z())))
+                    columns.add(c);
+        }
+        if (columns.isEmpty())
+            return new Plan(List.of(), 0, 0, "Rien à construire ici");
+        return new Plan(columns, woodCost(building, columns.size()), oreCost(building, columns.size()), null);
+    }
+
     // splits the plan into segments (buildings) of a few columns; a gate is one segment; gaps start a new segment
     public static List<List<RampartShapes.Column>> segments(RampartBuilding building, List<RampartShapes.Column> columns) {
         List<List<RampartShapes.Column>> segments = new ArrayList<>();

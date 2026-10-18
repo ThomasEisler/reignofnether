@@ -197,7 +197,7 @@ Rien de tout ça n'est fait. À prévoir aussi : retirer WorldEdit du serveur (D
 
 ### Mes remparts (revus le 16/10 : un seul bouton, puis on clique sur le mur)
 - Dans le **menu de construction des ouvriers** : un seul bouton **« Rempart »** (touche **D**) qui pose une **palissade**. Les anciens boutons (rempart de pierre, portes, herse, tour) ont disparu du menu.
-- **Mur** : cliquer où il commence, puis où il finit ; le mur (jusqu'à 48 blocs de long) et son prix suivent le curseur, en vert si c'est possible, en rouge sinon (avec la raison). **Maj + clic** : continuer le mur depuis ce point. Clic droit ou Échap : arrêter.
+- **Éditeur de mur** (18/10) : cliquer où il commence, puis **un clic à chaque virage** (poteau jaune) ; tout le mur et son prix suivent le curseur, en vert si c'est possible, en rouge sinon (avec la raison ; un point n'est pas ajouté si son tronçon est impossible). **Double-clic ou Entrée** : construire tout le mur d'un coup (un seul prix) ; avec **Maj** on enchaîne un autre mur. **Clic droit ou Retour arrière** : enlever le dernier point (sans point : arrêter). **Échap** : arrêter. 48 blocs au plus par tronçon, 32 points au plus.
 - Construits par les **ouvriers sélectionnés**, morceau par morceau (5 blocs). Chaque morceau a de la vie : les barbares (et les ennemis) peuvent les attaquer et faire une brèche.
 - Le mur suit le terrain sans le creuser, s'arrête à l'eau, et s'accroche aux murs et bâtiments existants. Il faut rester à portée de ses bâtiments (24 blocs).
 - **Cliquer sur un morceau construit** le sélectionne ; 3 boutons :
@@ -460,6 +460,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 - [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
 - [ ] Tours de guet : amélioration niveaux 2 et 3, portée et dégâts de la garnison qui augmentent.
 - [ ] Tour de rempart : pose sur un mur (mur coupé autour), garnison de 2 qui tire d'en haut, sortie à côté de la tour.
+- [ ] Éditeur de remparts : points successifs (virages), poteaux jaunes, aperçu et prix total, double-clic / Entrée pour construire, clic droit / Retour arrière pour retirer un point, Maj pour enchaîner.
 - [ ] Mes remparts (revus le 16/10) : bouton unique « Rempart », clic sur un morceau construit → Tour / Porte / Améliorer tout le mur (prix au survol, ouvriers proches qui viennent), 3 niveaux (palissade, pierre, pierre renforcée), portes qui s'ouvrent pour mes unités, barbares qui les attaquent.
 - [ ] Cavalier : production à la caserne, cheval qui charge, vindicateur assis dessus, nom « Cavalier » dans l'interface.
 - [ ] Remparts barbares : cercle fermé, segments qui cassent, portes qui s'ouvrent pour les barbares, remplacement par la pierre au niveau 3.
@@ -612,3 +613,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 18/10/2026 | Formations militaires : rangs face à la marche (corps à corps devant, tireurs derrière, siège au fond), troupe au pas de la plus lente |
 | 18/10/2026 | Carte en plein écran ; entrepôts hors des frontières ; nuages sombres la nuit avec les shaders |
 | 18/10/2026 | Religion étape 2 : pression entre villes, prophètes (limite, coût en foi), protection, expulsion, camps barbares calmés, diplomatie (même religion, Fraternité) |
+| 18/10/2026 | Éditeur de remparts : un clic par virage, double-clic ou Entrée pour construire tout le mur |
