@@ -87,5 +87,6 @@ public class ServerEventRegistrar {
         vanillaEventBus.register(com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.religion.ReligionServerEvents.class);
         vanillaEventBus.register(com.solegendary.reignofnether.score.ScoreServerEvents.class);
+        vanillaEventBus.register(com.solegendary.reignofnether.trade.TradeServerEvents.class);
     }
 }

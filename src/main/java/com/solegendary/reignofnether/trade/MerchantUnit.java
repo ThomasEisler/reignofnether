@@ -40,9 +40,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-// Marchand: an unarmed villager (leatherworker's apron) followed by two pack llamas. Right-click a city linked to
-// its own by a royal road and it trades there, back and forth, for emeralds (TradeServerEvents).
-// Trained at a market, one per market (two with the Grand Market).
+// Marchand: an unarmed villager (leatherworker's apron) followed by two pack llamas, who runs a trade route opened in
+// a market (TradeServerEvents): hired by the route, back and forth between the two cities.
 public class MerchantUnit extends Vindicator implements Unit, VillagerDataHolder {
     public static final Abilities ABILITIES = new Abilities();
 
@@ -176,20 +175,13 @@ public class MerchantUnit extends Vindicator implements Unit, VillagerDataHolder
             TradeServerEvents.tickMerchant(this);
     }
 
-    // trade route: home city and the city traded with (Town Centre origins), which way it's going, its llamas
-    @Nullable public BlockPos homeCity = null, tradeCity = null;
-    public boolean outbound = true;
+    // its pack llamas
     public final List<java.util.UUID> llamas = new ArrayList<>();
 
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         this.addUnitSaveData(pCompound);
-        if (homeCity != null && tradeCity != null) {
-            pCompound.putLong("homeCity", homeCity.asLong());
-            pCompound.putLong("tradeCity", tradeCity.asLong());
-            pCompound.putBoolean("outbound", outbound);
-        }
         net.minecraft.nbt.ListTag l = new net.minecraft.nbt.ListTag();
         for (java.util.UUID id : llamas)
             l.add(net.minecraft.nbt.NbtUtils.createUUID(id));
@@ -200,11 +192,6 @@ public class MerchantUnit extends Vindicator implements Unit, VillagerDataHolder
     public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         this.readUnitSaveData(pCompound);
-        if (pCompound.contains("tradeCity")) {
-            homeCity = BlockPos.of(pCompound.getLong("homeCity"));
-            tradeCity = BlockPos.of(pCompound.getLong("tradeCity"));
-            outbound = pCompound.getBoolean("outbound");
-        }
         llamas.clear();
         for (net.minecraft.nbt.Tag t : pCompound.getList("llamas", net.minecraft.nbt.Tag.TAG_INT_ARRAY))
             llamas.add(net.minecraft.nbt.NbtUtils.loadUUID(t));

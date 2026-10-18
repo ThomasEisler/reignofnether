@@ -34,6 +34,9 @@ public abstract class AbstractMarket extends ProductionBuilding implements ItemS
         this.abilities.add(new TradeResources(UnitAction.BUY_FOOD), Keybindings.abilitySlot4);
         this.abilities.add(new TradeResources(UnitAction.BUY_WOOD),  Keybindings.abilitySlot5);
         this.abilities.add(new TradeResources(UnitAction.BUY_ORE), Keybindings.abilitySlot6);
+        // trade routes (trade/): one per market, a second with the Grand Market
+        this.abilities.add(new com.solegendary.reignofnether.trade.TradeRouteAbility(0), Keybindings.abilitySlot7);
+        this.abilities.add(new com.solegendary.reignofnether.trade.TradeRouteAbility(1), Keybindings.abilitySlot8);
 
         this.maxHealth = 300d;
         this.maxHealthBonusPerUpgradeLevel = 50d;

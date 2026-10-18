@@ -1,12 +1,8 @@
 package com.solegendary.reignofnether.trade;
 
-import com.solegendary.reignofnether.api.ReignOfNetherRegistries;
 import com.solegendary.reignofnether.building.BuildingPlacement;
-import com.solegendary.reignofnether.building.BuildingProductionClientboundPacket;
 import com.solegendary.reignofnether.building.BuildingServerEvents;
-import com.solegendary.reignofnether.building.buildings.placements.ProductionPlacement;
 import com.solegendary.reignofnether.building.buildings.villagers.VillagerMarket;
-import com.solegendary.reignofnether.building.production.ProductionItems;
 import com.solegendary.reignofnether.diplomacy.DiplomacyServerEvents;
 import com.solegendary.reignofnether.resources.ResourceName;
 import com.solegendary.reignofnether.resources.ResourcesServerEvents;
@@ -20,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 
 // Trade for computer-run civilisations: with a market, a royal road from the capital to the nearest city of a
-// civilisation at peace (or one of its own), when it can afford it; then a merchant trading along it.
+// civilisation at peace (or one of its own), when it can afford it; then the market's route slots opened on it.
 public class TradeBot {
 
     public static final int THINK_TICKS = 20 * 30;
@@ -29,10 +25,9 @@ public class TradeBot {
     public static void think(ServerLevel level, String name, long ticksAlive, List<BuildingPlacement> buildings, BuildingPlacement capital) {
         if (ticksAlive % THINK_TICKS != 0 || !capital.isBuilt)
             return;
-        BuildingPlacement market = buildings.stream().filter(b -> b.isBuilt && b.getBuilding() instanceof VillagerMarket).findFirst().orElse(null);
-        if (market == null)
+        List<BuildingPlacement> markets = buildings.stream().filter(b -> b.isBuilt && b.getBuilding() instanceof VillagerMarket).toList();
+        if (markets.isEmpty())
             return;
-        // the cities its capital is linked to by a finished royal road
         List<BuildingPlacement> linked = BuildingServerEvents.getBuildings().stream().filter(b -> b.getBuilding().isCapitol && b != capital &&
             isRoyal(RoadServerEvents.getConnection(capital.originPos, b.originPos)) &&
             (b.ownerName.equals(name) || !DiplomacyServerEvents.atWar(name, b.ownerName))).toList();
@@ -40,14 +35,20 @@ public class TradeBot {
             buildRoad(level, name, capital);
             return;
         }
-        // a merchant, and every idle merchant off to a linked city
-        if (TradeServerEvents.merchantError(name) == null && market instanceof ProductionPlacement pp && pp.productionQueue.isEmpty() &&
-            pp.startProductionItem(ProductionItems.MERCHANT))
-            BuildingProductionClientboundPacket.startProduction(name, pp.originPos,
-                ReignOfNetherRegistries.PRODUCTION_ITEM.getKey(ProductionItems.MERCHANT).toString());
-        for (MerchantUnit m : TradeServerEvents.merchantsOf(name))
-            if (m.tradeCity == null)
-                TradeServerEvents.startTrade(m, linked.get(m.getRandom().nextInt(linked.size())));
+        // every free route slot of the markets of its capital, opened towards a linked city
+        for (BuildingPlacement market : markets) {
+            if (TradeServerEvents.homeCity(false, market) != capital)
+                continue;
+            for (int slot = 0; slot < TradeServerEvents.slotsOf(market); slot++) {
+                final int s = slot;
+                if (TradeServerEvents.data().routes.stream().anyMatch(r -> r.market.equals(market.originPos) && r.slot == s))
+                    continue;
+                BuildingPlacement target = linked.stream().filter(c -> TradeServerEvents.data().routes.stream()
+                    .noneMatch(r -> r.market.equals(market.originPos) && r.target.equals(c.originPos))).findFirst().orElse(null);
+                if (target != null)
+                    TradeServerEvents.openRoute(name, market, slot, target.centrePos);
+            }
+        }
     }
 
     private static boolean isRoyal(RoadConnection c) {

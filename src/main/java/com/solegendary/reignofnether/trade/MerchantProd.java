@@ -20,7 +20,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-// A merchant, at a market: one per market, two with the Grand Market (TradeServerEvents.merchantError)
+// A merchant: not trained any more (hired by a market's trade route, TradeServerEvents); kept for the unit's name and icon
 public class MerchantProd extends ProductionItem implements IUnitProductionItem {
 
     public final static String itemName = "Merchant";
@@ -40,7 +40,7 @@ public class MerchantProd extends ProductionItem implements IUnitProductionItem 
     @Override
     @javax.annotation.Nullable
     public String getProduceErrorMsg(ProductionPlacement pp) {
-        return TradeServerEvents.merchantError(pp.ownerName);
+        return "Les marchands viennent des routes commerciales du marché";
     }
 
     public String getItemName() {

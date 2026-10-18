@@ -42,6 +42,12 @@ public class RoadClientEvents {
     }
 
     @Nullable
+    // a finished royal road between two cities (trade routes)
+    public static boolean isRoyalLinked(BlockPos a, BlockPos b) {
+        RoadClientboundPacket.RoadInfo r = getRoad(a, b);
+        return r != null && r.type().isRoyal() && !r.underConstruction();
+    }
+
     private static RoadClientboundPacket.RoadInfo getRoad(BlockPos a, BlockPos b) {
         for (RoadClientboundPacket.RoadInfo road : roads)
             if (road.connects(a) && road.connects(b))
