@@ -68,8 +68,8 @@ public class TradeBot {
         if (target == null)
             return;
         int length = (int) Math.sqrt(target.centrePos.distSqr(capital.centrePos)) + 40;
-        if (!ResourcesServerEvents.canAfford(name, ResourceName.WOOD, RoadType.ROYAL.woodPerLength * length + ROAD_RESERVE) ||
-            !ResourcesServerEvents.canAfford(name, ResourceName.ORE, RoadType.ROYAL.orePerLength * length + ROAD_RESERVE))
+        if (!ResourcesServerEvents.canAfford(name, ResourceName.WOOD, RoadType.ROYAL.woodPerLength * RoadType.ROYAL.units(length) + ROAD_RESERVE) ||
+            !ResourcesServerEvents.canAfford(name, ResourceName.ORE, RoadType.ROYAL.orePerLength * RoadType.ROYAL.units(length) + ROAD_RESERVE))
             return;
         RoadServerEvents.tryBuildRoad(level, name, capital.originPos, target.originPos, RoadType.ROYAL);
     }

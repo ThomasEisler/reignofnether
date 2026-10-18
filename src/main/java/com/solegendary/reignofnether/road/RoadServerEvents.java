@@ -77,11 +77,11 @@ public class RoadServerEvents {
     }
 
     public static int getWoodCost(RoadType type, int length) {
-        return type.woodPerLength * length;
+        return type.woodPerLength * type.units(length);
     }
 
     public static int getOreCost(RoadType type, int length) {
-        return type.orePerLength * length;
+        return type.orePerLength * type.units(length);
     }
 
     // serverside validation of a player's request to build a road between two of their buildings

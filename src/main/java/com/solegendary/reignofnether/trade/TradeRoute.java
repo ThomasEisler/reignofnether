@@ -15,7 +15,6 @@ public class TradeRoute {
     public final BlockPos target;   // Town Centre origin of the city traded with
     @Nullable public UUID merchant = null;
     public boolean outbound = true;
-    public long nextMerchant = 0;   // game time a new merchant may come (after the last one died)
     public String state = "";       // shown in the market: why it is stopped, or empty
 
     public TradeRoute(BlockPos market, int slot, String owner, BlockPos target) {

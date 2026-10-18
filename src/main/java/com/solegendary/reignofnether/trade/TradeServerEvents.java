@@ -34,9 +34,9 @@ import java.util.UUID;
 // Trade routes, run from markets: a market button (one route per market, two with the Grand Market), then a click on
 // a city linked to the market's city by a finished royal road. The route gets a merchant (paid for, with two pack
 // llamas) who goes back and forth on its own; each time it reaches the other city it brings in emeralds (spent at the
-// market for resources): more the longer the road, twice as much with a foreign city, which also gets a share. A dead
-// merchant is replaced after a while; a war with that city, or a lost road, stops the route until things are back.
-// Clicking the route's button again closes it.
+// market for resources): more the longer the road, twice as much with a foreign city, which also gets a share.
+// The route is closed for good (to be opened and paid for again in the market) if the merchant is killed, if war
+// breaks out with that city, or if the road or a city is lost. Clicking the route's button again closes it too.
 public class TradeServerEvents {
 
     public static final int BASE_EMERALDS = 12;         // per delivery...
@@ -44,7 +44,6 @@ public class TradeServerEvents {
     public static final float FOREIGN_MULT = 2f;        // trading with another civilisation's city
     public static final float PARTNER_SHARE = 0.25f;    // what that civilisation gets on top
     public static final int MERCHANT_FOOD = 100, MERCHANT_WOOD = 75;
-    public static final int REPLACE_TICKS = 20 * 45;    // a new merchant this long after one dies
     public static final int ARRIVE_RANGE = 10;          // from the Town Centre's centre
     public static final int LLAMAS = 2;
 
@@ -205,32 +204,28 @@ public class TradeServerEvents {
                 continue;
             }
             BuildingPlacement home = homeCity(false, market), target = buildingAt(r.target);
-            String stop = null;
-            if (home == null || target == null || !target.getBuilding().isCapitol)
-                stop = "ville perdue";
-            else if (!royalRoad(home.originPos, target.originPos))
-                stop = "route royale coupée";
-            else if (!target.ownerName.equals(r.owner) && DiplomacyServerEvents.atWar(r.owner, target.ownerName))
-                stop = "en guerre avec " + target.ownerName;
             MerchantUnit m = merchantOf(r);
-            if (stop != null) { // suspended: the merchant waits at home
-                if (!stop.equals(r.state)) { r.state = stop; needsSync = true; }
-                if (m != null && home != null)
-                    goTo(m, home);
+            String end = null;
+            if (home == null || target == null || !target.getBuilding().isCapitol)
+                end = "une des deux villes est perdue";
+            else if (!royalRoad(home.originPos, target.originPos))
+                end = "la route royale est coupée";
+            else if (!target.ownerName.equals(r.owner) && DiplomacyServerEvents.atWar(r.owner, target.ownerName))
+                end = "guerre avec " + target.ownerName;
+            else if (m == null && r.merchant != null)
+                end = "le marchand a été tué";
+            if (end != null) { // closed for good: to be opened (and paid) again in the market
+                removeMerchant(r);
+                data().routes.remove(r);
+                data().setDirty();
+                needsSync = true;
+                HudClientboundPacket.showTempMessageI18n(r.owner, "Route commerciale fermée : " + end);
                 continue;
             }
-            if (m == null) {
-                if (r.merchant != null) { // died: a new one in a while
-                    r.merchant = null;
-                    r.nextMerchant = now + REPLACE_TICKS;
-                    r.state = "marchand tué, un autre arrive bientôt";
-                    needsSync = true;
-                }
-                if (now >= r.nextMerchant) {
-                    String before = r.state;
-                    hireMerchant(r, market);
-                    if (!before.equals(r.state) || r.merchant != null) needsSync = true;
-                }
+            if (m == null) { // just opened: its merchant, as soon as it can be paid for
+                String before = r.state;
+                hireMerchant(r, market);
+                if (!before.equals(r.state) || r.merchant != null) needsSync = true;
                 continue;
             }
             if (!r.state.isEmpty()) { r.state = ""; needsSync = true; }

@@ -8,17 +8,21 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
-// Road tiers, each a random-looking mix of blocks. Costs are per block of road length (along its centre line),
-// so longer roads cost more.
+// Road tiers, each a random-looking mix of blocks. Costs are per block (royal road: per 2 blocks) of road length
+// (along its centre line), so longer roads cost more.
 public enum RoadType {
-    PATH(List.of(Blocks.GRAVEL, Blocks.COARSE_DIRT), 1, 0, 0.15f),
-    PAVED(List.of(Blocks.ANDESITE, Blocks.GRAVEL), 1, 1, 0.25f),
-    ADVANCED(List.of(Blocks.ANDESITE, Blocks.STONE_BRICKS, Blocks.STONE), 0, 3, 0.35f),
+    PATH(List.of(Blocks.GRAVEL, Blocks.COARSE_DIRT), 1, 0, 0.15f, 1),
+    PAVED(List.of(Blocks.ANDESITE, Blocks.GRAVEL), 1, 1, 0.25f, 1),
+    ADVANCED(List.of(Blocks.ANDESITE, Blocks.STONE_BRICKS, Blocks.STONE), 0, 3, 0.35f, 1),
     // between two cities (Town Centres, also another civilisation's): 5 wide, longer, needed for trade routes
-    ROYAL(List.of(Blocks.STONE_BRICKS, Blocks.POLISHED_ANDESITE, Blocks.STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS, Blocks.ANDESITE), 1, 1, 0.40f);
+    ROYAL(List.of(Blocks.STONE_BRICKS, Blocks.POLISHED_ANDESITE, Blocks.STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS, Blocks.ANDESITE), 1, 0, 0.40f, 2);
 
     // the tiers a road between buildings goes through when upgraded (the royal road is apart)
     public static final RoadType MAX_BUILDING_ROAD = ADVANCED;
+
+    public int units(int length) {
+        return (length + blocksPerUnit - 1) / blocksPerUnit;
+    }
 
     public boolean isRoyal() {
         return this == ROYAL;
@@ -28,8 +32,10 @@ public enum RoadType {
     public final int woodPerLength;
     public final int orePerLength;
     public final float speedBonus; // movement speed multiplier bonus for units on this road (0.15 = +15%)
+    public final int blocksPerUnit; // the costs are for this many blocks of length (royal road: 1 wood every 2 blocks)
 
-    RoadType(List<Block> blocks, int woodPerLength, int orePerLength, float speedBonus) {
+    RoadType(List<Block> blocks, int woodPerLength, int orePerLength, float speedBonus, int blocksPerUnit) {
+        this.blocksPerUnit = blocksPerUnit;
         this.blocks = blocks;
         this.woodPerLength = woodPerLength;
         this.orePerLength = orePerLength;

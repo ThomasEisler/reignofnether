@@ -49,7 +49,7 @@ public class BuildRoad extends Ability {
                     FormattedCharSequence.forward("", Style.EMPTY),
                     FormattedCharSequence.forward("Cliquez sur un autre Hôtel de ville (le vôtre, ou celui d'une civilisation", Style.EMPTY),
                     FormattedCharSequence.forward("qui n'est pas en guerre avec vous) : grande route de 5 blocs, jusqu'à 500 blocs.", Style.EMPTY),
-                    FormattedCharSequence.forward(type.woodPerLength + " bois et " + type.orePerLength + " minerai par bloc de longueur ; unités +" +
+                    FormattedCharSequence.forward(type.woodPerLength + " bois tous les " + type.blocksPerUnit + " blocs de longueur ; unités +" +
                         Math.round(type.speedBonus * 100) + " % plus rapides. Il en faut une pour les routes commerciales.", Style.EMPTY)),
                 this,
                 placement
