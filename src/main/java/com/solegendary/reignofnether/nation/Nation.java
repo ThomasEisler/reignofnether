@@ -9,7 +9,7 @@ public enum Nation {
     FRANCE  ("France",       "Louis XIV",              0x3060E0, "Bâtiments construits 20 % plus vite",              1.2f,  1f,      1,        1f,  1f,   1f,    0f,   0),
     ENGLAND ("Angleterre",   "Élisabeth I",          0xD02828, "Routes 30 % moins chères",                         1f,    0.7f,    1,        1f,  1f,   1f,    0f,   0),
     SPAIN   ("Espagne",      "Isabelle I",           0xE8B020, "Butin des camps barbares doublé",                  1f,    1f,      1,        2f,  1f,   1f,    0f,   0),
-    HRE     ("Saint-Empire", "Frédéric Barberousse",   0x303030, "Unités produites 15 % plus vite",                  1f,    1f,      1,        1f,  1.15f, 1f,   0f,   0),
+    HRE     ("Saint-Empire", "Frédéric Barberousse",   0x8A5530, "Unités produites 15 % plus vite",                  1f,    1f,      1,        1f,  1.15f, 1f,   0f,   0),
     ROME    ("Rome",         "Auguste",                0x8020A0, "Routes construites deux fois plus vite",           1f,    1f,      2,        1f,  1f,   1f,    0f,   0),
     PORTUGAL("Portugal",     "Jean II",                0x20A050, "+200 de nourriture, bois et minerai au départ",    1f,    1f,      1,        1f,  1f,   1f,    0f,   200),
     RUSSIA  ("Russie",       "Pierre le Grand",        0xE07A20, "Récolte 15 % plus rapide",                         1f,    1f,      1,        1f,  1f,   1.15f, 0f,   0),

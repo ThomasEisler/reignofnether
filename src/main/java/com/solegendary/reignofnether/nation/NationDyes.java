@@ -20,7 +20,7 @@ public class NationDyes {
             case FRANCE -> DyeColor.BLUE;
             case ENGLAND -> DyeColor.RED;
             case SPAIN -> DyeColor.YELLOW;
-            case HRE -> DyeColor.BLACK;
+            case HRE -> DyeColor.BROWN;
             case ROME -> DyeColor.PURPLE;
             case PORTUGAL -> DyeColor.GREEN;
             case RUSSIA -> DyeColor.ORANGE;
