@@ -41,6 +41,9 @@ public class MoveToTargetBlockGoal extends Goal {
     // start() itself on the idle -> active transition, so setMoveTarget only needs to fire start()
     // manually while already running - otherwise an idle unit would path twice for one order.
     protected boolean isRunning = false;
+    // a unit marching in a military formation goes at the pace of the slowest one (see UnitFormations);
+    // back to 1 when it stops or gets another order
+    public float formationSpeed = 1f;
     // Bumped on every new request/order/stop. The async callback captures it at request time and drops its
     // result if it no longer matches, so a slow stale path can't overwrite a newer order.
     protected int pathRequestSeq = 0;
@@ -182,7 +185,7 @@ public class MoveToTargetBlockGoal extends Goal {
          */
         float speedMod = u.getSpeedModifier();
         if (speedMod < 1.0f) speedMod = (float) Math.sqrt(speedMod);
-        this.mob.getNavigation().moveTo(path, speedMod);
+        this.mob.getNavigation().moveTo(path, speedMod * formationSpeed);
         // Broadcast the path so clients can render it briefly. Server-only — clients
         // that received the packet decide whether to render based on ownership/FOW.
         if (!this.mob.level().isClientSide()) {
@@ -229,7 +232,7 @@ public class MoveToTargetBlockGoal extends Goal {
         // Follow even a partial (unreachable) path so the unit still makes progress toward the target.
         float speedMod = u.getSpeedModifier();
         if (speedMod < 1.0f) speedMod = (float) Math.sqrt(speedMod);
-        this.mob.getNavigation().moveTo(path, speedMod);
+        this.mob.getNavigation().moveTo(path, speedMod * formationSpeed);
         // The RTS pathfinder is async: node 0 is the unit's position when the request was SUBMITTED, a few
         // ticks ago. By delivery the unit has often drifted off it (crowd/formation separation, momentum),
         // and vanilla navigation always starts following at node 0 - so it would steer the unit BACK to the
@@ -318,6 +321,7 @@ public class MoveToTargetBlockGoal extends Goal {
     }
 
     public void stopMoving() {
+        formationSpeed = 1f;
         recalcCooldown = 0;
         pathPending = false;
         pendingRepath = false;

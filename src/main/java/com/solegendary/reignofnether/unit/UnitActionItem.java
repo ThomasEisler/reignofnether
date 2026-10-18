@@ -178,6 +178,7 @@ public class UnitActionItem {
         }
 
         ArrayList<Unit> formationUnits = new ArrayList<>();
+        ArrayList<LivingEntity> attackMoveUnits = new ArrayList<>(); // attack-move targets given after the loop (formation)
 
         actionableUnitsLoop:
         for (Unit unit : actionableUnits) {
@@ -297,6 +298,7 @@ public class UnitActionItem {
                     if (unit instanceof AttackerUnit attackerUnit) {
                         MiscUtil.addUnitCheckpoint(unit, preselectedBlockPos, false);
                         attackerUnit.setAttackMoveTarget(preselectedBlockPos);
+                        attackMoveUnits.add((LivingEntity) unit);
                         if (((LivingEntity) unit).getFirstPassenger() instanceof RangedAttackerUnit rau &&
                             rau.getRangedAttackGroundGoal() != null) {
                             rau.getRangedAttackGroundGoal().setGroundTarget(null);
@@ -486,9 +488,15 @@ public class UnitActionItem {
             for (Unit u : formationUnits) {
                 if (u instanceof LivingEntity livingEntity) list.add(livingEntity);
             }
-            List<Pair<LivingEntity, BlockPos>> formationPairs = UnitFormations.getMoveFormation(
-                level, new ArrayList<>(list), preselectedBlockPos
-            );
+            // soldiers march in ranks at the pace of the slowest; others (workers...) spread round the point as before
+            List<Pair<LivingEntity, BlockPos>> formationPairs;
+            if (UnitFormations.useMilitaryFormation(list)) {
+                list.removeIf(le -> le.getVehicle() != null && list.contains(le.getVehicle())); // the mount carries it
+                formationPairs = UnitFormations.getMilitaryFormation(level, list, preselectedBlockPos);
+                UnitFormations.syncSpeeds(list);
+            } else {
+                formationPairs = UnitFormations.getMoveFormation(level, new ArrayList<>(list), preselectedBlockPos);
+            }
             // Filter out redundant moves once, then either dispatch immediately (small groups)
             // or queue for time-sliced dispatch on the server (large groups) so we don't run
             // N concurrent A* searches in the same tick.
@@ -512,6 +520,15 @@ public class UnitActionItem {
             } else {
                 UnitServerEvents.queueFormationMove(filtered);
             }
+        }
+
+        // soldiers attack-moving together: each to its place in the ranks, at the pace of the slowest
+        if (attackMoveUnits.size() >= 2 && UnitFormations.useMilitaryFormation(attackMoveUnits)) {
+            attackMoveUnits.removeIf(le -> le.getVehicle() != null && attackMoveUnits.contains(le.getVehicle()));
+            for (Pair<LivingEntity, BlockPos> pair : UnitFormations.getMilitaryFormation(level, attackMoveUnits, preselectedBlockPos))
+                if (pair.getFirst() instanceof AttackerUnit au)
+                    au.setAttackMoveTarget(pair.getSecond());
+            UnitFormations.syncSpeeds(attackMoveUnits);
         }
 
         if (level.isClientSide() && usedAbility != null && usedAbility.oneClickOneUse) {

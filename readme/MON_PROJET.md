@@ -277,6 +277,11 @@ Code : `rampart/RampartUpgrades.java` (mur entier, prix, remplacement des morcea
 - Les guerres, alliances (oubliées au redémarrage par le mod d'origine) et opinions sont **sauvegardées** ; `/rts-reset` remet tout en paix.
 - Réglages en tête de `diplomacy/DiplomacyServerEvents.java` ; code : dossier `diplomacy/` (`DiplomacyServerEvents` = règles et décisions, `DiplomacyClient` = état côté écran, `Stance`, `Proposal`, `DiplomacySaveData`, paquets `Diplomacy*boundPacket`) ; branchements dans `MiscUtil` (cibles automatiques), `AttackerUnit`, `UnitActionItem` (ordres refusés), `BotArmy.isEnemy`, `DiplomacyPlayerDisplay` (écran).
 
+### Formations militaires (18/10, à tester en jeu)
+- Des **soldats déplacés ensemble** (au moins 2, ordre « déplacer » ou « attaquer en avançant », joueurs et bots) se rangent en **rangs face à la direction de marche** au lieu de s'entasser autour du point : **corps à corps devant**, **cavaliers** derrière, **tireurs** (archers, arbalétriers, pillards) ensuite, **catapultes et le reste** (ouvriers, prêtres…) à l'arrière. Chaque rang est centré sur le point visé, 2 blocs entre deux unités ; chacun garde son côté (pas de croisements).
+- **Toute la troupe avance au pas de la plus lente** (une catapulte ralentit tout le monde), pour que les rangs tiennent en chemin ; chacun retrouve sa vitesse au prochain ordre ou en combat.
+- Sans soldats (ouvriers seuls), rien ne change. Réglages en tête de la partie « military formations » de `unit/UnitFormations.java` (`SPACING`, largeur des rangs) ; vitesse commune : `MoveToTargetBlockGoal.formationSpeed`.
+
 ### Frontières (16/10, à tester en jeu)
 - Chaque civilisation a un **territoire** : 48 blocs autour de chaque Hôtel de ville, 28 autour de ses autres bâtiments (pas les remparts ni les ponts). Là où deux territoires se touchent, chaque endroit va au bâtiment dont il est le plus « au cœur ».
 - **Frontière dessinée** : un trait fin (0,28 bloc), un peu transparent, posé sur le sol, de la **couleur de la nation**, tout autour du territoire (par carrés de 2 × 2 blocs). Quand deux territoires se touchent, les deux traits courent côte à côte. Visible jusqu'à 160 blocs de la caméra, caché sous les nuages (terrain inexploré).
@@ -456,6 +461,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 - [ ] Bots (`/rts-bot ajouter`, 3 fois pour 4 civilisations) : arrivée loin des villes, Hôtel de ville, villageois produits et répartis, maisons, fermes, entrepôt.
 - [ ] Bouton « Bots » du menu de départ (clic gauche nombre, clic droit difficulté), arrivée des bots une fois l'Hôtel de ville posé, effets de la difficulté.
 - [ ] Armée des bots : formation à la caserne, attente près de l'Hôtel de ville, défense quand un ennemi approche, attaque d'un camp barbare (dès 6 soldats), retour quand l'armée est battue, attaque des autres civilisations après 25 min.
+- [ ] Formations : groupe de soldats déplacé → rangs face à la marche (corps à corps devant, tireurs derrière, catapultes au fond), troupe qui avance au pas de la plus lente, aussi en « attaquer en avançant » ; vérifier les cavaliers (pas de place en double) et les bots.
 - [ ] Religion (étape 1) : temple (après Mysticisme, un par ville, refusé hors de ses terres), foi qui monte sous les ressources (`/rts-religion foi 500` pour aller vite), boutons de fondation dans le temple et leurs infobulles, message à tous, symbole après le nom de la ville, Panthéon (ex-Autel de la Prospérité), effets (construction plus rapide avec l'Orthodoxie, etc.).
 - [ ] Frontières : trait au sol de la couleur de la nation (allure, épaisseur, transparence, sur les pentes et l'eau), les deux traits côte à côte entre voisins, frontière sur la minimap, rien sous les nuages, ralentissements éventuels.
 - [ ] Diplomatie : tout en paix au départ (unités qui ne se battent pas, ordre d'attaque refusé), déclarer la guerre / proposer la paix ou l'alliance à un bot depuis l'écran Diplomatie (touche 8), opinion affichée, cadeaux et échanges (négatif = demander), bots qui se déclarent la guerre entre eux, offres d'un bot dans le chat, sauvegarde après redémarrage.
@@ -596,3 +602,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 16/10/2026 | Remparts : un seul bouton « Rempart » ; tour, porte et amélioration de tout le mur en cliquant sur un morceau ; 3 niveaux (palissade, pierre, pierre renforcée) ; herse avec Maçonnerie |
 | 16/10/2026 | Frontières : territoire autour des bâtiments, trait au sol de la couleur de la nation et frontière sur la minimap ; la diplomatie s'en sert |
 | 18/10/2026 | Religion étape 1 : temple, foi, fondation des 8 religions et croyances, religion des villes, effets ; Autel de la Prospérité renommé Panthéon |
+| 18/10/2026 | Formations militaires : rangs face à la marche (corps à corps devant, tireurs derrière, siège au fond), troupe au pas de la plus lente |
