@@ -72,6 +72,7 @@ public class ExplorationClientEvents {
     private static int builtVersion = -1;
     private static float bakedLight = 1f;
     public static final float NIGHT_LIGHT = 0.3f; // cloud brightness at night (1 = white)
+    public static final float SHADER_NIGHT_LIGHT = 0.04f, SHADER_DAY_LIGHT = 0.6f; // the same with shaders on
     private static long builtCentre = Long.MIN_VALUE;
     private static long lastBuildTime = 0;
     private static int originX = 0, originZ = 0;
@@ -87,7 +88,10 @@ public class ExplorationClientEvents {
         // daylight is baked into the cloud colours (shaders ignore a colour set at draw time): dark grey at night.
         // Worked out from the time of day itself (sky darkness stayed high at night in game, the clouds were glaring)
         float sun = Mth.clamp(Mth.cos(MC.level.getTimeOfDay(1f) * Mth.TWO_PI) * 2f + 0.5f, 0f, 1f);
-        float light = NIGHT_LIGHT + (1f - NIGHT_LIGHT) * sun;
+        // shaders (Oculus) draw these colours far brighter than they are (glaring at night): much darker then
+        float light = shadersOn()
+            ? SHADER_NIGHT_LIGHT + (SHADER_DAY_LIGHT - SHADER_NIGHT_LIGHT) * sun
+            : NIGHT_LIGHT + (1f - NIGHT_LIGHT) * sun;
         if (Math.abs(light - bakedLight) > 0.03f)
             builtVersion = -1;
         if (builtVersion != version || builtCentre != centre || now - lastBuildTime > 3000) {
@@ -133,6 +137,22 @@ public class ExplorationClientEvents {
     // Looked up by name so the mod still works without Oculus.
     private static java.lang.reflect.Method irisInstance = null, irisShadowPass = null;
     private static boolean irisChecked = false;
+
+    private static java.lang.reflect.Method irisPackInUse = null;
+
+    // a shader pack is on (Oculus)
+    private static boolean shadersOn() {
+        isShadowPass(); // looks Oculus up
+        if (irisInstance == null)
+            return false;
+        try {
+            if (irisPackInUse == null)
+                irisPackInUse = irisInstance.getReturnType().getMethod("isShaderPackInUse");
+            return (Boolean) irisPackInUse.invoke(irisInstance.invoke(null));
+        } catch (Throwable e) {
+            return false;
+        }
+    }
 
     private static boolean isShadowPass() {
         if (!irisChecked) {
