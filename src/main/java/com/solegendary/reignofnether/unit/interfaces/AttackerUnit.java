@@ -176,6 +176,9 @@ public interface AttackerUnit {
 
     // move to a building and start attacking it
     public default void setAttackBuildingTarget(BlockPos preselectedBlockPos, boolean forced) {
+        // rampart walls and towers: siege units only (others break the gates)
+        if (!com.solegendary.reignofnether.rampart.RampartSiege.mayAttack(this, ((LivingEntity) this).level(), preselectedBlockPos))
+            return;
         if (this.canAttackBuildings()) {
             Goal attackBuildingGoal = this.getAttackBuildingGoal();
             if (attackBuildingGoal instanceof RangedAttackBuildingGoal<?> rabg) {

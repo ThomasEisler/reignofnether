@@ -363,6 +363,9 @@ public class UnitActionItem {
                     // if the unit can't actually attack just treat this as a move action
                     if (attacked != null && refusedAtPeace(level, unit, attacked.ownerName)) {
                         unit.setMoveTarget(preselectedBlockPos);
+                    } else if (attacked != null && !com.solegendary.reignofnether.rampart.RampartSiege.mayAttack(unit, attacked)) {
+                        if (level.isClientSide()) // walls and towers: siege units only
+                            HudClientEvents.showTemporaryMessage("Seules les unités de siège (catapulte, ravageur, golem) attaquent les murs : attaquez une porte");
                     } else if (unit instanceof AttackerUnit attackerUnit) {
                         attackerUnit.setAttackBuildingTarget(preselectedBlockPos);
                     } else {

@@ -5,9 +5,6 @@ import com.solegendary.reignofnether.building.BuildingBlock;
 import com.solegendary.reignofnether.building.BuildingPlacement;
 import com.solegendary.reignofnether.building.BuildingServerEvents;
 import com.solegendary.reignofnether.unit.UnitServerEvents;
-import com.solegendary.reignofnether.unit.goals.MeleeAttackBuildingGoal;
-import com.solegendary.reignofnether.unit.goals.RangedAttackBuildingGoal;
-import com.solegendary.reignofnether.unit.interfaces.AttackerUnit;
 import com.solegendary.reignofnether.unit.interfaces.Unit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -164,7 +161,6 @@ public class RampartServerEvents {
         if (evt.phase != TickEvent.Phase.END || ++ticks < GATE_TICK_INTERVAL)
             return;
         ticks = 0;
-        boolean checkBlocked = ++gateAttackTicks % GATE_ATTACK_CHECK_INTERVAL == 0;
         Set<BlockPos> seen = new HashSet<>();
         for (BuildingPlacement placement : BuildingServerEvents.getBuildings()) {
             if (!(placement.getBuilding() instanceof RampartBuilding rb) || !rb.isGate() || !placement.isBuilt)
@@ -184,8 +180,6 @@ public class RampartServerEvents {
                 }
             }
             int open = gateOpenColumns.getOrDefault(placement.originPos, 0);
-            if (!friendNear && checkBlocked)
-                attackGateIfBlocked(placement);
             if (friendNear && open < columns.size()) {
                 setColumnOpen(level, columns.get(open), true);
                 open++;
@@ -199,35 +193,6 @@ public class RampartServerEvents {
             gateOpenColumns.put(placement.originPos, open);
         }
         gateOpenColumns.keySet().retainAll(seen);
-    }
-
-    // enemy units held up at a shut gate (paths go through gates, so they walk up to it) break it down by themselves,
-    // unless they're busy fighting or at peace with its owner
-    private static final double GATE_BLOCKED_RANGE = 4; // from the gate's centre
-    private static final int GATE_ATTACK_CHECK_INTERVAL = 10; // gate steps (20 ticks)
-    private static int gateAttackTicks = 0;
-
-    private static void attackGateIfBlocked(BuildingPlacement gate) {
-        for (LivingEntity entity : UnitServerEvents.getAllUnits()) {
-            if (!entity.isAlive() || !(entity instanceof AttackerUnit attacker) || !(entity instanceof Unit unit) ||
-                !attacker.canAttackBuildings() || isFriendly(unit.getOwnerName(), gate.ownerName) ||
-                com.solegendary.reignofnether.diplomacy.Diplomacy.atPeace(false, unit.getOwnerName(), gate.ownerName) ||
-                entity.position().distanceToSqr(gate.centrePos.getCenter()) > GATE_BLOCKED_RANGE * GATE_BLOCKED_RANGE)
-                continue;
-            if (unit.getTargetGoal().getTarget() != null || hasBuildingTarget(attacker))
-                continue;
-            if (unit.getMoveGoal().getMoveTarget() == null && ((net.minecraft.world.entity.Mob) entity).getNavigation().isDone())
-                continue; // standing there on purpose
-            attacker.setAttackBuildingTarget(gate.centrePos, false);
-        }
-    }
-
-    private static boolean hasBuildingTarget(AttackerUnit attacker) {
-        if (attacker.getAttackBuildingGoal() instanceof MeleeAttackBuildingGoal g)
-            return g.getBuildingTarget() != null;
-        if (attacker.getAttackBuildingGoal() instanceof RangedAttackBuildingGoal<?> g)
-            return g.getBuildingTarget() != null;
-        return false;
     }
 
     private static boolean isColumnClear(Level level, RampartShapes.Column c) {
