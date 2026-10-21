@@ -326,15 +326,7 @@ public class BuildingPlacement {
     }
 
     protected void setBlocks(ArrayList<BuildingBlock> blocks) {
-        // white wool, carpets and banners in the model take the owner's nation colour (tents, flags)
-        com.solegendary.reignofnether.nation.Nation nation = ownerName == null || ownerName.isBlank() || level == null ? null :
-            com.solegendary.reignofnether.nation.Nation.of(level.isClientSide(), ownerName);
-        boolean barbarian = com.solegendary.reignofnether.barbarian.BarbarianServerEvents.OWNER_NAME.equals(ownerName); // black
-        if (nation != null || barbarian)
-            for (BuildingBlock block : blocks)
-                block.setBlockState(barbarian
-                    ? com.solegendary.reignofnether.nation.NationDyes.recolour(block.getBlockState(), net.minecraft.world.item.DyeColor.BLACK)
-                    : com.solegendary.reignofnether.nation.NationDyes.recolour(block.getBlockState(), nation));
+        recolourBlocks(blocks);
         this.blocks = blocks;
         var index = 0;
         for (BuildingBlock block : this.blocks) {
@@ -343,6 +335,18 @@ public class BuildingPlacement {
             index++;
         }
         this.totalBlocks = index;
+    }
+
+    // white wool, carpets and banners in the model take the owner's nation colour (tents, flags)
+    private void recolourBlocks(ArrayList<BuildingBlock> blocks) {
+        com.solegendary.reignofnether.nation.Nation nation = ownerName == null || ownerName.isBlank() || level == null ? null :
+            com.solegendary.reignofnether.nation.Nation.of(level.isClientSide(), ownerName);
+        boolean barbarian = com.solegendary.reignofnether.barbarian.BarbarianServerEvents.OWNER_NAME.equals(ownerName); // black
+        if (nation != null || barbarian)
+            for (BuildingBlock block : blocks)
+                block.setBlockState(barbarian
+                    ? com.solegendary.reignofnether.nation.NationDyes.recolour(block.getBlockState(), net.minecraft.world.item.DyeColor.BLACK)
+                    : com.solegendary.reignofnether.nation.NationDyes.recolour(block.getBlockState(), nation));
     }
 
     public float getMeleeDamageMult() {
@@ -366,6 +370,7 @@ public class BuildingPlacement {
     // a building finished before nation colours and road floors existed keeps white wool and dirt path:
     // puts them in the nation colour and the floor material of its road (or path) once, after loading
     public void refreshLooks(ServerLevel serverLevel) {
+        recolourBlocks(blocks); // buildings loaded from the save are made before nations are read back
         RoadType floorType = RoadServerEvents.getFloorType(originPos);
         for (BuildingBlock block : blocks) {
             BlockPos bp = block.getBlockPos();
