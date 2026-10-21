@@ -363,6 +363,23 @@ public class BuildingPlacement {
         initPlacedBlocks();
     }
 
+    // a building finished before nation colours and road floors existed keeps white wool and dirt path:
+    // puts them in the nation colour and the floor material of its road (or path) once, after loading
+    public void refreshLooks(ServerLevel serverLevel) {
+        RoadType floorType = RoadServerEvents.getFloorType(originPos);
+        for (BuildingBlock block : blocks) {
+            BlockPos bp = block.getBlockPos();
+            if (!serverLevel.isLoaded(bp))
+                continue;
+            BlockState inWorld = serverLevel.getBlockState(bp);
+            BlockState wanted = block.getBlockState();
+            if (RoadType.isRoadFloorMarker(wanted) && inWorld.is(Blocks.DIRT_PATH))
+                serverLevel.setBlockAndUpdate(bp, (floorType != null ? floorType : RoadType.PATH).getStateAt(bp));
+            else if (com.solegendary.reignofnether.nation.NationDyes.isStillWhite(inWorld, wanted))
+                serverLevel.setBlockAndUpdate(bp, wanted);
+        }
+    }
+
     public void setServerBlocksPlaced(int blocksPlaced) {
         this.serverBlocksPlaced = blocksPlaced;
         if (this.getBlocksPlaced() > highestBlockCountReached) {

@@ -186,7 +186,17 @@ public class BuildingServerEvents {
                 saveTicks = 0;
             }
         }
+        if (saveTicks % 100 == 50) {
+            ServerLevel level = evt.getServer().getLevel(Level.OVERWORLD);
+            if (level != null)
+                for (BuildingPlacement b : getBuildings())
+                    if (b.isBuilt && looksRefreshed.add(b))
+                        b.refreshLooks(level);
+        }
     }
+
+    // buildings whose wool colours and road floor were brought up to date (buildings finished before those existed)
+    private static final Set<BuildingPlacement> looksRefreshed = Collections.newSetFromMap(new WeakHashMap<>());
 
     public static void saveBuildings(ServerLevel level) {
         if (level == null)

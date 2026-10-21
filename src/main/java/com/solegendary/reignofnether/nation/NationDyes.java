@@ -2,6 +2,7 @@ package com.solegendary.reignofnether.nation;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -47,6 +48,15 @@ public class NationDyes {
         for (Property<?> p : state.getProperties())
             out = copy(state, out, p); // banner rotation and facing
         return out;
+    }
+
+    // white wool, carpet or banner in the world where the building wants another colour of the same thing
+    public static boolean isStillWhite(BlockState inWorld, BlockState wanted) {
+        if (inWorld.getBlock() == wanted.getBlock() || recolour(inWorld, DyeColor.BLACK) == inWorld)
+            return false;
+        return (inWorld.is(BlockTags.WOOL) && wanted.is(BlockTags.WOOL)) ||
+            (inWorld.is(BlockTags.WOOL_CARPETS) && wanted.is(BlockTags.WOOL_CARPETS)) ||
+            (inWorld.is(BlockTags.BANNERS) && wanted.is(BlockTags.BANNERS));
     }
 
     private static <T extends Comparable<T>> BlockState copy(BlockState from, BlockState to, Property<T> p) {

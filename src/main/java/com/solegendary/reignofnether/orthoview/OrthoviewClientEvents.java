@@ -296,6 +296,9 @@ public class OrthoviewClientEvents {
         forceMoveCam(pos.getX(), pos.getZ(), cameraLockTicks);
     }
 
+    private static final int AUTO_ENABLE_TICKS = 40;
+    private static int autoEnableTicksLeft = AUTO_ENABLE_TICKS;
+
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent evt) {
         if (evt.phase != TickEvent.Phase.END) {
@@ -321,6 +324,14 @@ public class OrthoviewClientEvents {
             MC.gameMode.getPlayerMode() == GameType.ADVENTURE || MC.gameMode.getPlayerMode() == GameType.SURVIVAL
         )) {
             toggleEnable();
+        }
+
+        // straight into the RTS view (F12) when joining a world, once it has loaded
+        if (MC.player == null || MC.level == null) {
+            autoEnableTicksLeft = AUTO_ENABLE_TICKS;
+        } else if (autoEnableTicksLeft > 0 && --autoEnableTicksLeft == 0 && !enabled && MC.gameMode != null &&
+                (MC.gameMode.getPlayerMode() == GameType.CREATIVE || MC.gameMode.getPlayerMode() == GameType.SPECTATOR)) {
+            tryToToggleEnable();
         }
 
         if (cameraLockTicksLeft > 0) {

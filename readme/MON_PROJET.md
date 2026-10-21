@@ -30,7 +30,7 @@ Version personnelle du mod RTS **Reign of Nether** (Minecraft 1.20.1, Forge), po
 Un **serveur unique** avec ce mod : je ne partage pas le mod, on joue seulement sur mon serveur.
 
 1. **Première connexion** : le joueur choisit sa **nation**.
-2. La **vue RTS (F12) est forcée** : les joueurs ne peuvent pas jouer autrement.
+2. La **vue RTS (F12) est forcée** : les joueurs ne peuvent pas jouer autrement. (21/10 : déjà, on entre dans un monde directement en vue RTS, en créatif ou spectateur : `OrthoviewClientEvents.onClientTick`, 2 s après le chargement.)
 3. Le serveur **l'envoie dans une zone encore libre**, que personne d'autre n'occupe.
 4. **Distance de sécurité** : impossible de poser son Hôtel de ville trop près de celui d'un autre joueur.
 5. Ensuite, on joue tous ensemble sur la même carte.
@@ -356,7 +356,7 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 
 ## Ajouter ou modifier un bâtiment
 
-**Couleur de la nation** (18/10) : dans mes modèles, la **laine blanche** (et les tapis et bannières blancs) est posée dans la couleur de la nation du propriétaire (France bleu, Angleterre rouge, Espagne jaune, Saint-Empire marron (couleur de la nation passée au marron partout), Rome violet, Portugal vert, Russie orange (couleur de la nation passée à l’orange partout), Suède bleu clair ; barbares noir ; sans nation : blanc). Pour les tentes et les drapeaux. Code `nation/NationDyes.java` (appliqué dans `BuildingPlacement.setBlocks`) ; une laine d'une autre couleur compte comme posée (`BuildingBlock.isPlaced`), donc les bâtiments déjà construits en blanc ne sont pas vus comme abîmés.
+**Couleur de la nation** (18/10) : dans mes modèles, la **laine blanche** (et les tapis et bannières blancs) est posée dans la couleur de la nation du propriétaire (France bleu, Angleterre rouge, Espagne jaune, Saint-Empire marron (couleur de la nation passée au marron partout), Rome violet, Portugal vert, Russie orange (couleur de la nation passée à l’orange partout), Suède bleu clair ; barbares noir ; sans nation : blanc). Pour les tentes et les drapeaux. Code `nation/NationDyes.java` (appliqué dans `BuildingPlacement.setBlocks`) ; une laine d'une autre couleur compte comme posée (`BuildingBlock.isPlaced`), donc les bâtiments déjà construits en blanc ne sont pas vus comme abîmés. Les bâtiments finis avant cette version (laine blanche, chemin de terre) sont mis à jour une fois, peu après le chargement du monde (`BuildingPlacement.refreshLooks`, appelé depuis `BuildingServerEvents.onServerTick`).
 
 1. En jeu (créatif, triches activées) : `/give @s minecraft:structure_block`.
 2. Bloc de structure en mode **Load**, nom `reignofnether:barracks` (par exemple) → Load : le bâtiment actuel apparaît.
@@ -649,3 +649,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 18/10/2026 | Route royale à 1 bois tous les 2 blocs ; route commerciale fermée si marchand tué ou guerre |
 | 21/10/2026 | Hôtels de ville de plus en plus chers (+50 % par ville déjà fondée) |
 | 21/10/2026 | Mes modèles : nouvelle bibliothèque (avec son sol), ferme de blé et maison retouchées ; BATIMENTS.md à jour |
+| 21/10/2026 | Correction : les bâtiments construits avant les couleurs de nation et le sol adaptable (monde « v2 ») passent à la couleur de la nation et au matériau de leur route au chargement ; vue RTS (F12) activée d'office en entrant dans un monde |
