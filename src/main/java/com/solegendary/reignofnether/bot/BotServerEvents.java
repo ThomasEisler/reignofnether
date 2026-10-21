@@ -4,7 +4,9 @@ import com.solegendary.reignofnether.api.ReignOfNetherRegistries;
 import com.solegendary.reignofnether.barbarian.BarbarianServerEvents;
 import com.solegendary.reignofnether.bot.BotSaveData.BotData;
 import com.solegendary.reignofnether.building.Building;
+import com.solegendary.reignofnether.building.BuildingBlock;
 import com.solegendary.reignofnether.building.BuildingPlacement;
+import net.minecraft.world.level.block.Blocks;
 import com.solegendary.reignofnether.building.BuildingProductionClientboundPacket;
 import com.solegendary.reignofnether.building.BuildingServerEvents;
 import com.solegendary.reignofnether.building.BuildingValidators;
@@ -269,7 +271,7 @@ public class BotServerEvents {
             int r = minR + random.nextInt(Math.max(1, maxR - minR + 1));
             int cx = centre.getX() + (int) (Math.cos(angle) * r), cz = centre.getZ() + (int) (Math.sin(angle) * r);
             BlockPos g = ground(level, cx, cz);
-            BlockPos origin = new BlockPos(cx - s[0] / 2, g.getY() + 1, cz - s[1] / 2);
+            BlockPos origin = new BlockPos(cx - s[0] / 2, g.getY(), cz - s[1] / 2); // like a player: the ground block (models start one above)
             Rotation rotation = Rotation.NONE;
             if (BuildingValidators.getPlacementValidityError(level, building, origin, name, rotation, false, false, true) != null)
                 continue;
@@ -302,7 +304,7 @@ public class BotServerEvents {
                 return; // lost its last city: nothing more to do for now
             BuildingPlacement tc = placeNear(level, bot.name, Buildings.TOWN_CENTRE, bot.start, 0, 10, villagers);
             if (tc == null && bot.ticksAlive > 20 * 60) // can't find a valid spot for a minute: put it down anyway
-                tc = BuildingServerEvents.placeBuilding(Buildings.TOWN_CENTRE, bot.start.above(), Rotation.NONE, bot.name,
+                tc = BuildingServerEvents.placeBuilding(Buildings.TOWN_CENTRE, bot.start, Rotation.NONE, bot.name,
                     villagers.stream().mapToInt(LivingEntity::getId).toArray(), false, false, true, true);
             if (tc != null) {
                 bot.capitalPlaced = true;
@@ -492,6 +494,49 @@ public class BotServerEvents {
     private static boolean isFreeResource(ServerLevel level, BlockPos bp, ResourceName type) {
         return com.solegendary.reignofnether.resources.ResourceSources.getBlockResourceName(bp, level) == type &&
             !com.solegendary.reignofnether.building.BuildingUtils.isPosInsideAnyBuilding(false, bp);
+    }
+
+    // /rts-bot redescendre: bots used to put their buildings down one block too high (see placeNear). Each built
+    // building of a bot that floats is taken away and put back down, finished, one block lower.
+    public static String lowerFloatingBuildings(ServerLevel level) {
+        int moved = 0;
+        for (BotData bot : data().bots)
+            for (BuildingPlacement b : getBuildings(bot.name))
+                if (b.isBuilt && isFloating(level, b) && relocate(level, b, b.originPos.below()))
+                    moved++;
+        return moved + " bâtiment(s) de bot redescendu(s)";
+    }
+
+    // the ring just around the building: air at the building's lowest level and ground right under it
+    private static boolean isFloating(ServerLevel level, BuildingPlacement b) {
+        int y = b.originPos.getY(), n = 0, air = 0, ground = 0;
+        for (int x = b.minCorner.getX() - 1; x <= b.maxCorner.getX() + 1; x++)
+            for (int z = b.minCorner.getZ() - 1; z <= b.maxCorner.getZ() + 1; z++) {
+                if (x >= b.minCorner.getX() && x <= b.maxCorner.getX() && z >= b.minCorner.getZ() && z <= b.maxCorner.getZ())
+                    continue;
+                n++;
+                if (!level.getBlockState(new BlockPos(x, y, z)).isSolid())
+                    air++;
+                if (level.getBlockState(new BlockPos(x, y - 1, z)).isSolid())
+                    ground++;
+            }
+        return n > 0 && air > n * 0.6 && ground > n * 0.6;
+    }
+
+    private static boolean relocate(ServerLevel level, BuildingPlacement old, BlockPos origin) {
+        int levelIndex = old.getLevelIndex();
+        BuildingServerEvents.getBuildings().remove(old);
+        for (BuildingBlock bb : old.getBlocks())
+            if (!bb.getBlockState().isAir())
+                level.setBlock(bb.getBlockPos(), Blocks.AIR.defaultBlockState(), 2);
+        BuildingPlacement placed = BuildingServerEvents.placeBuilding(old.getBuilding(), origin, old.rotation, old.ownerName,
+            new int[0], false, false, true, true);
+        if (placed == null)
+            return false;
+        if (levelIndex > 0)
+            placed.applyLevel(levelIndex);
+        placed.rebuildBlocksInWorld();
+        return true;
     }
 
     private static int count(Map<LivingEntity, Job> jobs, Job job) {

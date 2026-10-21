@@ -456,6 +456,11 @@ public class CommandsServerEvents {
 						ctx.getSource().sendSuccess(() -> Component.literal("Difficulté des bots : " + d.frName), true);
 						return 1;
 					})))
+				.then(Commands.literal("redescendre").executes(ctx -> {
+					String msg = com.solegendary.reignofnether.bot.BotServerEvents.lowerFloatingBuildings(ctx.getSource().getLevel());
+					ctx.getSource().sendSuccess(() -> Component.literal(msg), true);
+					return 1;
+				}))
 				.then(Commands.literal("info").executes(ctx -> {
 					for (String line : com.solegendary.reignofnether.bot.BotInfo.describe(ctx.getSource().getLevel()))
 						ctx.getSource().sendSuccess(() -> Component.literal(line), false);

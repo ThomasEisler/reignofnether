@@ -1335,7 +1335,7 @@ public class HudClientEvents {
                 }
                 if ((resName == ResourceName.FOOD || resName == ResourceName.WOOD || resName == ResourceName.ORE) &&
                     MC.player != null && finalSelPlayerName.equals(MC.player.getName().getString())) {
-                    workerCountZones.put(resName, RectZone.getZoneByLW(blitX + 69, blitY, iconFrameSize, iconFrameSize));
+                    workerCountZones.put(resName, RectZone.getZoneByLW(blitX, blitY, 69 + iconFrameSize, iconFrameSize)); // the whole row
                     workerCountIds.put(resName, workerIds);
                 }
 
@@ -2056,6 +2056,7 @@ public class HudClientEvents {
             if (!e.getValue().isMouseOver(mouseX, mouseY))
                 continue;
             List<Integer> ids = workerCountIds.getOrDefault(e.getKey(), List.of());
+            ReignOfNether.LOGGER.info("worker count clicked: " + e.getKey() + ", " + ids.size() + " workers");
             if (ids.isEmpty())
                 return true;
             int i = workerCountIndex.getOrDefault(e.getKey(), 0) % ids.size();
