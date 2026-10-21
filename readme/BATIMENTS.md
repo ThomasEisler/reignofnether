@@ -82,10 +82,11 @@ Les bâtiments des **monstres** et des **piglins** existent toujours dans le cod
 
 | Fichier de structure | État |
 |---|---|
-| `wheat_farm` | ✅ refaite avec son sol (y = 0) |
+| `wheat_farm` | ✅ refaite avec son sol (y = 0) ; retouchée le 21/10 |
 | `town_centre` | ✅ refait avec son sol (y = 0), 11 × 10 × 11 |
 | `stockpile_oak` | ✅ refait avec son sol (y = 0), 7 × 5 × 7 |
-| `villager_house` | ✅ refaite avec son sol (y = 0), 7 × 7 × 5 |
+| `villager_house` | ✅ refaite avec son sol (y = 0), 7 × 7 × 5 ; retouchée le 21/10 |
+| `library` | ✅ refaite le 21/10 avec son sol (y = 0), 7 × 8 × 7 (`library_grand` reste l'ancienne) |
 | `barracks` | ✅ faite (niveau 1), sol à refaire |
 | `barracks_lvl2`, `barracks_lvl3`, `town_centre_lvl2`, `town_centre_lvl3` | ⚠️ provisoires |
 | `watchtower_lvl2`, `watchtower_lvl3` | ⚠️ provisoires (copies de la tour) |

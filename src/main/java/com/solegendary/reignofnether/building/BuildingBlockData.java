@@ -34,6 +34,7 @@ public class BuildingBlockData {
         "mine",
         "mill",
         "hospice",
+        "library",
         "temple",
         "town_centre",
         "stockpile_oak",
