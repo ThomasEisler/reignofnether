@@ -309,6 +309,7 @@ Code : `rampart/RampartUpgrades.java` (mur entier, prix, remplacement des morcea
 - Recalculé quand un bâtiment apparaît ou disparaît (toutes les secondes au plus). Réglages en tête de `territory/Territory.java` (rayons) et `territory/TerritoryClientEvents.java` (épaisseur, transparence, distance) ; la minimap dans `MinimapClientEvents.updateMapUnitsAndBuildings`.
 
 ### Villes
+- **Prix croissant** (21/10) : chaque nouvel Hôtel de ville coûte **+50 % du prix de base par ville déjà fondée** (350 bois + 250 minerai pour la 1re ; 2e : 525 + 375 ; 3e : 700 + 500 ; 4e : 875 + 625). Le prix affiché au survol du bouton suit. Réglage `Cities.CITY_COST_STEP` ; appliqué par `BuildingPlacement.getCost()` (achat, remboursement).
 - On peut construire **plusieurs Hôtels de ville** (menu des ouvriers) : chacun est une **ville**, nommée d'après la **prochaine ville de sa nation** (France : Paris, Lyon, Marseille, Bordeaux… ; 12 noms par nation, puis « Paris 2 »… ; « Ville 1 », « Ville 2 »… sans nation). Le nom flotte au-dessus de l'Hôtel de ville, dans la couleur de la nation. Les noms ne resservent pas (même si une ville est détruite) ; ils repartent du début avec `/rts-reset`.
 - **Distances entre villes** (centre à centre) : **100 blocs** de ses propres villes (et de celles des alliés), **180 blocs** d'une ville ennemie. Zone rouge pendant la pose d'un Hôtel de ville là où c'est trop près.
 - Un Hôtel de ville n'a pas besoin d'être à 24 blocs de ses bâtiments (il fonde une nouvelle zone de construction autour de lui).
@@ -646,3 +647,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 18/10/2026 | Routes commerciales : marchand et lamas, allers-retours sur route royale, émeraudes (×2 avec l'étranger) ; bots commerçants |
 | 18/10/2026 | Routes commerciales gérées dans le Marché (boutons, marchand embauché par la route) ; route royale moins chère, gains revus |
 | 18/10/2026 | Route royale à 1 bois tous les 2 blocs ; route commerciale fermée si marchand tué ou guerre |
+| 21/10/2026 | Hôtels de ville de plus en plus chers (+50 % par ville déjà fondée) |

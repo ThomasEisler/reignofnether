@@ -73,4 +73,18 @@ public class Cities {
         }
         return true;
     }
+
+    // Town Centres cost more and more: +CITY_COST_STEP of the base price for each city the owner already has
+    public static final float CITY_COST_STEP = 0.5f;
+
+    public static com.solegendary.reignofnether.resources.ResourceCost cityCost(boolean clientSide, String owner,
+            @javax.annotation.Nullable BuildingPlacement exclude, com.solegendary.reignofnether.resources.ResourceCost base) {
+        int cities = 0;
+        for (BuildingPlacement b : BuildingUtils.getBuildingsList(clientSide))
+            if (b != exclude && b.getBuilding().isCapitol && b.ownerName.equals(owner))
+                cities++;
+        float mult = 1f + CITY_COST_STEP * cities;
+        return com.solegendary.reignofnether.resources.ResourceCost.Building(Math.round(base.food * mult), Math.round(base.wood * mult),
+            Math.round(base.ore * mult), base.population);
+    }
 }

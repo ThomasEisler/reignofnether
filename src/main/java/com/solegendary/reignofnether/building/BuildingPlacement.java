@@ -401,6 +401,13 @@ public class BuildingPlacement {
     }
 
 
+    // what this building costs its owner (a new city costs more for each city already owned)
+    public com.solegendary.reignofnether.resources.ResourceCost getCost() {
+        return building.isCapitol && level != null && ownerName != null && !ownerName.isBlank()
+            ? com.solegendary.reignofnether.nation.Cities.cityCost(level.isClientSide(), ownerName, this, building.cost)
+            : building.cost;
+    }
+
     public boolean canAfford(String ownerName) {
         if (SandboxServer.isAnyoneASandboxPlayer() &&
             (ownerName.isEmpty() || ownerName.equals("Enemy")))
@@ -413,9 +420,9 @@ public class BuildingPlacement {
         for (Resources resources : ResourcesServerEvents.resourcesList)
             if (resources.ownerName.equals(ownerName)) {
                 return (
-                    resources.food >= building.cost.food &&
-                    resources.wood >= building.cost.wood &&
-                    resources.ore >= building.cost.ore
+                    resources.food >= getCost().food &&
+                    resources.wood >= getCost().wood &&
+                    resources.ore >= getCost().ore
                 );
             }
         return false;

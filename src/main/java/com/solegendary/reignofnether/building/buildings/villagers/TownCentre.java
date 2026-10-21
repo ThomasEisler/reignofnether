@@ -96,14 +96,29 @@ public class TownCentre extends ProductionBuilding implements RangeIndicatorAddo
                 () -> BuildingClientEvents.getBuildingToPlace() == Buildings.TOWN_CENTRE,
                 () -> false,
                 () -> true,
-                List.of(
-                        Component.translatable("buildings.reignofnether.town_centre").withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
-                        ResourceCosts.getFormattedCost(cost),
-                        ResourceCosts.getFormattedPop(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        Component.translatable("buildings.reignofnether.town_centre.tooltip1").getVisualOrderText()
-                ),
+                tooltip(),
                 this
+        ) {
+            @Override
+            public void renderTooltip(net.minecraft.client.gui.GuiGraphics guiGraphics, int mouseX, int mouseY) {
+                this.tooltipLines = tooltip(); // the price goes up with each city
+                super.renderTooltip(guiGraphics, mouseX, mouseY);
+            }
+        };
+    }
+
+    private List<FormattedCharSequence> tooltip() {
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        ResourceCost price = mc.player == null ? cost :
+            com.solegendary.reignofnether.nation.Cities.cityCost(true, mc.player.getName().getString(), null, cost);
+        return List.of(
+                Component.translatable("buildings.reignofnether.town_centre").withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(price),
+                ResourceCosts.getFormattedPop(cost),
+                FormattedCharSequence.forward("", Style.EMPTY),
+                Component.translatable("buildings.reignofnether.town_centre.tooltip1").getVisualOrderText(),
+                FormattedCharSequence.forward("Chaque nouvelle ville coûte " + Math.round(com.solegendary.reignofnether.nation.Cities.CITY_COST_STEP * 100) +
+                    " % de plus que la première, par ville déjà fondée.", Style.EMPTY)
         );
     }
 

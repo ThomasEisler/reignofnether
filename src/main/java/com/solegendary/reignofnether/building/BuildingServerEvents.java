@@ -525,9 +525,9 @@ public class BuildingServerEvents {
             );
             if (!fromCommand) {
                 ResourcesServerEvents.addSubtractResources(new Resources(ownerName,
-                        -newBuilding.getBuilding().cost.food,
-                        -newBuilding.getBuilding().cost.wood,
-                        -newBuilding.getBuilding().cost.ore
+                        -newBuilding.getCost().food,
+                        -newBuilding.getCost().wood,
+                        -newBuilding.getCost().ore
                 ));
             }
 
@@ -612,10 +612,10 @@ public class BuildingServerEvents {
 
     private static void warnInsufficientResources(BuildingPlacement newBuilding) {
         ResourcesClientboundPacket.warnInsufficientResources(newBuilding.ownerName,
-            ResourcesServerEvents.canAfford(newBuilding.ownerName, ResourceName.FOOD, newBuilding.getBuilding().cost.food),
-            ResourcesServerEvents.canAfford(newBuilding.ownerName, ResourceName.WOOD, newBuilding.getBuilding().cost.wood),
-            ResourcesServerEvents.canAfford(newBuilding.ownerName, ResourceName.ORE, newBuilding.getBuilding().cost.ore),
-            ResourcesServerEvents.canAfford(newBuilding.ownerName, ResourceName.EMERALD, newBuilding.getBuilding().cost.emerald)
+            ResourcesServerEvents.canAfford(newBuilding.ownerName, ResourceName.FOOD, newBuilding.getCost().food),
+            ResourcesServerEvents.canAfford(newBuilding.ownerName, ResourceName.WOOD, newBuilding.getCost().wood),
+            ResourcesServerEvents.canAfford(newBuilding.ownerName, ResourceName.ORE, newBuilding.getCost().ore),
+            ResourcesServerEvents.canAfford(newBuilding.ownerName, ResourceName.EMERALD, newBuilding.getCost().emerald)
         );
     }
 
@@ -686,14 +686,14 @@ public class BuildingServerEvents {
         if (!building.isBuilt || SurvivalServerEvents.isEnabled()) {
 
             float buildPercent = building.getBlocksPlacedPercent();
-            int food = Math.round(building.getBuilding().cost.food * (1 - buildPercent));
-            int wood = Math.round(building.getBuilding().cost.wood * (1 - buildPercent));
-            int ore = Math.round(building.getBuilding().cost.ore * (1 - buildPercent));
+            int food = Math.round(building.getCost().food * (1 - buildPercent));
+            int wood = Math.round(building.getCost().wood * (1 - buildPercent));
+            int ore = Math.round(building.getCost().ore * (1 - buildPercent));
 
             if (building.isBuilt && SurvivalServerEvents.isEnabled()) {
-                food = Math.round(building.getBuilding().cost.food * 0.5f * buildPercent);
-                wood = Math.round(building.getBuilding().cost.wood * 0.5f * buildPercent);
-                ore = Math.round(building.getBuilding().cost.ore * 0.5f * buildPercent);
+                food = Math.round(building.getCost().food * 0.5f * buildPercent);
+                wood = Math.round(building.getCost().wood * 0.5f * buildPercent);
+                ore = Math.round(building.getCost().ore * 0.5f * buildPercent);
             }
             if (food > 0 || wood > 0 || ore > 0) {
                 Resources res = new Resources(building.ownerName, food, wood, ore);
