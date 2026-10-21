@@ -35,8 +35,17 @@ public class RampartGateBlock extends Block {
         builder.add(AXIS, OPEN);
     }
 
+    // a shut gate is aimed at as a whole block (the thin panel was hard to click from the RTS camera, so it couldn't be
+    // attacked); it doesn't hide its neighbours' faces though (see getOcclusionShape)
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+        if (state.getValue(OPEN))
+            return Shapes.empty();
+        return Shapes.block();
+    }
+
+    @Override
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
         if (state.getValue(OPEN))
             return Shapes.empty();
         return state.getValue(AXIS) == Direction.Axis.X ? PANEL_X : PANEL_Z;
