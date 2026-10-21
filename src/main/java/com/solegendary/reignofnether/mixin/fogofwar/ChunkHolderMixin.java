@@ -15,7 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 // Per-packet fog gate for chunk broadcasts (block updates, multi-block section updates, block entity data,
-// light). ChunkMapMixin already dropped fog-dark players from the recipient list; this refines edge chunks
+// light). Dark chunks get nothing (shouldSendChunkPacket; ChunkMapMixin, which dropped dark players from ChunkMap.getPlayers,
+// is gone: that list is also the first send of a chunk that finishes loading, so those chunks never arrived and left
+// holes of sky in the world). This also refines edge chunks
 // per column via FogOfWarServerEvents.shouldSendChunkPacket so the visible part of an edge chunk updates
 // live while its fogged part stays frozen.
 @Mixin(ChunkHolder.class)

@@ -51,7 +51,6 @@
         "fire.WalkNodeEvaluatorMixin",
         "fogofwar.ChunkHolderMixin",
         "fogofwar.ChunkMapInitialSendMixin",
-        "fogofwar.ChunkMapMixin",
         "fogofwar.ServerLevelParticleMixin",
         "fogofwar.TrackedEntityMixin",
         "fogofwar.WorldBorderMixin",
