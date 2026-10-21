@@ -359,7 +359,7 @@ public class BotServerEvents {
         // a stockpile by the nearest forest
         boolean hasStockpile = buildings.stream().anyMatch(b -> b.getBuilding() == Buildings.OAK_STOCKPILE);
         if (!building && !hasStockpile && villagers.size() >= 6) {
-            Optional<BlockPos> wood = ResourceIndex.get(level).findClosest(level, capital.centrePos, RESOURCE_RANGE, ResourceName.WOOD, bp -> true);
+            Optional<BlockPos> wood = ResourceIndex.get(level).findClosest(level, capital.centrePos, RESOURCE_RANGE, ResourceName.WOOD, bp -> isFreeResource(level, bp, ResourceName.WOOD));
             if (wood.isPresent() && wood.get().distSqr(capital.centrePos) > 20 * 20)
                 placeNear(level, bot.name, Buildings.OAK_STOCKPILE, wood.get(), 4, 10, nearest(builderPool, wood.get(), 1));
         }
@@ -475,15 +475,23 @@ public class BotServerEvents {
             // resource isn't sent straight back to the same one, and villagers spread over several spots
             BlockPos home = nearestCity(cities, v.blockPosition(), capital).centrePos;
             BlockPos from = home.offset(random.nextInt(33) - 16, 0, random.nextInt(33) - 16);
-            Optional<BlockPos> target = ResourceIndex.get(level).findClosest(level, from, RESOURCE_RANGE, type, bp -> true);
+            ResourceName wanted = type;
+            Optional<BlockPos> target = ResourceIndex.get(level).findClosest(level, from, RESOURCE_RANGE, type, bp -> isFreeResource(level, bp, wanted));
             if (target.isEmpty() && type == ResourceName.ORE)
-                target = ResourceIndex.get(level).findClosest(level, from, RESOURCE_RANGE, type = ResourceName.WOOD, bp -> true);
+                target = ResourceIndex.get(level).findClosest(level, from, RESOURCE_RANGE, type = ResourceName.WOOD, bp -> isFreeResource(level, bp, ResourceName.WOOD));
             if (target.isPresent()) {
                 order(name, UnitAction.MOVE, List.of(v), target.get());
                 if (type == ResourceName.ORE)
                     ore++;
             }
         }
+    }
+
+    // a resource block a villager can be sent to: not part of a building (the logs of a Town Centre are a resource
+    // too, but an order there is only a move: the villagers walked to them again and again and never worked)
+    private static boolean isFreeResource(ServerLevel level, BlockPos bp, ResourceName type) {
+        return com.solegendary.reignofnether.resources.ResourceSources.getBlockResourceName(bp, level) == type &&
+            !com.solegendary.reignofnether.building.BuildingUtils.isPosInsideAnyBuilding(false, bp);
     }
 
     private static int count(Map<LivingEntity, Job> jobs, Job job) {
