@@ -3,7 +3,9 @@
 Bâtiments qui existent dans ma version du mod (faction **villageois**, la seule jouable).
 Prix en bois / minerai. Durée de construction avec **1 ouvrier** (3 ouvriers : 60 % du temps, 5 ouvriers : 43 %).
 
-> Tenu à jour avec le code. Dernière mise à jour : 13 octobre 2026.
+> Tenu à jour avec le code. Dernière mise à jour : 21 octobre 2026.
+
+**Couleur de la nation** : la laine blanche (et les tapis et bannières blancs) des modèles est posée dans la couleur de la nation du propriétaire (barbares : noir). Pour les tentes et les drapeaux.
 
 ## Le nom à mettre dans le bloc de structure
 
@@ -33,9 +35,11 @@ La colonne **« Nom dans le bloc de structure »** donne le nom exact à taper d
 | **Marché** | `reignofnether:market_villagers1` · amélioré : `reignofnether:market_villagers2` | 75 bois, 75 minerai | 90 s | 300 | Commerce | Échanger des ressources |
 | **Golem de fer** (bâtiment) | `reignofnether:iron_golem` | 50 bois, 250 minerai | 60 s | — | Métallurgie | Se transforme en golem de fer une fois construit |
 | **Hutte de sorcière** | `reignofnether:witch_hut` | 200 bois, 50 minerai | 90 s | 250 | Mysticisme | Sorcières ; recherches de potions |
-| **Sanctuaire de prospérité** | `reignofnether:shrine_of_prosperity` | 125 bois, 50 minerai | 90 s | 240 | Mysticisme | Héros : garde royal, enchanteur (et leur résurrection) |
+| **Panthéon** (ex-Sanctuaire de prospérité) | `reignofnether:shrine_of_prosperity` | 125 bois, 50 minerai | 90 s | 240 | Mysticisme | Héros : garde royal, enchanteur (et leur résurrection) |
 | **Château** | `reignofnether:castle` · avec drapeau (recherche) : `reignofnether:castle_with_flag` | 400 bois, 300 minerai | 180 s | 800 | Fortifications | Ravageurs ; recherches (cavalerie, drapeau) |
 | **Tour arcanique** | `reignofnether:arcane_tower` | 100 bois, 200 minerai | 120 s | 340 | Arcanes | Évocateurs, invocateurs de vent |
+| **Temple** | `reignofnether:temple` (provisoire, 7 × 7, rangée du bas = sol) | 150 bois, 75 minerai | 60 s | 250 | Mysticisme | Foi, fondation de la religion, prophètes, rites. Un par ville |
+| **Port de pêche** | `reignofnether:port` (provisoire, posé contre l'eau) | 150 bois, 25 minerai | — | — | — | Pêcheurs en bateau |
 
 Limite : on construit à **24 blocs maximum** de ses bâtiments, sauf entrepôt et pont.
 
@@ -46,20 +50,19 @@ Limite : on construit à **24 blocs maximum** de ses bâtiments, sauf entrepôt 
 | **Camp barbare** | `reignofnether:barbarian_camp` · niv. 2 : `reignofnether:barbarian_camp_lvl2` · niv. 3 : `reignofnether:barbarian_camp_lvl3` | 200 / 350 / 500 selon le niveau | Centre du camp, garnison, raids, butin |
 | **Tente** | `reignofnether:barbarian_tent` | — | Bâtiment annexe (1 à 3 selon le niveau) |
 | **Tour barbare** | `reignofnether:barbarian_tower` | — | Bâtiment annexe dès le niveau 2 |
+| **Camp niv. 4 et 5** | `reignofnether:barbarian_camp_lvl4`, `reignofnether:barbarian_camp_lvl5` | — | Grands camps (provisoires : copies du niv. 3) |
+| **Annexes** (7 × 7 au plus) | `reignofnether:barbarian_campfire`, `barbarian_loot`, `barbarian_forge`, `barbarian_alarm`, `barbarian_cages`, `barbarian_stable`, `barbarian_ravager_pen`, `barbarian_chief_tent` | — | Feu de camp, butin, forge, cor d'alarme, cages, écurie, enclos à ravageurs, tente du chef (provisoires) |
+
+## Carte (posés à la génération)
+
+| Élément | Nom dans le bloc de structure |
+|---|---|
+| Carrières | `reignofnether:quarry_1`, `reignofnether:quarry_2` (provisoires, 9 × 9 ; rang du bas enfoncé dans le sol) |
+| Ruines | `reignofnether:ruin_1`, `reignofnether:ruin_2` (provisoires, 9 × 9 ; posées sur le sol) |
 
 ## Remparts
 
-Faits de segments (5 colonnes de mur) qui sont chacun un bâtiment : ils ont de la vie et s'effondrent quand ils sont trop abîmés. Leur forme suit le tracé et le terrain (pas de fichier de structure).
-
-| Bâtiment | Nom dans le code | PV par segment | Blocs | Rôle |
-|---|---|---|---|---|
-| **Palissade** | `palisade` | 150 | palissade + pointe de palissade (3-4 de haut) | Mur en bois |
-| **Rempart de pierre** | `stone_rampart` | 300 | rempart de pierre, créneaux (5 de haut) | Mur en pierre |
-| **Porte en bois** | `wooden_gate` | 220 | porte en bois de rempart (4 de haut) | Coulisse pour laisser passer ses unités |
-| **Herse** | `iron_gate` | 450 | herse (5 de haut) | Coulisse pour laisser passer ses unités |
-| **Tour de rempart** | `rampart_tower` | 500 | rempart de pierre, 3 × 3, 8 de haut, créneaux | Garnison de 2 qui tire d'en haut ; se pose sur un mur |
-
-Les joueurs les construisent depuis le menu des ouvriers (Palissade **D**, Rempart de pierre **J** après Maçonnerie, Porte en bois **K**, Herse **Z** après Métallurgie, Tour de rempart **V** après Maçonnerie) : deux clics pour tracer, construits par les ouvriers. Prix : palissade 4 bois par bloc de long, pierre 3 bois + 4 minerai par bloc, porte en bois 80 bois, herse 60 bois + 100 minerai. Les camps barbares en construisent aussi.
+Pas de fichier de structure : leur forme suit le tracé et le terrain. Un seul bouton « Rempart » (palissade) dans le menu des ouvriers ; ensuite, en cliquant sur un morceau construit : tour, porte, ou amélioration de tout le mur. 3 niveaux : palissade, pierre (Maçonnerie), pierre renforcée (Fortifications). Détails et prix : « Mes remparts » dans [MON_PROJET.md](MON_PROJET.md).
 
 ## Bâtiments neutres (cartes spéciales, modes de jeu)
 
