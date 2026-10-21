@@ -1213,6 +1213,7 @@ public class HudClientEvents {
             resourceNames = new String[] { "food", "wood", "ore", "pop" };
         }
 
+        workerCountZones.clear();
         if (resources != null && MC.player != null) {
             for (String resourceName : resourceNames) {
                 ResourceLocation rl;
@@ -1281,12 +1282,13 @@ public class HudClientEvents {
                 String finalSelPlayerName = selPlayerName;
                 RTSPlayer rtsPlayer = PlayerClientEvents.getPlayer(finalSelPlayerName);
 
-                int numWorkersHunting = UnitClientEvents.getAllUnits()
+                List<LivingEntity> workersHunting = UnitClientEvents.getAllUnits()
                     .stream()
                     .filter(le -> le instanceof WorkerUnit wu && le instanceof Unit u && u.getOwnerName()
                         .equals(finalSelPlayerName) && ResourceSources.isHuntableAnimal(u.getTargetGoal().getTarget()))
-                    .toList()
-                    .size();
+                    .toList();
+                int numWorkersHunting = workersHunting.size();
+                List<Integer> workerIds = new ArrayList<>(); // the workers counted in the square, to go through on clicks
 
                 int numberInSquare = 0;
                 // we can only see ReturnResourcesGoal data on server, so we can't use that here
@@ -1312,6 +1314,7 @@ public class HudClientEvents {
                                     || resName == ResourceName.WOOD && res.wood > 0
                                     || resName == ResourceName.ORE && res.ore > 0) {
                                     numberInSquare += 1;
+                                    workerIds.add(le.getId());
                                     alreadyAssigned = true;
                                 }
                             }
@@ -1319,12 +1322,21 @@ public class HudClientEvents {
                                 .getTargetResourceName()
                                 .equals(resName)) {
                                 numberInSquare += 1;
+                                workerIds.add(le.getId());
                             }
                         }
                     }
                 }
                 if (resName == ResourceName.FOOD) {
                     numberInSquare += numWorkersHunting;
+                    for (LivingEntity le : workersHunting)
+                        if (!workerIds.contains(le.getId()))
+                            workerIds.add(le.getId());
+                }
+                if ((resName == ResourceName.FOOD || resName == ResourceName.WOOD || resName == ResourceName.ORE) &&
+                    MC.player != null && finalSelPlayerName.equals(MC.player.getName().getString())) {
+                    workerCountZones.put(resName, RectZone.getZoneByLW(blitX + 69, blitY, iconFrameSize, iconFrameSize));
+                    workerCountIds.put(resName, workerIds);
                 }
 
                 hudZones.add(MyRenderer.renderIconFrameWithBg(evt.getGuiGraphics(),
@@ -2031,9 +2043,38 @@ public class HudClientEvents {
         return null;
     }
 
+    // the worker counts next to food, wood and ore: a click selects one of those workers and moves the camera to it,
+    // the next click the next one
+    private static final Map<ResourceName, RectZone> workerCountZones = new HashMap<>();
+    private static final Map<ResourceName, List<Integer>> workerCountIds = new HashMap<>();
+    private static final Map<ResourceName, Integer> workerCountIndex = new HashMap<>();
+
+    private static boolean clickWorkerCount(int mouseX, int mouseY) {
+        if (MC.level == null)
+            return false;
+        for (Map.Entry<ResourceName, RectZone> e : workerCountZones.entrySet()) {
+            if (!e.getValue().isMouseOver(mouseX, mouseY))
+                continue;
+            List<Integer> ids = workerCountIds.getOrDefault(e.getKey(), List.of());
+            if (ids.isEmpty())
+                return true;
+            int i = workerCountIndex.getOrDefault(e.getKey(), 0) % ids.size();
+            workerCountIndex.put(e.getKey(), i + 1);
+            if (MC.level.getEntity(ids.get(i)) instanceof LivingEntity le) {
+                OrthoviewClientEvents.centreCameraOnPos(le.position());
+                UnitClientEvents.clearSelectedUnits();
+                UnitClientEvents.addSelectedUnit(le);
+            }
+            return true;
+        }
+        return false;
+    }
+
     @SubscribeEvent
     public static void onMousePress(ScreenEvent.MouseButtonPressed.Post evt) {
         if (!(MC.screen instanceof TopdownGui))
+            return;
+        if (evt.getButton() == GLFW.GLFW_MOUSE_BUTTON_1 && clickWorkerCount((int) evt.getMouseX(), (int) evt.getMouseY()))
             return;
         for (Button button : renderedButtons) {
             if (evt.getButton() == GLFW.GLFW_MOUSE_BUTTON_1) {

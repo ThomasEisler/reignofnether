@@ -11,11 +11,13 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 // The sawmill (and the mine) turns its workers' time into a resource: each villager working inside (sent with a right
@@ -51,6 +53,32 @@ public class SawmillPlacement extends FarmPlacement {
         return workers;
     }
 
+    public com.solegendary.reignofnether.resources.ResourceName getResource() {
+        return resource;
+    }
+
+    // where workers face while working: the saw, or the middle
+    public BlockPos getWorkSpot() {
+        return saw != null ? saw : centrePos;
+    }
+
+    // a free spot to stand on inside the building, for workers to move about while working
+    @Nullable
+    public BlockPos randomStandingSpot(RandomSource random) {
+        for (int i = 0; i < 8; i++) {
+            int x = minCorner.getX() + 1 + random.nextInt(Math.max(1, maxCorner.getX() - minCorner.getX() - 1));
+            int z = minCorner.getZ() + 1 + random.nextInt(Math.max(1, maxCorner.getZ() - minCorner.getZ() - 1));
+            for (int y = minCorner.getY(); y <= minCorner.getY() + 3; y++) {
+                BlockPos bp = new BlockPos(x, y, z);
+                if (level.getBlockState(bp).getCollisionShape(level, bp).isEmpty() &&
+                    level.getBlockState(bp.above()).getCollisionShape(level, bp.above()).isEmpty() &&
+                    !level.getBlockState(bp.below()).getCollisionShape(level, bp.below()).isEmpty())
+                    return bp;
+            }
+        }
+        return null;
+    }
+
     private int countWorkers() {
         int n = 0;
         for (LivingEntity le : UnitServerEvents.getAllUnits())
@@ -82,8 +110,11 @@ public class SawmillPlacement extends FarmPlacement {
             return;
         }
         for (ServerPlayer p : level.players()) {
+            // a big plume of smoke over the shed, thicker with more workers
             level.sendParticles(p, ParticleTypes.CAMPFIRE_COSY_SMOKE, true, at.getX() + 0.5, maxCorner.getY() + 1.0, at.getZ() + 0.5,
-                1, 0.2, 0.1, 0.2, 0.01);
+                2 + 2 * workers, 0.5, 0.3, 0.5, 0.02);
+            level.sendParticles(p, ParticleTypes.LARGE_SMOKE, true, at.getX() + 0.5, maxCorner.getY() + 0.5, at.getZ() + 0.5,
+                4 + 3 * workers, 0.8, 0.4, 0.8, 0.03);
             level.sendParticles(p, new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.defaultBlockState()), true,
                 at.getX() + 0.5, at.getY() + 1.1, at.getZ() + 0.5, 4 + 2 * workers, 0.3, 0.1, 0.3, 0.1);
         }

@@ -56,6 +56,8 @@ public class GatherResourcesGoal extends MoveToTargetBlockGoal {
     private int searchCdTicksLeft = 0;
     private int failedSearches = 0; // number of times we've failed to search for a new block - as this increases slow down or stop searching entirely to prevent lag
     private static final int MAX_FAILED_SEARCHES = 4;
+    private static final int MILL_MOVE_CHANCE = 5; // 1 in N seconds, a sawmill worker moves to another spot
+    private boolean millWorking = false; // standing in a sawmill (or mine) and working
     private static final float TICK_CD = 20; // only tick down gather time once this many ticks to reduce processing requirements
     private float cdTicksLeft = TICK_CD;
     public static final int NO_TARGET_TIMEOUT = 50; // if we reach this time without progressing a gather tick while having navigation done, then switch a new target
@@ -187,10 +189,25 @@ public class GatherResourcesGoal extends MoveToTargetBlockGoal {
             return;
 
         // at a sawmill there's nothing to cut: the worker goes inside and works there (the sawmill makes the wood)
+        // the worker holds an axe (a pickaxe at a mine), swings it and counts with that resource's workers
         if (data.targetFarm instanceof com.solegendary.reignofnether.building.buildings.placements.SawmillPlacement mill) {
+            data.targetResourceName = mill.getResource();
+            millWorking = false;
             if (mill.isPosInsideBuilding(mob.getOnPos(), 1)) {
                 ticksIdle = 0;
-                mob.getLookControl().setLookAt(mill.centrePos.getX(), mill.centrePos.getY(), mill.centrePos.getZ());
+                if (!mob.getNavigation().isDone())
+                    return;
+                if (mob.getRandom().nextInt(MILL_MOVE_CHANCE) == 0) { // now and then, goes to work at another spot
+                    BlockPos spot = mill.randomStandingSpot(mob.getRandom());
+                    if (spot != null) {
+                        this.moveReachRange = 0;
+                        super.setMoveTarget(spot);
+                        return;
+                    }
+                }
+                millWorking = true;
+                BlockPos at = mill.getWorkSpot();
+                mob.getLookControl().setLookAt(at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5);
             } else {
                 setMoveTarget(mill.centrePos);
             }
@@ -488,6 +505,8 @@ public class GatherResourcesGoal extends MoveToTargetBlockGoal {
     public boolean isGathering() {
         if (this.mob.level().isClientSide())
             return isGatheringServerside;
+        if (data.targetFarm instanceof com.solegendary.reignofnether.building.buildings.placements.SawmillPlacement)
+            return millWorking;
 
          if (!Unit.atMaxResources((Unit) mob) && this.data.gatherTarget != null && this.data.targetResourceSource != null &&
             ResourceSources.getBlockResourceName(this.data.gatherTarget, mob.level()) != ResourceName.NONE)
