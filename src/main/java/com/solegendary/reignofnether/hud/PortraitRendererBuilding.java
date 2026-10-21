@@ -9,7 +9,13 @@ import com.solegendary.reignofnether.building.BuildingClientEvents;
 import com.solegendary.reignofnether.building.BuildingPlacement;
 import com.solegendary.reignofnether.building.addon.NightSourceAddon;
 import com.solegendary.reignofnether.building.buildings.monsters.SculkCatalyst;
+import com.solegendary.reignofnether.building.buildings.placements.FarmPlacement;
+import com.solegendary.reignofnether.building.buildings.placements.SawmillPlacement;
 import com.solegendary.reignofnether.building.buildings.placements.SculkCatalystPlacement;
+import com.solegendary.reignofnether.resources.ResourceName;
+import com.solegendary.reignofnether.unit.UnitClientEvents;
+import com.solegendary.reignofnether.unit.interfaces.Unit;
+import com.solegendary.reignofnether.unit.interfaces.WorkerUnit;
 import com.solegendary.reignofnether.building.custombuilding.CustomBuilding;
 import com.solegendary.reignofnether.healthbars.HealthBarClientEvents;
 import com.solegendary.reignofnether.player.PlayerColors;
@@ -22,10 +28,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.joml.Quaternionf;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // Renders a Building's portrait including an animated block, name, healthbar, list of stats and UI frames
 
@@ -76,6 +86,12 @@ public class PortraitRendererBuilding {
                 x+4,y-9,
                 0xFFFFFFFF
         );
+        // production of my own working buildings, above the name
+        if (rs == Relationship.OWNED && building.isBuilt) {
+            List<String> info = productionInfo(building);
+            for (int i = 0; i < info.size(); i++)
+                guiGraphics.drawString(Minecraft.getInstance().font, info.get(i), x + 4, y - 9 - 10 * (info.size() - i), 0xFFE0D090);
+        }
         int bgCol = PlayerColors.getPlayerPortraitDisplayColorHex(building.ownerName);
         MyRenderer.renderFrameWithBg(guiGraphics, x, y,
                 frameWidth,
@@ -97,6 +113,29 @@ public class PortraitRendererBuilding {
         );
 
         return RectZone.getZoneByLW(x, y, frameWidth, frameHeight);
+    }
+
+    // workers and output of a sawmill or mine; farmers on a farm
+    private static List<String> productionInfo(BuildingPlacement building) {
+        List<String> lines = new ArrayList<>();
+        if (!(building instanceof FarmPlacement))
+            return lines;
+        int workers = 0;
+        for (LivingEntity le : UnitClientEvents.getAllUnits())
+            if (le instanceof WorkerUnit w && le instanceof Unit u && u.getOwnerName().equals(building.ownerName) &&
+                w.getGatherResourceGoal() != null && w.getGatherResourceGoal().isGathering() &&
+                building.isPosInsideBuilding(le.getOnPos(), 1))
+                workers++;
+        if (building instanceof SawmillPlacement mill) {
+            workers = Math.min(workers, SawmillPlacement.MAX_WORKERS);
+            boolean ore = mill.getResource() == ResourceName.ORE;
+            int perMinute = workers * SawmillPlacement.WOOD_PER_LOAD * 60 / SawmillPlacement.WORK_SECONDS;
+            lines.add("Ouvriers : " + workers + "/" + SawmillPlacement.MAX_WORKERS);
+            lines.add("Production : " + perMinute + (ore ? " minerai" : " bois") + "/min");
+        } else {
+            lines.add("Fermiers : " + workers);
+        }
+        return lines;
     }
 
     public void drawBlockOnScreen(int x, int y, Block block, float blockScale) {
