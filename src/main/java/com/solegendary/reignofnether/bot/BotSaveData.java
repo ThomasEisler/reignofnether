@@ -25,6 +25,7 @@ public class BotSaveData extends SavedData {
     public final List<BotData> bots = new ArrayList<>();
     public int wanted = 0; // bots the game should have (start menu button)
     public String difficulty = "NORMAL";
+    public boolean sunkenRaised = false; // bot buildings sunk by the 21/10/2026 repair were put back up
 
     @Nonnull
     public static BotSaveData getInstance(LevelAccessor level) {
@@ -47,6 +48,7 @@ public class BotSaveData extends SavedData {
             data.bots.add(bot);
         }
         data.wanted = tag.getInt("wanted");
+        data.sunkenRaised = tag.getBoolean("sunkenRaised");
         if (tag.contains("difficulty"))
             data.difficulty = tag.getString("difficulty");
         return data;
@@ -66,6 +68,7 @@ public class BotSaveData extends SavedData {
         tag.put("bots", list);
         tag.putInt("wanted", wanted);
         tag.putString("difficulty", difficulty);
+        tag.putBoolean("sunkenRaised", sunkenRaised);
         return tag;
     }
 }

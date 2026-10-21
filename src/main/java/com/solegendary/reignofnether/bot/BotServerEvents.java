@@ -496,35 +496,40 @@ public class BotServerEvents {
             !com.solegendary.reignofnether.building.BuildingUtils.isPosInsideAnyBuilding(false, bp);
     }
 
-    // bots used to put their buildings down one block too high (see placeNear): a few seconds after the world loads,
-    // each built building of a bot that floats is taken away and put back down, finished, one block lower
+    // 21/10/2026: a repair put some bot buildings one block too low (sunk into the ground). A few seconds after the
+    // world loads, once per world (BotSaveData.sunkenRaised), each sunken building of a bot is put back up one block.
     private static int ticksSinceStart = 0;
-    private static final int LOWER_AFTER_TICKS = 100;
+    private static final int RAISE_AFTER_TICKS = 100;
 
-    private static void lowerFloatingBuildings(ServerLevel level) {
-        int moved = 0;
+    private static void raiseSunkenBuildings(ServerLevel level) {
+        if (data().sunkenRaised)
+            return;
+        data().sunkenRaised = true;
+        data().setDirty();
         for (BotData bot : data().bots)
             for (BuildingPlacement b : getBuildings(bot.name))
-                if (b.isBuilt && isFloating(level, b) && relocate(level, b, b.originPos.below()))
-                    moved++;
-        if (moved > 0)
-            com.solegendary.reignofnether.ReignOfNether.LOGGER.info("Bots: " + moved + " floating building(s) put back down");
+                if (b.isBuilt && isSunken(level, b)) {
+                    BlockPos was = b.originPos;
+                    if (relocate(level, b, b.originPos.above()))
+                        com.solegendary.reignofnether.ReignOfNether.LOGGER.info("Bots: sunken " + b.getBuilding().name + " at " + was + " put back up");
+                }
     }
 
-    // the ring just around the building: air at the building's lowest level and ground right under it
-    private static boolean isFloating(ServerLevel level, BuildingPlacement b) {
-        int y = b.originPos.getY(), n = 0, air = 0, ground = 0;
-        for (int x = b.minCorner.getX() - 1; x <= b.maxCorner.getX() + 1; x++)
-            for (int z = b.minCorner.getZ() - 1; z <= b.maxCorner.getZ() + 1; z++) {
-                if (x >= b.minCorner.getX() && x <= b.maxCorner.getX() && z >= b.minCorner.getZ() && z <= b.maxCorner.getZ())
-                    continue;
-                n++;
-                if (!level.getBlockState(new BlockPos(x, y, z)).isSolid())
-                    air++;
-                if (level.getBlockState(new BlockPos(x, y - 1, z)).isSolid())
-                    ground++;
-            }
-        return n > 0 && air > n * 0.6 && ground > n * 0.6;
+    // the terrain 2 to 4 blocks around the building is mostly one block above its floor (right next to it, a ditch
+    // was left, so that ring doesn't count)
+    private static boolean isSunken(ServerLevel level, BuildingPlacement b) {
+        int y = b.originPos.getY(), above = 0, level0 = 0, below = 0;
+        for (int d = 2; d <= 4; d++)
+            for (int x = b.minCorner.getX() - d; x <= b.maxCorner.getX() + d; x++)
+                for (int z = b.minCorner.getZ() - d; z <= b.maxCorner.getZ() + d; z++) {
+                    if (x > b.minCorner.getX() - d && x < b.maxCorner.getX() + d && z > b.minCorner.getZ() - d && z < b.maxCorner.getZ() + d)
+                        continue;
+                    int top = ground(level, x, z).getY() - y;
+                    if (top == 1) above++;
+                    else if (top == 0) level0++;
+                    else if (top == -1) below++;
+                }
+        return above > level0 && above > below;
     }
 
     private static boolean relocate(ServerLevel level, BuildingPlacement old, BlockPos origin) {
@@ -532,7 +537,10 @@ public class BotServerEvents {
         BuildingServerEvents.getBuildings().remove(old);
         for (BuildingBlock bb : old.getBlocks())
             if (!bb.getBlockState().isAir())
-                level.setBlock(bb.getBlockPos(), Blocks.AIR.defaultBlockState(), 2);
+                level.setBlock(bb.getBlockPos(), bb.getBlockPos().getY() < origin.getY() ? Blocks.DIRT.defaultBlockState()
+                    : Blocks.AIR.defaultBlockState(), 2); // under the new floor: ground
+        if (origin.getY() > old.originPos.getY())
+            fillDitch(level, old, origin.getY());
         BuildingPlacement placed = BuildingServerEvents.placeBuilding(old.getBuilding(), origin, old.rotation, old.ownerName,
             new int[0], false, false, true, true);
         if (placed == null)
@@ -541,6 +549,22 @@ public class BotServerEvents {
             placed.applyLevel(levelIndex);
         placed.rebuildBlocksInWorld();
         return true;
+    }
+
+    // the ring right around the building, up to its floor (its top block, often the path around it, is kept on top)
+    private static void fillDitch(ServerLevel level, BuildingPlacement b, int floorY) {
+        for (int x = b.minCorner.getX() - 1; x <= b.maxCorner.getX() + 1; x++)
+            for (int z = b.minCorner.getZ() - 1; z <= b.maxCorner.getZ() + 1; z++) {
+                if (x >= b.minCorner.getX() && x <= b.maxCorner.getX() && z >= b.minCorner.getZ() && z <= b.maxCorner.getZ())
+                    continue;
+                BlockPos top = ground(level, x, z);
+                if (top.getY() >= floorY || top.getY() < floorY - 3 || !level.getFluidState(top).isEmpty())
+                    continue;
+                net.minecraft.world.level.block.state.BlockState topState = level.getBlockState(top);
+                for (int y = top.getY(); y < floorY; y++)
+                    level.setBlockAndUpdate(new BlockPos(x, y, z), Blocks.DIRT.defaultBlockState());
+                level.setBlockAndUpdate(new BlockPos(x, floorY, z), topState);
+            }
     }
 
     private static int count(Map<LivingEntity, Job> jobs, Job job) {
@@ -654,8 +678,8 @@ public class BotServerEvents {
     public static void onServerTick(TickEvent.ServerTickEvent evt) {
         if (evt.phase != TickEvent.Phase.END || serverLevel == null)
             return;
-        if (++ticksSinceStart == LOWER_AFTER_TICKS)
-            lowerFloatingBuildings(serverLevel);
+        if (++ticksSinceStart == RAISE_AFTER_TICKS)
+            raiseSunkenBuildings(serverLevel);
         if (++ticks < TICK_INTERVAL)
             return;
         ticks = 0;
