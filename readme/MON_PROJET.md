@@ -378,7 +378,6 @@ Sans recherche : Hôtel de ville, maison, ferme, entrepôt, caserne, Bibliothèq
 | `modifythephasevariance` | ignore les bâtiments requis |
 | `/rts-rebuild-buildings reignofnether:barracks` | reconstruit tous les bâtiments d'un type avec leur forme actuelle |
 | `/rts-road <pos A> <pos B> [path\|paved\|advanced]` | construit une route entre deux bâtiments (test) |
-| `/rts-bot redescendre` | redescend d'un bloc les bâtiments des bots posés trop haut (avant le 21/10) : retirés puis reposés finis |
 | `/rts-barbarians on` / `off` | active / désactive les barbares |
 | `/rts-barbarians facile` / `normal` / `difficile` | choisit la difficulté des barbares |
 | `/rts-barbarian-camp <pos> [1-5]` | pose un camp barbare du niveau choisi (test) |
@@ -654,4 +653,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 21/10/2026 | Correction : les bâtiments construits avant les couleurs de nation et le sol adaptable (monde « v2 ») passent à la couleur de la nation et au matériau de leur route au chargement ; vue RTS (F12) activée d'office en entrant dans un monde |
 | 21/10/2026 | Scierie : grosse fumée, villageois qui bougent et donnent des coups de hache, comptés dans les ouvriers au bois ; clic sur le nombre d'ouvriers (nourriture, bois, minerai) en haut à gauche : sélectionne un de ces ouvriers et y amène la caméra, le clic suivant passe au suivant |
 | 21/10/2026 | Correction bots : ils envoyaient leurs villageois sur les bûches de leur Hôtel de ville (villageois qui marchent sans fin, 0 bois) |
-| 21/10/2026 | Correction bots : bâtiments posés un bloc trop haut (comme le joueur maintenant : repère = bloc de sol) ; `/rts-bot redescendre` redescend ceux déjà posés ; clic sur les compteurs d'ouvriers : toute la ligne est cliquable |
+| 21/10/2026 | Correction bots : bâtiments posés un bloc trop haut (comme le joueur maintenant : repère = bloc de sol) ; ceux déjà posés sont redescendus tout seuls 5 s après le chargement du monde (retirés puis reposés finis, `BotServerEvents.lowerFloatingBuildings`) ; clic sur les compteurs d'ouvriers : toute la ligne est cliquable |

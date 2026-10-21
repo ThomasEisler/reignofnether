@@ -496,15 +496,19 @@ public class BotServerEvents {
             !com.solegendary.reignofnether.building.BuildingUtils.isPosInsideAnyBuilding(false, bp);
     }
 
-    // /rts-bot redescendre: bots used to put their buildings down one block too high (see placeNear). Each built
-    // building of a bot that floats is taken away and put back down, finished, one block lower.
-    public static String lowerFloatingBuildings(ServerLevel level) {
+    // bots used to put their buildings down one block too high (see placeNear): a few seconds after the world loads,
+    // each built building of a bot that floats is taken away and put back down, finished, one block lower
+    private static int ticksSinceStart = 0;
+    private static final int LOWER_AFTER_TICKS = 100;
+
+    private static void lowerFloatingBuildings(ServerLevel level) {
         int moved = 0;
         for (BotData bot : data().bots)
             for (BuildingPlacement b : getBuildings(bot.name))
                 if (b.isBuilt && isFloating(level, b) && relocate(level, b, b.originPos.below()))
                     moved++;
-        return moved + " bâtiment(s) de bot redescendu(s)";
+        if (moved > 0)
+            com.solegendary.reignofnether.ReignOfNether.LOGGER.info("Bots: " + moved + " floating building(s) put back down");
     }
 
     // the ring just around the building: air at the building's lowest level and ground right under it
@@ -648,7 +652,11 @@ public class BotServerEvents {
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent evt) {
-        if (evt.phase != TickEvent.Phase.END || serverLevel == null || ++ticks < TICK_INTERVAL)
+        if (evt.phase != TickEvent.Phase.END || serverLevel == null)
+            return;
+        if (++ticksSinceStart == LOWER_AFTER_TICKS)
+            lowerFloatingBuildings(serverLevel);
+        if (++ticks < TICK_INTERVAL)
             return;
         ticks = 0;
         for (BotData bot : new ArrayList<>(data().bots)) {
@@ -665,6 +673,7 @@ public class BotServerEvents {
     @SubscribeEvent
     public static void onServerStarted(ServerStartedEvent evt) {
         serverLevel = evt.getServer().getLevel(Level.OVERWORLD);
+        ticksSinceStart = 0;
     }
 
     @SubscribeEvent
