@@ -476,6 +476,14 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
   - Autres pistes nourriture non retenues pour l'instant : prairies fertiles, bosquets de baies, vergers.
 
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
+- [x] Sol en chemin de terre des anciens bâtiments changé en matériau de route (vérifié le 21/10).
+- [x] Vue RTS (F12) activée d'office en entrant dans un monde (vérifié le 21/10).
+- [x] Clic sur un compteur d'ouvriers (nourriture, bois, minerai) : sélectionne un ouvrier, la caméra y va, le suivant au clic suivant (vérifié le 21/10).
+- [ ] Scierie : grosse fumée, villageois qui bougent et donnent des coups de hache, comptés dans les ouvriers au bois.
+- [ ] Panneau du bâtiment sélectionné : ouvriers et production par minute (scierie, mine), fermiers (ferme).
+- [ ] Remparts : unités classiques qui cassent la porte la plus proche quand un mur les bloque, puis reprennent leur trajet ; murs et tours cassés seulement par catapultes, ravageurs, golems.
+- [ ] Plus de trous de ciel dans le monde (morceaux de terrain qui manquaient avec le brouillard).
+- [ ] Bâtiments du Saint-Empire au bon niveau après la remontée (la ferme au bord de l'eau vers x 90 / z -377 n'a pas été remontée : à regarder).
 - [ ] Amélioration des bâtiments (touche **E** dans la caserne / le Hôtel de ville).
 - [ ] Routes : tracé, prix, place autour des bâtiments, passage aux niveaux pavée / avancée, sol des bâtiments qui change de matériau.
 - [ ] Chantiers : durées du tableau, tours d'échafaudage qui montent, barre de progression dorée.
@@ -490,7 +498,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 - [ ] Armée des bots : formation à la caserne, attente près de l'Hôtel de ville, défense quand un ennemi approche, attaque d'un camp barbare (dès 6 soldats), retour quand l'armée est battue, attaque des autres civilisations après 25 min.
 - [ ] Carte plein écran (bouton d'agrandissement) : taille, centrage, clic sur la carte pour déplacer la caméra, boutons encore cliquables, ralentissements ; menu de départ (qui utilise la grande carte). Nuages la nuit avec et sans shaders.
 - [ ] Formations : groupe de soldats déplacé → rangs face à la marche (corps à corps devant, tireurs derrière, catapultes au fond), troupe qui avance au pas de la plus lente, aussi en « attaquer en avançant » ; vérifier les cavaliers (pas de place en double) et les bots.
-- [ ] Laine blanche des modèles dans la couleur de la nation (nouveau bâtiment, montée de niveau) ; anciens bâtiments pas abîmés.
+- [x] Laine blanche des modèles dans la couleur de la nation, aussi sur les anciens bâtiments (vérifié le 21/10 dans « v2 »).
 - [ ] Routes commerciales : boutons du Marché (1, 2 avec le Grand marché), clic sur une ville reliée par route royale (aperçu du gain), marchand et 2 lamas embauchés, allers-retours, émeraudes à chaque arrivée, part de l'autre civilisation, route fermée (message) si le marchand est tué ou en guerre, fermeture au bouton ; bots qui font une route royale et commercent.
 - [ ] Route royale : bouton sur l'Hôtel de ville, aperçu et prix vers une autre ville (aussi étrangère), 5 de large, murets, vitesse ; refusée en guerre.
 - [ ] Classement : tableau en bas de l'écran Diplomatie (touche 8), points qui bougent (villes, recherches, unités tuées…), `/rts-classement`, `/rts-fin` (vainqueur à l'écran).
@@ -499,7 +507,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 - [ ] Religion (étape 1) : temple (après Mysticisme, un par ville, refusé hors de ses terres), foi qui monte sous les ressources (`/rts-religion foi 500` pour aller vite), boutons de fondation dans le temple et leurs infobulles, message à tous, symbole après le nom de la ville, Panthéon (ex-Autel de la Prospérité), effets (construction plus rapide avec l'Orthodoxie, etc.).
 - [ ] Frontières : trait au sol de la couleur de la nation (allure, épaisseur, transparence, sur les pentes et l'eau), les deux traits côte à côte entre voisins, frontière sur la minimap, rien sous les nuages, ralentissements éventuels.
 - [ ] Diplomatie : tout en paix au départ (unités qui ne se battent pas, ordre d'attaque refusé), déclarer la guerre / proposer la paix ou l'alliance à un bot depuis l'écran Diplomatie (touche 8), opinion affichée, cadeaux et échanges (négatif = demander), bots qui se déclarent la guerre entre eux, offres d'un bot dans le chat, sauvegarde après redémarrage.
-- [ ] Bot bloqué (Saint-Empire, nourriture à 0) : repart après l'anti-blocage ? `/rts-bot info` pour voir ses villageois (le bois s'est arrêté à 19 h 43 sans explication).
+- [ ] Bot bloqué (Saint-Empire) : cause trouvée et corrigée le 21/10 (villageois envoyés sur les bûches de son Hôtel de ville) ; vérifier avec `/rts-bot info` que ses villageois récoltent et que son bois monte.
 - [ ] Villes : 2e Hôtel de ville loin du premier, nom au-dessus, refus trop près (100 / 180 blocs) et zone rouge.
 - [ ] Carrières (minage, minerai qui repousse) et ruines (deviennent attaquables quand on approche, trésor) ; icônes.
 - [ ] Pêche et troupeaux : bulles sur l'eau près des rives, port posé contre l'eau, pêcheurs en bateau (clic droit sur le port) qui vont aux bulles et rapportent, troupeaux qui tournent en rond, s'éloignent des villes, repoussent ; plus de bêtes seules (nouveau monde conseillé).
