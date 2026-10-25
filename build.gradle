@@ -147,6 +147,9 @@ dependencies {
     implementation 'org.junit.jupiter:junit-jupiter:5.9.2'
 
     minecraft 'net.minecraftforge:forge:1.20.1-47.4.0'
+    // Small Ships (ships piloted by our units, see naval/): only compiled against, installed as its own mod.
+    // Not in git (All Rights Reserved): download smallships-2.0.2-forge-1.20.1.jar from Modrinth into libs/
+    compileOnly files('libs/smallships-2.0.2-forge-1.20.1.jar')
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 

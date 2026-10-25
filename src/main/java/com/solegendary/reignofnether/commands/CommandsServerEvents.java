@@ -390,6 +390,18 @@ public class CommandsServerEvents {
 		);
 
 		// builds a road between the two buildings at the given positions, owned and paid for by the executing player
+		// test: a Small Ships ship with one of my villagers at the helm (at the given spot, or under my camera)
+		dispatcher.register(Commands.literal("rts-navire")
+				.requires(source -> source.hasPermission(2))
+				.then(Commands.argument("type", StringArgumentType.word())
+					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+						List.of("cog", "brigg", "caravel", "galley", "war_galley", "drakkar", "dhow", "galleon", "rowboat"), builder))
+					.executes(ctx -> spawnShip(ctx, ctx.getSource().getPlayerOrException().blockPosition()))
+					.then(Commands.argument("pos", BlockPosArgument.blockPos())
+						.executes(ctx -> spawnShip(ctx, BlockPosArgument.getBlockPos(ctx, "pos")))
+					)
+				)
+		);
 		dispatcher.register(Commands.literal("rts-road")
 				.requires(source -> source.hasPermission(2))
 				.then(Commands.argument("from", BlockPosArgument.blockPos())
@@ -836,6 +848,14 @@ public class CommandsServerEvents {
 		return 1;
 	}
 	
+	private static int spawnShip(CommandContext<CommandSourceStack> ctx, BlockPos pos) throws CommandSyntaxException {
+		ServerPlayer player = ctx.getSource().getPlayerOrException();
+		String msg = com.solegendary.reignofnether.naval.NavalServerEvents.spawnShip(ctx.getSource().getLevel(),
+			StringArgumentType.getString(ctx, "type"), pos, player.getName().getString());
+		ctx.getSource().sendSuccess(() -> Component.literal(msg), false);
+		return 1;
+	}
+
 	private static int buildRoad(CommandContext<CommandSourceStack> ctx, RoadType type) throws CommandSyntaxException {
 		ServerPlayer player = ctx.getSource().getPlayerOrException();
 		boolean built = RoadServerEvents.tryBuildRoad(ctx.getSource().getLevel(), player.getName().getString(),

@@ -315,6 +315,14 @@ Code : `rampart/RampartUpgrades.java` (mur entier, prix, remplacement des morcea
 - Un Hôtel de ville n'a pas besoin d'être à 24 blocs de ses bâtiments (il fonde une nouvelle zone de construction autour de lui).
 - Code : `nation/Cities.java` (noms, distances `OWN_SPACING`, `ENEMY_SPACING`), `CityServerEvents` (nom donné à la pose, `CitySaveData`), `CityClientEvents` (nom au-dessus).
 
+### Navires (25/10, étape 1 sur 4, à tester en jeu)
+- Avec le mod **Small Ships** (2.0.2, Forge 1.20.1, mod à part à installer sur le serveur **et** chez chaque joueur ; licence : usage non commercial avec lien vers sa page Modrinth, interdit de le redistribuer donc **pas dans git**). Notre mod le commande par son API `ShipBridge` ; s'il n'est pas installé, rien ne change.
+- Chaque navire a un **capitaine** (un de mes villageois) assis à la barre : sélectionner le capitaine = sélectionner le navire. **Clic droit** (ou « attaquer en avançant ») sur l'eau : le navire tourne vers le point et y va **tout droit** (pas de calcul de chemin sur l'eau), voiles réduites dans les virages serrés et à l'approche, voiles carguées à l'arrivée (moins de 4 blocs). Small Ships l'arrête tout seul contre un obstacle.
+- Nos villageois sont ajoutés au réglage `driverEntities` de Small Ships au démarrage du serveur (sans ça, ils ne peuvent pas tenir la barre).
+- Test : `/rts-navire <type> [position]` pose un navire sur l'eau (sous la caméra ou à la position) avec un capitaine à moi. Types : `cog`, `brigg`, `caravel`, `galley`, `war_galley`, `drakkar`, `dhow`, `galleon`, `rowboat`.
+- Code : dossier `naval/` (`NavalServerEvents` = sans Small Ships ; `ShipPilot` = tout ce qui touche Small Ships). Compilation : `libs/smallships-2.0.2-forge-1.20.1.jar` (à télécharger sur Modrinth, `compileOnly` dans `build.gradle`).
+- Étapes suivantes : 2) embarquement (unités sélectionnées → clic droit sur un navire, 6 places sur le Cog, 12 sur le gros), débarquement sur la côte, naufrage = passagers morts, production au port (recherche Navigation) ; 3) navires de guerre et canons ; 4) pêche au clic droit sur les coins de pêche.
+
 ### Arbre des technologies
 - Pendant une recherche, un **bandeau au-dessus de la fenêtre de l'arbre** (pas sur l'écran principal) montre son icône, son nom en grand, une grande barre de progression (pourcentage) et le temps restant (« en pause » sans Bibliothèque).
 - Bouton **« Technologies x/18 »** à gauche de l'écran RTS (une barre bleue montre la recherche en cours), ou bouton **« Technologies »** de la **Bibliothèque** (touche **P**) : ouvre l'arbre presque plein écran (Échap pour fermer).
@@ -476,6 +484,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
   - Autres pistes nourriture non retenues pour l'instant : prairies fertiles, bosquets de baies, vergers.
 
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
+- [ ] Navires (étape 1) : `/rts-navire cog` sur l'eau, sélectionner le capitaine, clic droit sur l'eau : le navire tourne et y va, s'arrête à l'arrivée.
 - [ ] Flèche de la couleur de la nation au-dessus de la tête des unités sélectionnées (qui monte et descend doucement).
 - [x] Sol en chemin de terre des anciens bâtiments changé en matériau de route (vérifié le 21/10).
 - [x] Vue RTS (F12) activée d'office en entrant dans un monde (vérifié le 21/10).
@@ -667,3 +676,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 21/10/2026 | Remparts : portes visables sur tout le bloc ; unités arrêtées par un rempart qui l'attaquent d'elles-mêmes (portes pour toutes, murs et tours pour les unités de siège seulement) puis reprennent leur trajet |
 | 21/10/2026 | Panneau du bâtiment sélectionné (en bas) : au-dessus du nom, ouvriers et production par minute pour la scierie et la mine, nombre de fermiers pour une ferme (`PortraitRendererBuilding.productionInfo`) |
 | 25/10/2026 | Serveur de test sur le VPS (`planup`, port 25566, `/root/mc/rts`, service `mc-rts`) ; petite flèche dans la couleur de la nation au-dessus des unités sélectionnées (`HealthBarClientEvents.renderSelectionArrows`) |
+| 25/10/2026 | Navires étape 1 : Small Ships piloté par un capitaine (clic droit = cap direct), commande `/rts-navire` |

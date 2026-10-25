@@ -56,3 +56,10 @@ Minecraft, except it's an RTS
     versionRange="[1.20.1,1.21)"
     ordering="NONE"
     side="BOTH"
+# Small Ships: ships piloted by our units (naval/), optional
+[[dependencies.reignofnether]]
+    modId="smallships"
+    mandatory=false
+    versionRange="[2.0.2,)"
+    ordering="NONE"
+    side="BOTH"
