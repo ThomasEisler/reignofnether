@@ -176,12 +176,18 @@ public class UnitClientEvents {
     private static boolean rightClickMoveDeferred = false;
     private static boolean rightClickActionTaken = false;
 
+    // a rider is selected through its mount (pillager on a ravager...), but a unit aboard something that isn't a unit
+    // (a ship's captain at the helm) is selected itself
+    public static boolean isRidingUnit(Entity entity) {
+        return entity.isPassenger() && entity.getVehicle() instanceof Unit;
+    }
+
     public static void addPreselectedUnit(LivingEntity unit) {
         if (unit instanceof Player player && (player.isSpectator() || player.isCreative()))
             return;
         if (!FogOfWarClientEvents.isInBrightChunk(unit))
             return;
-        if (unit.isPassenger())
+        if (isRidingUnit(unit))
             return;
         preselectedUnits.add(unit);
         markSelectedUnitsChanged();
@@ -194,7 +200,7 @@ public class UnitClientEvents {
         CursorClientEvents.setLeftClickAction(null);
         if (!FogOfWarClientEvents.isInBrightChunk(unit))
             return;
-        if (unit.isPassenger())
+        if (isRidingUnit(unit))
             return;
         selectedUnits.add(unit);
         BuildingClientEvents.clearSelectedBuildings();
@@ -205,7 +211,7 @@ public class UnitClientEvents {
         CursorClientEvents.setLeftClickAction(null);
         if (!FogOfWarClientEvents.isInBrightChunk(unit))
             return;
-        if (unit.isPassenger())
+        if (isRidingUnit(unit))
             return;
         selectedUnits.add(unit);
         selectedUnits.sort(Comparator.comparing(MiscUtil::getSimpleEntityName));
@@ -1078,7 +1084,7 @@ public class UnitClientEvents {
 
                     for (LivingEntity entity : allUnits) {
                         if (!FogOfWarClientEvents.isInBrightChunk(entity) ||
-                                entity.isPassenger())
+                                isRidingUnit(entity))
                             continue;
 
                         float alpha = 0.5f;
