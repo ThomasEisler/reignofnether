@@ -476,6 +476,7 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
   - Autres pistes nourriture non retenues pour l'instant : prairies fertiles, bosquets de baies, vergers.
 
 ### À vérifier en jeu (codé, compilé, pas encore testé par moi)
+- [ ] Flèche de la couleur de la nation au-dessus de la tête des unités sélectionnées (qui monte et descend doucement).
 - [x] Sol en chemin de terre des anciens bâtiments changé en matériau de route (vérifié le 21/10).
 - [x] Vue RTS (F12) activée d'office en entrant dans un monde (vérifié le 21/10).
 - [x] Clic sur un compteur d'ouvriers (nourriture, bois, minerai) : sélectionne un ouvrier, la caméra y va, le suivant au clic suivant (vérifié le 21/10).
@@ -665,3 +666,4 @@ Plan décidé avec moi (comme dans Civilization, en simple) :
 | 21/10/2026 | Correction : trous de ciel dans le monde (morceaux de terrain jamais reçus quand ils se chargeaient dans le brouillard) : `ChunkMapMixin` retiré, les mises à jour restent filtrées par `ChunkHolderMixin` |
 | 21/10/2026 | Remparts : portes visables sur tout le bloc ; unités arrêtées par un rempart qui l'attaquent d'elles-mêmes (portes pour toutes, murs et tours pour les unités de siège seulement) puis reprennent leur trajet |
 | 21/10/2026 | Panneau du bâtiment sélectionné (en bas) : au-dessus du nom, ouvriers et production par minute pour la scierie et la mine, nombre de fermiers pour une ferme (`PortraitRendererBuilding.productionInfo`) |
+| 25/10/2026 | Serveur de test sur le VPS (`planup`, port 25566, `/root/mc/rts`, service `mc-rts`) ; petite flèche dans la couleur de la nation au-dessus des unités sélectionnées (`HealthBarClientEvents.renderSelectionArrows`) |

@@ -11,6 +11,7 @@ import com.solegendary.reignofnether.building.BuildingClientEvents;
 import com.solegendary.reignofnether.building.buildings.shared.AbstractBridge;
 import com.solegendary.reignofnether.fogofwar.FogOfWarClientEvents;
 import com.solegendary.reignofnether.orthoview.OrthoviewClientEvents;
+import com.solegendary.reignofnether.unit.UnitClientEvents;
 import com.solegendary.reignofnether.unit.interfaces.HeroUnit;
 import com.solegendary.reignofnether.unit.interfaces.Unit;
 import com.solegendary.reignofnether.util.MiscUtil;
@@ -119,6 +120,7 @@ public class HealthBarClientEvents {
 
         renderConstructionBars(matrix, camera);
         renderBarbarianMarkers(matrix, camera, partialTick);
+        renderSelectionArrows(matrix, camera, partialTick);
 
         for (LivingEntity entity : renderedEntities) {
             float scaleToGui = 0.025f;
@@ -203,6 +205,47 @@ public class HealthBarClientEvents {
                 buffer.vertex(m4f, (float) (Math.cos(angle) * radius), (float) (Math.sin(angle) * radius), 0)
                     .color(0.75f, 0f, 0f, 1f).endVertex();
             }
+            Tesselator.getInstance().end();
+            matrix.popPose();
+        }
+        RenderSystem.enableCull();
+    }
+
+    // a small arrow in its owner's nation colour above each selected unit's head, pointing down at it
+    private static void renderSelectionArrows(PoseStack matrix, Camera camera, float partialTick) {
+        if (MC.level == null)
+            return;
+        Vec3 camPos = camera.getPosition();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.disableCull();
+        float bob = (float) Math.sin((MC.level.getGameTime() + partialTick) * 0.2) * 0.12f;
+        for (LivingEntity entity : UnitClientEvents.getSelectedUnits()) {
+            if (!(entity instanceof Unit unit) || !entity.isAlive() || entity.isInvisible())
+                continue;
+            com.solegendary.reignofnether.nation.Nation nation = com.solegendary.reignofnether.nation.Nation.of(true, unit.getOwnerName());
+            int rgb = nation != null ? nation.colour : 0xFFFFFF;
+            float r = ((rgb >> 16) & 0xFF) / 255f, g = ((rgb >> 8) & 0xFF) / 255f, b = (rgb & 0xFF) / 255f;
+            double x = Mth.lerp(partialTick, entity.xo, entity.getX());
+            double y = Mth.lerp(partialTick, entity.yo, entity.getY()) + entity.getBbHeight() + 1.4 + bob;
+            double z = Mth.lerp(partialTick, entity.zo, entity.getZ());
+
+            float scale = OrthoviewClientEvents.isEnabled() ? 0.04f : 0.025f;
+            matrix.pushPose();
+            matrix.translate(x - camPos.x(), y - camPos.y(), z - camPos.z());
+            matrix.mulPose(Axis.YP.rotationDegrees(-camera.getYRot()));
+            matrix.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
+            matrix.scale(-scale, -scale, scale);
+            Matrix4f m4f = matrix.last().pose();
+            BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+            buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+            // dark outline, then the arrow in the nation colour (y grows downwards here: the tip is at +y)
+            buffer.vertex(m4f, -7.5f, -5.5f, 0).color(0f, 0f, 0f, 0.9f).endVertex();
+            buffer.vertex(m4f, 7.5f, -5.5f, 0).color(0f, 0f, 0f, 0.9f).endVertex();
+            buffer.vertex(m4f, 0, 7.5f, 0).color(0f, 0f, 0f, 0.9f).endVertex();
+            buffer.vertex(m4f, -5.5f, -4f, 0).color(r, g, b, 1f).endVertex();
+            buffer.vertex(m4f, 5.5f, -4f, 0).color(r, g, b, 1f).endVertex();
+            buffer.vertex(m4f, 0, 5f, 0).color(r, g, b, 1f).endVertex();
             Tesselator.getInstance().end();
             matrix.popPose();
         }
